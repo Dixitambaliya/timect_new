@@ -1131,17 +1131,18 @@ html:has(.cg-gifts-omega) {
   user-select: none;
   /* Wheel drives product flow; allow horizontal scrub on trackpad */
   touch-action: none;
-  cursor: default;
+  cursor: grab;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 
 .floating-gift-field.is-dragging {
-  cursor: default;
+  cursor: grabbing;
 }
 
 .floating-gift-field.is-dragging .float-product {
+  cursor: grabbing;
   pointer-events: none;
 }
 
@@ -1187,7 +1188,6 @@ html:has(.cg-gifts-omega) {
   will-change: transform;
   transform: translate3d(0, 0, 0);
   backface-visibility: hidden;
-  contain: layout style;
 }
 
 .floating-row__track.is-static {
@@ -1202,7 +1202,8 @@ html:has(.cg-gifts-omega) {
   display: none;
 }
 
-.floating-row__half {
+.floating-row__half,
+.floating-row__unit {
   display: flex;
   align-items: center;
   gap: clamp(2.25rem, 5vw, 5rem);
@@ -1293,14 +1294,14 @@ html:has(.cg-gifts-omega) {
 
 .orbital-hint {
   position: absolute;
-  bottom: 0.15rem;
+  bottom: calc(max(1.25rem, env(safe-area-inset-bottom, 0px)) + 6.6rem);
   left: 50%;
   transform: translateX(-50%);
   z-index: 3;
   font-size: 0.58rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: rgba(0, 0, 0, 0.28);
+  color: rgba(0, 0, 0, 0.38);
   pointer-events: none;
   white-space: nowrap;
 }
@@ -1324,6 +1325,7 @@ html:has(.cg-gifts-omega) {
   -webkit-appearance: none;
   font: inherit;
   text-align: center;
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 /* Sized so 3 rows + gaps fit fully in the viewport */
@@ -1370,6 +1372,7 @@ html:has(.cg-gifts-omega) {
   transform: scale(0.85);
   pointer-events: none;
   z-index: 0;
+  transition: opacity 0.35s ease, transform 0.35s ease;
 }
 
 .float-product__img-wrap {
@@ -1420,6 +1423,11 @@ html:has(.cg-gifts-omega) {
   z-index: 4;
   transform: translate3d(0, -8px, 0) scale(1.08);
   animation-play-state: paused;
+}
+
+.float-product:hover .float-product__halo {
+  opacity: 1;
+  transform: scale(1);
 }
 
 .float-product:hover .float-product__img {

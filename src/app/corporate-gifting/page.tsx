@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import CorporateGiftingExperience from "@/components/immersive/CorporateGiftingExperience";
-import { GIFT_SAMPLES } from "@/data/giftSamples";
+import { publicGetCorporateGiftingItems } from "@/admin/actions/corporate-gifting";
 
 export const metadata: Metadata = {
   title: "Corporate Gifting | Timect",
@@ -15,9 +15,10 @@ export const metadata: Metadata = {
 };
 
 /**
- * Corporate gifting uses static sample products only.
- * No database queries, no products.json, no seed/write path.
+ * Corporate gifting catalog dynamically loaded from admin management,
+ * with zero-config fallback to default static samples.
  */
-export default function CorporateGiftingPage() {
-  return <CorporateGiftingExperience products={GIFT_SAMPLES} />;
+export default async function CorporateGiftingPage() {
+  const products = await publicGetCorporateGiftingItems();
+  return <CorporateGiftingExperience products={products} />;
 }

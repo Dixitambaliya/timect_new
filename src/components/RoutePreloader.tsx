@@ -102,6 +102,11 @@ export default function RoutePreloader() {
       tryHide();
     };
 
+    if (typeof window !== "undefined" && (window as any).__timect_page_ready) {
+      pageReady = true;
+      tryHide();
+    }
+
     window.addEventListener(PAGE_READY_EVENT, onReady);
 
     hardTimer = setTimeout(() => {

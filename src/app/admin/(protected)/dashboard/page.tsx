@@ -1,5 +1,6 @@
 import Link from "next/link";
 import {
+  Gift,
   Layers,
   Package,
   Plus,
@@ -21,6 +22,12 @@ export default async function AdminDashboardPage() {
       href: "/admin/products",
     },
     {
+      label: "Corporate Gifting",
+      value: stats.corporateGifting,
+      icon: Gift,
+      href: "/admin/corporate-gifting",
+    },
+    {
       label: "New arrivals",
       value: stats.newArrivals,
       icon: Sparkles,
@@ -31,12 +38,6 @@ export default async function AdminDashboardPage() {
       value: stats.recommended,
       icon: Star,
       href: "/admin/products?flag=recommended",
-    },
-    {
-      label: "Related",
-      value: stats.related,
-      icon: Link2,
-      href: "/admin/products?flag=related",
     },
     {
       label: "Collections",
@@ -56,10 +57,16 @@ export default async function AdminDashboardPage() {
             Catalog overview and quick actions
           </p>
         </div>
-        <Link href="/admin/products/new" className="admin-btn admin-btn-primary">
-          <Plus className="h-4 w-4" />
-          New product
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link href="/admin/corporate-gifting" className="admin-btn admin-btn-secondary">
+            <Gift className="h-4 w-4" />
+            Corporate Gifting
+          </Link>
+          <Link href="/admin/products/new" className="admin-btn admin-btn-primary">
+            <Plus className="h-4 w-4" />
+            New product
+          </Link>
+        </div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
@@ -137,6 +144,13 @@ export default async function AdminDashboardPage() {
         <div className="admin-card p-5">
           <h2 className="mb-4 text-sm font-semibold">Quick actions</h2>
           <div className="space-y-2">
+            <Link
+              href="/admin/corporate-gifting"
+              className="admin-btn admin-btn-secondary w-full justify-start"
+            >
+              <Gift className="h-4 w-4 text-[var(--admin-accent)]" />
+              Manage Corporate Gifting
+            </Link>
             <Link
               href="/admin/products/new"
               className="admin-btn admin-btn-secondary w-full justify-start"

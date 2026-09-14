@@ -12,7 +12,6 @@ import Image from "next/image";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
-import { EASE } from "@/lib/motion";
 import type { GiftProduct } from "./InfiniteProductScroll";
 
 type FloatingGiftFieldProps = {
@@ -28,22 +27,43 @@ type FloatingGiftFieldProps = {
 
 type RowRuntime = {
   track: HTMLDivElement;
-  half: number;
+  unitWidth: number; // width of one repeating set
   pos: number;
-  speed: number; // px per second (signed)
-  baseSpeed: number;
-  reverse: boolean;
+  baseDriftSpeed: number; // px/sec for ambient drifting
+  scrollParallax: number; // multiplier for user scroll response
 };
 
+/** Ensure each row has at least minCount items so a single unit is wider than 4K screens */
+function prepareRowItems(items: GiftProduct[], minCount = 24): GiftProduct[] {
+  if (!items.length) return [];
+  const res: GiftProduct[] = [];
+  while (res.length < minCount) {
+    res.push(...items);
+  }
+  return res;
+}
+
 /**
- * Timect “Orbital Time Field” — unique gift gallery:
- * - 3 infinite rows with independent base speeds
- * - Cursor gravity (field leans toward pointer)
- * - Soft focus spotlight that enlarges nearby pieces
- * - Drag-to-scrub then smooth auto-resume
- * - Scroll-velocity inertia on the marquee
- * - Subtle watch-hand tick micro-motion
- * Not a clone of other brand gift finders.
+ * Wraps row position seamlessly across 4 identical units.
+ * Units span [0, 4*W).
+ * We maintain pos in [-W, 0).
+ * At this range, unit 0..3 span [-W, 3*W) which completely covers all viewports from mobile to 4K.
+ */
+function wrapRowPos(pos: number, W: number): number {
+  if (!W || W <= 0 || Number.isNaN(pos)) return 0;
+  let res = pos % W;
+  if (res > 0) res -= W;
+  return res;
+}
+
+/**
+ * Timect “Orbital Time Field” — luxury infinite gift gallery:
+ * - 4 seamless repeating units per row: mathematically impossible to see empty spaces
+ * - True infinite bidirectional scrolling with natural inertia
+ * - Full-surface drag-to-scrub with velocity fling
+ * - Mouse wheel & trackpad horizontal/vertical natural scroll response
+ * - Hover to focus & soft-slow
+ * - Zero forced layout reflows in the animation tick
  */
 export default function FloatingGiftField({
   products,
@@ -59,185 +79,148 @@ export default function FloatingGiftField({
   const runtimesRef = useRef<RowRuntime[]>([]);
   const rafRef = useRef<number>(0);
   const lastTsRef = useRef<number>(0);
-  const draggingRef = useRef(false);
-  const dragLastXRef = useRef(0);
+
+  // Scroll velocity (user wheel / trackpad / fling momentum, px/s)
+  const scrollVelRef = useRef<number>(0);
+
+  // Drag interaction tracking
+  const pointerDownRef = useRef(false);
+  const pointerStartPos = useRef({ x: 0, y: 0 });
+  const pointerLastX = useRef(0);
+  const pointerLastTime = useRef(0);
+  const dragVelocityRef = useRef(0);
+  const isDraggingRef = useRef(false);
+  const dragJustEndedRef = useRef(false);
+  const [dragging, setDragging] = useState(false);
+
+  // Cursor position for tilt / spotlight
   const pointerRef = useRef({ x: 0.5, y: 0.5, active: false });
-  /** Extra horizontal velocity from wheel (px/s). + = content moves left. */
-  const wheelVelRef = useRef(0);
+
   const pausedRef = useRef(paused);
   pausedRef.current = paused;
-  const [dragging, setDragging] = useState(false);
-  // note: no full-field pause — only soft-slow on product hover
 
+  // Prepare 3 rows with staggered permutation and guaranteed width
   const rows = useMemo(() => {
     if (!products.length) return [[], [], []] as GiftProduct[][];
-    const pad = (list: GiftProduct[], min = 10) => {
-      if (!list.length) return list;
-      const out = [...list];
-      let i = 0;
-      while (out.length < min) {
-        out.push(list[i % list.length]);
-        i++;
-      }
-      return out;
-    };
-    const a = pad([...products]);
-    const b = pad([...products].reverse());
-    const mid = Math.floor(products.length / 3);
-    const c = pad([
-      ...products.slice(mid),
-      ...products.slice(0, mid),
-    ]);
-    return [a, b, c];
+
+    const listA = [...products];
+    const listB = [...products].reverse();
+    const mid = Math.max(1, Math.floor(products.length / 3));
+    const listC = [...products.slice(mid), ...products.slice(0, mid)];
+
+    return [
+      prepareRowItems(listA, 24),
+      prepareRowItems(listB, 24),
+      prepareRowItems(listC, 24),
+    ];
   }, [products]);
 
+  // Measure row dimensions and initialize positions safely
   const measureRuntimes = useCallback(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    const tracks = Array.from(root.querySelectorAll<HTMLDivElement>(".floating-row__track"));
+    if (!tracks.length) return;
+
     const next: RowRuntime[] = [];
-    rowRefs.current.forEach((track, rowIndex) => {
-      if (!track) return;
-      const half = track.scrollWidth / 2;
-      if (half <= 0) return;
-      const reverse = rowIndex % 2 === 1;
-      // px/sec — slow, unique per row
-      const loopSec = baseDuration + rowIndex * 24;
-      const baseSpeed = (half / loopSec) * (reverse ? 1 : -1);
+    const parallaxSpeeds = [1.0, 0.88, 1.14];
+    // Natural ambient drift speeds (px/s)
+    const driftSpeeds = reduced ? [0, 0, 0] : [-30, 24, -36];
+    // Organic starting offsets across rows
+    const staggers = [0, -0.32, 0.22];
+
+    tracks.forEach((track, rowIndex) => {
+      const unitEl = track.querySelector<HTMLElement>(".floating-row__unit");
+      const unitWidth =
+        unitEl?.getBoundingClientRect().width ||
+        unitEl?.offsetWidth ||
+        (track.scrollWidth ? track.scrollWidth / 4 : 0);
+      if (!unitWidth || unitWidth <= 10) return;
+
       const prev = runtimesRef.current[rowIndex];
+      let pos: number;
+      if (prev && prev.unitWidth > 10) {
+        // Retain current position progress when re-measuring on resize/update
+        pos = wrapRowPos(prev.pos, unitWidth);
+      } else {
+        // Initial staggered placement
+        const offset = staggers[rowIndex % staggers.length] * unitWidth;
+        pos = wrapRowPos(-0.5 * unitWidth + offset, unitWidth);
+      }
+
       next.push({
         track,
-        half,
-        pos: prev?.pos ?? (reverse ? -half * 0.25 : 0),
-        speed: baseSpeed,
-        baseSpeed,
-        reverse,
+        unitWidth,
+        pos,
+        baseDriftSpeed: driftSpeeds[rowIndex % driftSpeeds.length],
+        scrollParallax: parallaxSpeeds[rowIndex % parallaxSpeeds.length],
       });
-      gsap.set(track, { x: prev?.pos ?? 0, force3D: true });
+
+      track.style.transform = `translate3d(${pos}px, 0px, 0px)`;
     });
-    runtimesRef.current = next;
-  }, [baseDuration]);
 
-  // rAF driver — auto flow + smooth slow wheel velocity
+    if (next.length) {
+      runtimesRef.current = next;
+    }
+  }, [reduced]);
+
+  // Main animation frame loop (smooth 60/120fps, zero DOM reflow queries)
   useEffect(() => {
-    if (reduced) return;
-
-    const wrapPos = (rt: RowRuntime) => {
-      const h = rt.half;
-      if (h <= 0) return;
-      while (rt.pos <= -h) rt.pos += h;
-      while (rt.pos > 0) rt.pos -= h;
-    };
+    let active = true;
 
     const tick = (ts: number) => {
+      if (!active) return;
       const last = lastTsRef.current || ts;
-      const dt = Math.min(0.05, (ts - last) / 1000);
+      const dt = Math.min(0.04, (ts - last) / 1000);
       lastTsRef.current = ts;
 
-      // Smooth, slow coast after wheel — frame-rate independent friction
-      // Higher power = longer, softer glide
-      wheelVelRef.current *= Math.pow(0.955, dt * 60);
-      if (Math.abs(wheelVelRef.current) < 0.4) wheelVelRef.current = 0;
-
-      const productHover =
-        rootRef.current?.dataset.productHover === "1" && !draggingRef.current;
-      const fieldPaused = pausedRef.current;
-      const wheelVel = wheelVelRef.current;
-      const isScrolling = Math.abs(wheelVel) > 1;
-
-      runtimesRef.current.forEach((rt) => {
-        if (fieldPaused) {
-          rt.speed += (0 - rt.speed) * 0.12;
-        } else if (draggingRef.current) {
-          // Pointer drag owns position this frame; keep fling energy as set on move
-        } else if (isScrolling) {
-          // Per-row flow:
-          //  scroll UP   → continue that row’s natural direction
-          //  scroll DOWN → reverse that row’s direction
-          // All rows receive the wheel; each uses its own baseSpeed sign.
-          const flow = Math.sign(rt.baseSpeed) || -1;
-          // wheelVel > 0 (down) → opposite flow; wheelVel < 0 (up) → with flow
-          const scrollPart = -flow * wheelVel;
-          const target = scrollPart + rt.baseSpeed * 0.12;
-          rt.speed += (target - rt.speed) * 0.085; // soft ease-in
-        } else if (productHover) {
-          const target = rt.baseSpeed * 0.08;
-          rt.speed += (target - rt.speed) * 0.055;
-        } else {
-          // Resume gentle auto-flow
-          rt.speed += (rt.baseSpeed - rt.speed) * 0.04;
-        }
-
-        if (!draggingRef.current && !fieldPaused) {
-          rt.pos += rt.speed * dt;
-        }
-
-        wrapPos(rt);
-        gsap.set(rt.track, { x: rt.pos, force3D: true });
-      });
-
-      // Cursor gravity — field tilt + spotlight
-      const root = rootRef.current;
-      const spot = spotlightRef.current;
-      const p = pointerRef.current;
-      if (root && p.active) {
-        const gx = (p.x - 0.5) * 18;
-        const gy = (p.y - 0.5) * 12;
-        gsap.to(root.querySelector(".floating-gift-field__rows"), {
-          x: gx,
-          y: gy,
-          duration: 0.9,
-          ease: "power3.out",
-          overwrite: "auto",
-        });
-        root.querySelectorAll<HTMLElement>(".floating-row").forEach((row, i) => {
-          const depth = (i - 1) * 6;
-          gsap.to(row, {
-            y: gy * (0.35 + i * 0.15) + depth * (p.y - 0.5),
-            duration: 1,
-            ease: "power3.out",
-            overwrite: "auto",
-          });
-        });
-      }
-      if (spot && p.active) {
-        gsap.to(spot, {
-          left: `${p.x * 100}%`,
-          top: `${p.y * 100}%`,
-          opacity: 1,
-          duration: 0.45,
-          ease: "power2.out",
-          overwrite: "auto",
-        });
+      // Self-heal runtime measurement if not ready on mount frame
+      if (!runtimesRef.current.length) {
+        measureRuntimes();
       }
 
-      // Focus scale on products near pointer
-      if (root && p.active && !draggingRef.current) {
-        const rect = root.getBoundingClientRect();
-        const px = rect.left + p.x * rect.width;
-        const py = rect.top + p.y * rect.height;
-        root.querySelectorAll<HTMLElement>(".float-product").forEach((el) => {
-          if (el.dataset.hover === "1") return;
-          const r = el.getBoundingClientRect();
-          const cx = r.left + r.width / 2;
-          const cy = r.top + r.height / 2;
-          const dist = Math.hypot(cx - px, cy - py);
-          const influence = Math.max(0, 1 - dist / 240);
-          if (influence > 0.04) {
-            gsap.to(el, {
-              scale: 1 + influence * 0.12,
-              duration: 0.4,
-              ease: "power2.out",
-              overwrite: "auto",
-            });
-          } else if (el.dataset.focus === "1") {
-            el.dataset.focus = "0";
-            gsap.to(el, {
-              scale: 1,
-              duration: 0.45,
-              ease: "power2.out",
-              overwrite: "auto",
-            });
+      // Friction: smooth exponential decay on user scroll velocity
+      scrollVelRef.current *= Math.pow(0.92, dt * 60);
+      if (Math.abs(scrollVelRef.current) < 0.2) scrollVelRef.current = 0;
+
+      const isPaused = pausedRef.current;
+      const isDragging = isDraggingRef.current;
+      const isHovering = rootRef.current?.dataset.productHover === "1";
+      const hoverSlow = isHovering ? 0.3 : 1.0;
+      const userScroll = scrollVelRef.current;
+
+      if (!isPaused && !isDragging && runtimesRef.current.length) {
+        const root = rootRef.current;
+        const liveTracks = root ? Array.from(root.querySelectorAll<HTMLDivElement>(".floating-row__track")) : [];
+
+        runtimesRef.current.forEach((rt, rowIndex) => {
+          if (!rt.track.isConnected && liveTracks[rowIndex]) {
+            rt.track = liveTracks[rowIndex];
           }
-          if (influence > 0.04) el.dataset.focus = "1";
+
+          // Ambient gentle drift
+          const drift = rt.baseDriftSpeed * hoverSlow;
+          // User scroll: scrolling down (positive) moves content left (negative x)
+          const scrollMove = -userScroll * rt.scrollParallax;
+          const totalSpeed = drift + scrollMove;
+
+          rt.pos += totalSpeed * dt;
+          rt.pos = wrapRowPos(rt.pos, rt.unitWidth);
+
+          rt.track.style.transform = `translate3d(${rt.pos}px, 0px, 0px)`;
         });
+      }
+
+      // Cursor gravity tilt on rows container
+      const p = pointerRef.current;
+      const root = rootRef.current;
+      if (root && p.active && !isDragging) {
+        const gx = (p.x - 0.5) * 16;
+        const gy = (p.y - 0.5) * 10;
+        const rowsEl = root.querySelector<HTMLElement>(".floating-gift-field__rows");
+        if (rowsEl) {
+          gsap.set(rowsEl, { x: gx, y: gy, force3D: true });
+        }
       }
 
       rafRef.current = requestAnimationFrame(tick);
@@ -247,140 +230,76 @@ export default function FloatingGiftField({
       measureRuntimes();
       lastTsRef.current = 0;
       rafRef.current = requestAnimationFrame(tick);
+      window.setTimeout(measureRuntimes, 100);
       window.setTimeout(measureRuntimes, 400);
-      window.setTimeout(measureRuntimes, 1000);
     });
 
     const onResize = () => measureRuntimes();
     window.addEventListener("resize", onResize);
 
     /**
-     * Smooth slow wheel control (up & down).
-     * Velocity only — each row maps this through its own flow direction in tick.
-     * All rows scroll together; reverse rows reverse correctly.
+     * Natural, responsive wheel scroll.
+     * Scrolling down moves content left (forward through catalog).
+     * Scrolling up moves content right (backward through catalog).
      */
     const onWheel = (e: WheelEvent) => {
       if (pausedRef.current) return;
-      let delta = e.deltaY !== 0 ? e.deltaY : e.deltaX;
-      if (!delta) return;
       e.preventDefault();
 
-      // Normalize line / page deltas to pixel-ish units
-      if (e.deltaMode === 1) delta *= 14; // lines
-      if (e.deltaMode === 2) delta *= 400; // pages
+      let delta = e.deltaY !== 0 ? e.deltaY : e.deltaX;
+      if (!delta) return;
 
-      // Low sensitivity → slow motion; clamp so one flick stays gentle
-      const impulse = gsap.utils.clamp(-48, 48, delta * 0.28);
-      wheelVelRef.current = gsap.utils.clamp(
-        -160,
-        160,
-        wheelVelRef.current + impulse
-      );
+      if (e.deltaMode === 1) delta *= 24; // lines mode
+      if (e.deltaMode === 2) delta *= 320; // pages mode
+
+      // Responsive scroll impulse with smooth inertia
+      const impulse = delta * 1.5;
+      scrollVelRef.current = gsap.utils.clamp(-3500, 3500, scrollVelRef.current + impulse);
     };
 
     window.addEventListener("wheel", onWheel, { passive: false });
 
     return () => {
+      active = false;
       cancelAnimationFrame(boot);
       cancelAnimationFrame(rafRef.current);
       window.removeEventListener("resize", onResize);
       window.removeEventListener("wheel", onWheel);
     };
-  }, [reduced, measureRuntimes, products.length]);
+  }, [measureRuntimes]);
 
   useEffect(() => {
     measureRuntimes();
-  }, [products, measureRuntimes]);
+  }, [rows, measureRuntimes]);
 
-  // Staggered luxury entrance animation whenever products change (e.g. colour swatch clicked)
+  // Entrance animation whenever product set updates (e.g. colour filter clicked)
   useGSAP(
     () => {
-      if (reduced || !rootRef.current) return;
+      if (!rootRef.current) return;
       const items = rootRef.current.querySelectorAll<HTMLElement>(".float-product");
       if (!items.length) return;
 
-      // Animate products flying in with organic randomized offsets into their aligned floating positions
-      gsap.fromTo(
-        items,
-        {
-          opacity: 0,
-          scale: () => gsap.utils.random(0.35, 0.65),
-          y: () => gsap.utils.random(40, 110) * (Math.random() > 0.5 ? 1 : -1),
-          x: () => gsap.utils.random(-50, 50),
-          rotation: () => gsap.utils.random(-15, 15),
-        },
-        {
-          opacity: 1,
-          scale: 1,
-          y: 0,
-          x: 0,
-          rotation: 0,
-          duration: 0.95,
-          ease: "back.out(1.4)",
-          stagger: {
-            amount: 0.45,
-            from: "random",
-          },
-          overwrite: "auto",
-        }
-      );
+      gsap.set(items, { autoAlpha: 1, opacity: 1, visibility: "visible" });
     },
     { dependencies: [products, reduced], scope: rootRef }
   );
 
-  // Reduced-motion: still allow slow bidirectional wheel scrub via rAF ease
-  useEffect(() => {
-    if (!reduced) return;
+  // Drag interaction across entire field
+  const onPointerDown = (e: ReactPointerEvent) => {
+    if (pausedRef.current || e.button !== 0) return;
+    pointerDownRef.current = true;
+    isDraggingRef.current = false;
+    pointerStartPos.current = { x: e.clientX, y: e.clientY };
+    pointerLastX.current = e.clientX;
+    pointerLastTime.current = performance.now();
+    dragVelocityRef.current = 0;
 
-    measureRuntimes();
-    let raf = 0;
-    let last = 0;
-
-    const tick = (ts: number) => {
-      const dt = Math.min(0.05, (ts - (last || ts)) / 1000);
-      last = ts;
-      wheelVelRef.current *= Math.pow(0.955, dt * 60);
-      if (Math.abs(wheelVelRef.current) < 0.4) wheelVelRef.current = 0;
-
-      const wheelVel = wheelVelRef.current;
-      if (!pausedRef.current && Math.abs(wheelVel) > 0.4) {
-        runtimesRef.current.forEach((rt) => {
-          const flow = Math.sign(rt.baseSpeed) || -1;
-          // up = with flow, down = reverse flow (same as main loop)
-          rt.pos += -flow * wheelVel * dt;
-          const h = rt.half;
-          if (h > 0) {
-            while (rt.pos <= -h) rt.pos += h;
-            while (rt.pos > 0) rt.pos -= h;
-          }
-          gsap.set(rt.track, { x: rt.pos, force3D: true });
-        });
-      }
-      raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-
-    const onWheel = (e: WheelEvent) => {
-      if (pausedRef.current) return;
-      let delta = e.deltaY !== 0 ? e.deltaY : e.deltaX;
-      if (!delta) return;
-      e.preventDefault();
-      if (e.deltaMode === 1) delta *= 14;
-      if (e.deltaMode === 2) delta *= 400;
-      const impulse = gsap.utils.clamp(-48, 48, delta * 0.28);
-      wheelVelRef.current = gsap.utils.clamp(
-        -160,
-        160,
-        wheelVelRef.current + impulse
-      );
-    };
-
-    window.addEventListener("wheel", onWheel, { passive: false });
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener("wheel", onWheel);
-    };
-  }, [reduced, measureRuntimes]);
+    try {
+      rootRef.current?.setPointerCapture(e.pointerId);
+    } catch {
+      /* ignore */
+    }
+  };
 
   const onPointerMove = (e: ReactPointerEvent) => {
     const root = rootRef.current;
@@ -392,13 +311,67 @@ export default function FloatingGiftField({
       active: true,
     };
 
-    if (draggingRef.current) {
-      const dx = e.clientX - dragLastXRef.current;
-      dragLastXRef.current = e.clientX;
-      runtimesRef.current.forEach((rt) => {
-        rt.pos += dx;
-        rt.speed = dx * 18; // fling energy
+    // Update soft spotlight
+    const spot = spotlightRef.current;
+    if (spot) {
+      gsap.set(spot, {
+        left: `${pointerRef.current.x * 100}%`,
+        top: `${pointerRef.current.y * 100}%`,
+        opacity: 1,
       });
+    }
+
+    if (pointerDownRef.current) {
+      const dist = Math.hypot(
+        e.clientX - pointerStartPos.current.x,
+        e.clientY - pointerStartPos.current.y
+      );
+
+      if (dist > 5 && !isDraggingRef.current) {
+        isDraggingRef.current = true;
+        setDragging(true);
+      }
+
+      if (isDraggingRef.current) {
+        const dx = e.clientX - pointerLastX.current;
+        const now = performance.now();
+        const dt = Math.max(1, now - pointerLastTime.current);
+        dragVelocityRef.current = (dx / dt) * 1000;
+        pointerLastX.current = e.clientX;
+        pointerLastTime.current = now;
+
+        // 1:1 direct tracking
+        runtimesRef.current.forEach((rt) => {
+          rt.pos += dx * rt.scrollParallax;
+          rt.pos = wrapRowPos(rt.pos, rt.unitWidth);
+          rt.track.style.transform = `translate3d(${rt.pos}px, 0px, 0px)`;
+        });
+      }
+    }
+  };
+
+  const onPointerUp = (e: ReactPointerEvent) => {
+    if (pointerDownRef.current) {
+      pointerDownRef.current = false;
+      try {
+        rootRef.current?.releasePointerCapture(e.pointerId);
+      } catch {
+        /* ignore */
+      }
+
+      if (isDraggingRef.current) {
+        isDraggingRef.current = false;
+        setDragging(false);
+
+        // Momentum fling on release
+        const fling = -gsap.utils.clamp(-2500, 2500, dragVelocityRef.current * 0.8);
+        scrollVelRef.current = fling;
+
+        dragJustEndedRef.current = true;
+        window.setTimeout(() => {
+          dragJustEndedRef.current = false;
+        }, 120);
+      }
     }
   };
 
@@ -406,44 +379,29 @@ export default function FloatingGiftField({
     pointerRef.current.active = false;
     const spot = spotlightRef.current;
     if (spot) {
-      gsap.to(spot, { opacity: 0, duration: 0.5, overwrite: "auto" });
+      gsap.to(spot, { opacity: 0, duration: 0.4, overwrite: "auto" });
     }
-    const rowsEl = rootRef.current?.querySelector(".floating-gift-field__rows");
+    const rowsEl = rootRef.current?.querySelector<HTMLElement>(".floating-gift-field__rows");
     if (rowsEl) {
-      gsap.to(rowsEl, { x: 0, y: 0, duration: 1.1, ease: EASE.out, overwrite: "auto" });
-    }
-    rootRef.current?.querySelectorAll<HTMLElement>(".floating-row").forEach((row) => {
-      gsap.to(row, { y: 0, duration: 1.1, ease: EASE.out, overwrite: "auto" });
-    });
-    // Reset product scales
-    rootRef.current?.querySelectorAll<HTMLElement>(".float-product").forEach((el) => {
-      if (!el.matches(":hover")) {
-        gsap.to(el, { scale: 1, y: 0, duration: 0.5, ease: EASE.out, overwrite: "auto" });
-      }
-    });
-  };
-
-  const onPointerDown = (e: ReactPointerEvent) => {
-    // Only drag on empty field — allow product buttons to receive clicks
-    const t = e.target as HTMLElement;
-    if (t.closest("button.float-product, a.float-product")) return;
-    if (pausedRef.current) return;
-    draggingRef.current = true;
-    setDragging(true);
-    dragLastXRef.current = e.clientX;
-    rootRef.current?.setPointerCapture(e.pointerId);
-  };
-
-  const onPointerUp = (e: ReactPointerEvent) => {
-    if (!draggingRef.current) return;
-    draggingRef.current = false;
-    setDragging(false);
-    try {
-      rootRef.current?.releasePointerCapture(e.pointerId);
-    } catch {
-      /* ignore */
+      gsap.to(rowsEl, { x: 0, y: 0, duration: 0.8, ease: "power2.out", overwrite: "auto" });
     }
   };
+
+  const handleProductSelect = useCallback(
+    (product: GiftProduct) => {
+      if (dragJustEndedRef.current || isDraggingRef.current) return;
+      onProductSelect?.(product);
+    },
+    [onProductSelect]
+  );
+
+  const onProductEnter = useCallback(() => {
+    if (rootRef.current) rootRef.current.dataset.productHover = "1";
+  }, []);
+
+  const onProductLeave = useCallback(() => {
+    if (rootRef.current) rootRef.current.dataset.productHover = "0";
+  }, []);
 
   if (!products.length) {
     return (
@@ -485,32 +443,27 @@ export default function FloatingGiftField({
               }}
               className={`floating-row__track${reduced ? " is-static" : ""}`}
             >
-              <div className="floating-row__half">
-                {row.map((p, i) => (
-                  <FloatProduct
-                    key={`r${rowIndex}-a-${p.id}-${i}`}
-                    product={p}
-                    index={i + rowIndex * 3}
-                    size={sizeFor(i, rowIndex)}
-                    reduced={reduced}
-                    onSelect={onProductSelect}
-                  />
-                ))}
-              </div>
-              {!reduced && (
-                <div className="floating-row__half" aria-hidden="true">
+              {[0, 1, 2, 3].map((uIndex) => (
+                <div
+                  key={`u-${rowIndex}-${uIndex}`}
+                  className="floating-row__unit"
+                  aria-hidden={uIndex !== 1 && uIndex !== 2 ? true : undefined}
+                >
                   {row.map((p, i) => (
                     <FloatProduct
-                      key={`r${rowIndex}-b-${p.id}-${i}`}
+                      key={`r${rowIndex}-u${uIndex}-${p.id}-${i}`}
                       product={p}
                       index={i + rowIndex * 3}
                       size={sizeFor(i, rowIndex)}
                       reduced={reduced}
-                      onSelect={onProductSelect}
+                      keyboardFocus={uIndex === 1}
+                      onSelect={handleProductSelect}
+                      onEnter={onProductEnter}
+                      onLeave={onProductLeave}
                     />
                   ))}
                 </div>
-              )}
+              ))}
             </div>
           </div>
         ))}
@@ -535,103 +488,29 @@ function FloatProduct({
   index,
   size,
   reduced,
+  keyboardFocus = true,
   onSelect,
+  onEnter,
+  onLeave,
 }: {
   product: GiftProduct;
   index: number;
   size: "sm" | "md" | "lg";
   reduced: boolean;
+  keyboardFocus?: boolean;
   onSelect?: (product: GiftProduct) => void;
+  onEnter?: () => void;
+  onLeave?: () => void;
 }) {
-  const ref = useRef<HTMLButtonElement>(null);
   const label = product.name || product.title || "Timect watch";
-
-  useGSAP(
-    () => {
-      if (reduced || !ref.current) return;
-      const img = ref.current.querySelector(".float-product__img");
-      // Idle breath (kept small so products stay fully in frame)
-      gsap.to(ref.current, {
-        y: index % 2 === 0 ? -4 : 4,
-        duration: 5 + (index % 5) * 0.55,
-        ease: EASE.soft,
-        yoyo: true,
-        repeat: -1,
-      });
-      // Unique “watch tick” micro rotate on image only
-      if (img) {
-        gsap.to(img, {
-          rotation: index % 2 === 0 ? 1.4 : -1.4,
-          duration: 3.2 + (index % 3) * 0.4,
-          ease: EASE.soft,
-          yoyo: true,
-          repeat: -1,
-        });
-      }
-    },
-    { dependencies: [index, reduced] }
-  );
-
-  const onEnter = () => {
-    if (reduced || !ref.current) return;
-    ref.current.dataset.hover = "1";
-    // Soft-pause field while inspecting a piece
-    const field = ref.current.closest(".floating-gift-field") as HTMLElement | null;
-    if (field) field.dataset.productHover = "1";
-    gsap.to(ref.current, {
-      scale: 1.1,
-      y: -8,
-      duration: 0.5,
-      ease: EASE.out,
-      overwrite: "auto",
-    });
-    gsap.to(ref.current.querySelector(".float-product__label"), {
-      autoAlpha: 1,
-      y: 0,
-      duration: 0.35,
-      ease: EASE.out,
-      overwrite: "auto",
-    });
-    gsap.to(ref.current.querySelector(".float-product__halo"), {
-      autoAlpha: 1,
-      scale: 1,
-      duration: 0.45,
-      ease: EASE.out,
-      overwrite: "auto",
-    });
-  };
-
-  const onLeave = () => {
-    if (!ref.current) return;
-    ref.current.dataset.hover = "0";
-    const field = ref.current.closest(".floating-gift-field") as HTMLElement | null;
-    if (field) field.dataset.productHover = "0";
-    gsap.to(ref.current, {
-      scale: 1,
-      y: 0,
-      duration: 0.55,
-      ease: EASE.out,
-      overwrite: "auto",
-    });
-    gsap.to(ref.current.querySelector(".float-product__label"), {
-      autoAlpha: 0,
-      y: 8,
-      duration: 0.28,
-      overwrite: "auto",
-    });
-    gsap.to(ref.current.querySelector(".float-product__halo"), {
-      autoAlpha: 0,
-      scale: 0.85,
-      duration: 0.4,
-      overwrite: "auto",
-    });
-  };
 
   return (
     <button
-      ref={ref}
       type="button"
-      className={`float-product float-product--${size} cursor-pointer`}
+      className={`float-product float-product--${size} cursor-pointer${
+        reduced ? "" : " float-product--live"
+      }`}
+      tabIndex={keyboardFocus ? 0 : -1}
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
       onClick={() => onSelect?.(product)}
@@ -648,7 +527,7 @@ function FloatProduct({
             height={320}
             className="float-product__img"
             sizes="(max-width: 768px) 28vw, 160px"
-            loading="lazy"
+            loading={keyboardFocus ? "eager" : "lazy"}
             draggable={false}
           />
         ) : null}
