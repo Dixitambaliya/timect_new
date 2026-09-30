@@ -3,8 +3,7 @@ import Link from "next/link";
 import StaticPage from "@/components/StaticPage";
 
 export const metadata: Metadata = {
-  title: "Terms & Conditions",
-  alternates: { canonical: "/terms" },
+  title: "Terms & Conditions | Timect",
   description:
     "Terms governing use of the Timect website and purchase of Timect wristwatches from our official online store.",
 };

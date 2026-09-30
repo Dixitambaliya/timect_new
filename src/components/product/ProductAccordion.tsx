@@ -1,6 +1,7 @@
-"use client";
+'use client';
 
-import { useId, useState } from "react";
+import { useState } from 'react';
+import { Plus, Minus } from 'lucide-react';
 
 interface AccordionItem {
   title: string;
@@ -13,55 +14,38 @@ interface ProductAccordionProps {
 
 export default function ProductAccordion({ items }: ProductAccordionProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
-  const uid = useId();
+
+  const toggleAccordion = (index: number) => {
+    setOpenIndex(openIndex === index ? null : index);
+  };
 
   return (
-    <div className="w-full border-t border-[var(--line)]">
-      {items.map((item, index) => {
-        const open = openIndex === index;
-        return (
-          <div key={index} className="border-b border-[var(--line)]">
-            <h3>
-              <button
-                id={`${uid}-h-${index}`}
-                type="button"
-                aria-expanded={open}
-                aria-controls={`${uid}-p-${index}`}
-                onClick={() => setOpenIndex(open ? null : index)}
-                className="group w-full py-6 md:py-7 flex justify-between items-center gap-6 text-left"
-              >
-                <span className="flex items-baseline gap-5">
-                  <span className="numeral text-[0.9rem] text-[var(--champagne)]">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                  <span className="display text-[1.5rem] md:text-[1.75rem] leading-none transition-transform duration-700 ease-[var(--ease-lux)] group-hover:translate-x-1">
-                    {item.title}
-                  </span>
-                </span>
-                <span className="relative w-4 h-4 shrink-0" aria-hidden>
-                  <span className="absolute left-0 top-1/2 w-4 h-px bg-current" />
-                  <span
-                    className={`absolute left-0 top-1/2 w-4 h-px bg-current transition-transform duration-500 ease-[var(--ease-lux)] ${
-                      open ? "rotate-0" : "rotate-90"
-                    }`}
-                  />
-                </span>
-              </button>
-            </h3>
-            <div
-              id={`${uid}-p-${index}`}
-              role="region"
-              aria-labelledby={`${uid}-h-${index}`}
-              className="grid transition-[grid-template-rows,opacity] duration-700 ease-[var(--ease-lux)]"
-              style={{ gridTemplateRows: open ? "1fr" : "0fr", opacity: open ? 1 : 0 }}
-            >
-              <div className="overflow-hidden" inert={!open}>
-                <div className="pb-8 md:pl-[2.9rem] text-[var(--ink)]/85">{item.content}</div>
-              </div>
-            </div>
+    <div className="w-full mt-12 border-t border-gray-200">
+      {items.map((item, index) => (
+        <div key={index} className="border-b border-gray-200">
+          <button
+            className="w-full py-6 flex justify-between items-center text-left focus:outline-none"
+            onClick={() => toggleAccordion(index)}
+          >
+            <span className="font-semibold text-[#0a1e36]">{item.title}</span>
+            <span className="text-gray-400">
+              {openIndex === index ? (
+                <Minus size={20} />
+              ) : (
+                <Plus size={20} />
+              )}
+            </span>
+          </button>
+          
+          <div
+            className={`overflow-hidden transition-all duration-300 ease-in-out ${
+              openIndex === index ? 'max-h-[1000px] opacity-100 pb-6' : 'max-h-0 opacity-0'
+            }`}
+          >
+            <div className="text-gray-600 text-sm">{item.content}</div>
           </div>
-        );
-      })}
+        </div>
+      ))}
     </div>
   );
 }

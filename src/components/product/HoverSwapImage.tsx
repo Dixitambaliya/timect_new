@@ -1,6 +1,6 @@
 "use client";
 
-import { cld, cldSrcSet } from "@/lib/cloudinary";
+import { useEffect } from "react";
 
 type HoverSwapImageProps = {
   src?: string;
@@ -12,7 +12,7 @@ type HoverSwapImageProps = {
   onPrimaryLoad?: () => void;
 };
 
-/** Two stacked photos that crossfade on hover. The hover frame lazy-loads with the card (it overlaps it). */
+/** Two stacked photos that crossfade on hover. Hover src is preloaded so it never pops in. */
 export default function HoverSwapImage({
   src,
   hoverSrc,
@@ -22,18 +22,21 @@ export default function HoverSwapImage({
   priority = false,
   onPrimaryLoad,
 }: HoverSwapImageProps) {
-  // Deliver CDN-resized AVIF/WebP instead of multi-megabyte originals.
-  const primary = cld(src, { w: 800 });
-  const hover = hoverSrc && hoverSrc !== src ? cld(hoverSrc, { w: 800 }) : "";
-  const sizes = "(min-width: 1024px) 25vw, 50vw";
+  const primary = src || "";
+  const hover = hoverSrc && hoverSrc !== primary ? hoverSrc : "";
   const fitClass = fit === "cover" ? "object-cover" : "object-contain";
+
+  useEffect(() => {
+    if (!hover) return;
+    const img = new Image();
+    img.decoding = "async";
+    img.src = hover;
+  }, [hover]);
 
   return (
     <div className={`hover-swap ${className}`.trim()}>
       <img
         src={primary}
-        srcSet={cldSrcSet(src, [400, 600, 800, 1100])}
-        sizes={sizes}
         alt={alt}
         loading={priority ? "eager" : "lazy"}
         decoding="async"
@@ -43,10 +46,8 @@ export default function HoverSwapImage({
       {hover ? (
         <img
           src={hover}
-          srcSet={cldSrcSet(hoverSrc, [400, 600, 800, 1100])}
-          sizes={sizes}
           alt=""
-          loading="lazy"
+          loading="eager"
           decoding="async"
           className={`hover-swap__img hover-swap__img--alt ${fitClass}`}
         />

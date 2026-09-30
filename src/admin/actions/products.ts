@@ -543,6 +543,11 @@ export async function adminDuplicateProduct(
 export async function adminGetDashboardStats() {
   await requireAdminSession();
   try {
+    const { adminGetCorporateGiftingItems } = await import(
+      "@/admin/actions/corporate-gifting"
+    );
+    const giftingItems = await adminGetCorporateGiftingItems();
+
     const rows = await sql`
       SELECT
         COUNT(*)::int AS total,
@@ -564,6 +569,7 @@ export async function adminGetDashboardStats() {
       related: s.related || 0,
       mainProducts: s.main_products || 0,
       collections: s.collections || 0,
+      corporateGifting: giftingItems.length,
       recentlyAdded: recentRows.map((r) =>
         mapRowToProduct(r as Record<string, unknown>),
       ),
@@ -577,6 +583,7 @@ export async function adminGetDashboardStats() {
       related: 0,
       mainProducts: 0,
       collections: 0,
+      corporateGifting: 0,
       recentlyAdded: [] as Product[],
     };
   }

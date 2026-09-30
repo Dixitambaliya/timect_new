@@ -4,8 +4,7 @@ import StaticPage from "@/components/StaticPage";
 import FaqAccordion from "@/components/FaqAccordion";
 
 export const metadata: Metadata = {
-  title: "FAQs",
-  alternates: { canonical: "/faqs" },
+  title: "FAQs | Timect",
   description:
     "Frequently asked questions about Timect wristwatches, orders, water resistance, care, and warranty.",
 };

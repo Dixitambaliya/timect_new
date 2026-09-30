@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Package,
+  Gift,
   Layers,
   ImageIcon,
   Settings,
@@ -14,6 +15,7 @@ import {
 const NAV = [
   { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/products", label: "Products", icon: Package },
+  { href: "/admin/corporate-gifting", label: "Corporate Gifting", icon: Gift },
   { href: "/admin/collections", label: "Collections", icon: Layers },
   { href: "/admin/media", label: "Media", icon: ImageIcon },
   { href: "/admin/settings", label: "Settings", icon: Settings },

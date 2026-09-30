@@ -1,173 +1,416 @@
-import type { Metadata } from "next";
+"use client";
+
+import { useRef, useState, useEffect, useLayoutEffect } from "react";
+import gsap from "gsap";
+import ScrollTrigger from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
+import Lenis from "@studio-freight/lenis";
+import { getNewArrivals, getRecommended, Product } from "@/db/actions";
+
+import Preloader from "@/components/Preloader";
+
 import Header from "@/components/Header";
+import Hero from "@/components/Hero";
+import NewArrivals from "@/components/NewArrivals";
+import Recommended from "@/components/Recommended";
+import ShopByCategory from "@/components/ShopByCategory";
+import ForHimHer from "@/components/ForHimHer";
+import Quote from "@/components/Quote";
 import Footer from "@/components/Footer";
-import SmoothScroll from "@/components/motion/SmoothScroll";
-import Hero from "@/components/home/Hero";
-import WatchSequence, { type CameraKey, type SequenceChapter } from "@/components/home/WatchSequence";
-import CraftsmanshipSection from "@/components/home/CraftsmanshipSection";
-import WatchAnatomy from "@/components/home/WatchAnatomy";
-import MaterialSection from "@/components/home/MaterialSection";
-import CollectionShowcase from "@/components/home/CollectionShowcase";
-import SelectionIndex from "@/components/home/SelectionIndex";
-import CollectionsIndex from "@/components/home/CollectionsIndex";
-import BrandStory from "@/components/home/BrandStory";
-import PrecisionSection from "@/components/home/PrecisionSection";
-import FinalCTA from "@/components/home/FinalCTA";
-import type { WatchCardData } from "@/components/home/WatchCard";
-import { getNewArrivals, getRecommended, type Product } from "@/db/actions";
-import { BRAND_IMAGES } from "@/lib/cloudinary";
-import { SITE_URL, jsonLdScript } from "@/lib/seo";
+import {
+  applyScroll,
+  getSavedScroll,
+  isPopNav,
+} from "@/lib/scroll-memory";
 
-/** Re-render the storefront shelves from the catalog at most every 5 minutes. */
-export const revalidate = 300;
-
-export const metadata: Metadata = {
-  alternates: { canonical: "/" },
-};
-
-/* Camera path over the hero photograph (1568 × 2744). Image points are fractions:
-   dial centre ≈ (0.50, 0.46), crown ≈ (0.74, 0.47), lower bracelet ≈ (0.50, 0.68). */
-const DESKTOP_PATH: CameraKey[] = [
-  { at: 0, fx: 0.5, fy: 0.47, sx: 0.66, sy: 0.5, zoom: 1.18 },
-  { at: 0.13, fx: 0.5, fy: 0.47, sx: 0.5, sy: 0.5, zoom: 1.3 },
-  { at: 0.26, fx: 0.5, fy: 0.455, sx: 0.64, sy: 0.5, zoom: 2.2 },
-  { at: 0.4, fx: 0.5, fy: 0.455, sx: 0.64, sy: 0.5, zoom: 2.32 },
-  { at: 0.52, fx: 0.745, fy: 0.47, sx: 0.36, sy: 0.52, zoom: 2.6 },
-  { at: 0.62, fx: 0.745, fy: 0.47, sx: 0.36, sy: 0.52, zoom: 2.7 },
-  { at: 0.74, fx: 0.5, fy: 0.68, sx: 0.64, sy: 0.46, zoom: 2.05 },
-  { at: 0.84, fx: 0.5, fy: 0.66, sx: 0.64, sy: 0.48, zoom: 2.05 },
-  { at: 0.97, fx: 0.5, fy: 0.47, sx: 0.66, sy: 0.5, zoom: 1.18 },
-];
-
-const MOBILE_PATH: CameraKey[] = [
-  { at: 0, fx: 0.5, fy: 0.47, sx: 0.5, sy: 0.36, zoom: 1.2 },
-  { at: 0.13, fx: 0.5, fy: 0.47, sx: 0.5, sy: 0.4, zoom: 1.3 },
-  { at: 0.26, fx: 0.5, fy: 0.455, sx: 0.5, sy: 0.33, zoom: 2.05 },
-  { at: 0.4, fx: 0.5, fy: 0.455, sx: 0.5, sy: 0.33, zoom: 2.15 },
-  { at: 0.52, fx: 0.72, fy: 0.47, sx: 0.5, sy: 0.33, zoom: 2.4 },
-  { at: 0.62, fx: 0.72, fy: 0.47, sx: 0.5, sy: 0.33, zoom: 2.5 },
-  { at: 0.74, fx: 0.5, fy: 0.68, sx: 0.5, sy: 0.33, zoom: 1.85 },
-  { at: 0.84, fx: 0.5, fy: 0.66, sx: 0.5, sy: 0.34, zoom: 1.85 },
-  { at: 0.97, fx: 0.5, fy: 0.47, sx: 0.5, sy: 0.36, zoom: 1.2 },
-];
-
-const CHAPTERS: SequenceChapter[] = [
-  {
-    from: 0.2,
-    to: 0.43,
-    index: "I",
-    eyebrow: "The Dial",
-    title: (
-      <>
-        Read in a <em>single glance.</em>
-      </>
-    ),
-    body: "Baton indices, a Roman twelve and a day–date window — composed so the time arrives before the thought.",
-    align: "left",
-  },
-  {
-    from: 0.46,
-    to: 0.65,
-    index: "II",
-    eyebrow: "The Crown",
-    title: (
-      <>
-        Made for the <em>fingertips.</em>
-      </>
-    ),
-    body: "A fluted crown set close to the case: easy to find, easy to turn, quietly out of the way.",
-    align: "right",
-  },
-  {
-    from: 0.68,
-    to: 0.86,
-    index: "III",
-    eyebrow: "The Bracelet",
-    title: (
-      <>
-        Steel, and <em>deep blue.</em>
-      </>
-    ),
-    body: "Alternating links in two tones carry the colour of the bezel along the wrist.",
-    align: "left",
-  },
-  {
-    from: 0.9,
-    to: 1,
-    index: "IV",
-    eyebrow: "The Whole",
-    title: (
-      <>
-        Every element, <em>in balance.</em>
-      </>
-    ),
-    body: "Proportion, legibility and finish — resolved together, never one at the expense of another.",
-    align: "left",
-  },
-];
-
-function toCard(p: Product): WatchCardData {
-  return {
-    slug: p.slug,
-    name: p.name,
-    title: p.title,
-    code: p.code,
-    price: p.price,
-    image: p.image,
-    hoverImage: p.hoverImage,
-    collection: p.collection,
-    gender: p.gender,
-    tag: p.tag,
-  };
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger, useGSAP);
 }
 
-export default async function Home() {
-  const [arrivals, recommended] = await Promise.all([getNewArrivals(), getRecommended()]);
-  const newArrivals = arrivals.filter((p) => p.slug).map(toCard);
-  const selection = recommended.filter((p) => p.slug).map(toCard);
+let homeCatalogCache: { arrivals: Product[]; recs: Product[] } | null = null;
 
-  const itemList = {
-    "@context": "https://schema.org",
-    "@type": "ItemList",
-    name: "New arrivals",
-    itemListElement: newArrivals.map((p, i) => ({
-      "@type": "ListItem",
-      position: i + 1,
-      url: `${SITE_URL}/product/${p.slug}`,
-      name: p.name || p.title,
-    })),
-  };
+export default function Home() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const lenisRef = useRef<Lenis | null>(null);
+  const [skipIntro] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return isPopNav() && getSavedScroll("/") != null;
+  });
+  const [productsLoaded, setProductsLoaded] = useState(
+    () => homeCatalogCache != null,
+  );
+  const [newArrivals, setNewArrivals] = useState<Product[]>(
+    () => homeCatalogCache?.arrivals ?? [],
+  );
+  const [recommended, setRecommended] = useState<Product[]>(
+    () => homeCatalogCache?.recs ?? [],
+  );
+
+  const productsLoadedRef = useRef(productsLoaded);
+  const introFinishedRef = useRef(false);
+  const triggerExitRef = useRef<() => void>(() => {});
+
+  useLayoutEffect(() => {
+    if (!skipIntro) return;
+    const y = getSavedScroll("/") ?? 0;
+    applyScroll(y);
+  }, [skipIntro]);
+
+  useEffect(() => {
+    productsLoadedRef.current = productsLoaded;
+    triggerExitRef.current();
+  }, [productsLoaded]);
+
+  useEffect(() => {
+    if (skipIntro && productsLoaded) {
+      const y = getSavedScroll("/") ?? 0;
+      applyScroll(y);
+      lenisRef.current?.scrollTo(y, { immediate: true });
+    }
+  }, [skipIntro, productsLoaded]);
+
+  useEffect(() => {
+    if (homeCatalogCache) return;
+    Promise.all([getNewArrivals(), getRecommended()])
+      .then(([arrivals, recs]) => {
+        homeCatalogCache = { arrivals, recs };
+        setNewArrivals(arrivals);
+        setRecommended(recs);
+        setProductsLoaded(true);
+      })
+      .catch((err) => {
+        console.error("Error loading products:", err);
+        setProductsLoaded(true); // fallback to let user see site anyway
+      });
+  }, []);
+
+  useGSAP(() => {
+    // Lenis setup
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      direction: "vertical",
+      gestureDirection: "vertical",
+      smooth: true,
+      mouseMultiplier: 1,
+      smoothTouch: false,
+      touchMultiplier: 2,
+      infinite: false,
+    } as any);
+
+    lenisRef.current = lenis;
+    lenis.on("scroll", ScrollTrigger.update);
+
+    const onTicker = (time: number) => {
+      lenis.raf(time * 1000);
+    };
+    gsap.ticker.add(onTicker);
+    gsap.ticker.lagSmoothing(0);
+
+    // Elements
+    const preloader = document.querySelector(".preloader");
+    const preloaderLine = document.querySelector(".preloader-line");
+    const preloaderLogo = document.querySelector(".preloader-logo");
+    const header = document.querySelector("header");
+    const heroHeading = document.querySelector(".hero .serif");
+    const heroText = document.querySelector(".hero p");
+    const heroBtn = document.querySelector(".hero .btn-dark");
+    const heroImg = document.querySelector(".hero img");
+    const scrollProgress = document.querySelector(".scroll-progress");
+    const backToTop = document.querySelector(".back-to-top");
+
+    const showPageFully = () => {
+      gsap.set(header, { yPercent: 0, opacity: 1 });
+      gsap.set(heroHeading, { autoAlpha: 1, y: 0 });
+      gsap.set(heroText, { autoAlpha: 1, y: 0 });
+      gsap.set(heroBtn, { autoAlpha: 1, y: 0 });
+      gsap.set(heroImg, { scale: 1, opacity: 1 });
+      gsap.set(".heroDot", { autoAlpha: 1, x: 0 });
+      if (document.querySelectorAll(".prod-item").length > 0) {
+        gsap.set(".prod-item", { opacity: 1, y: 0 });
+      }
+      gsap.set(".cat-tile", {
+        clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
+      });
+      gsap.set("footer .footer-col", { opacity: 1, y: 0 });
+      document.querySelectorAll(".bg-\\[\\#f4f4f2\\] *").forEach((el) => {
+        if (el.tagName !== "IMG") gsap.set(el, { opacity: 1, y: 0 });
+      });
+      if (preloader) gsap.set(preloader, { yPercent: -100, autoAlpha: 0 });
+    };
+
+    function playExitAnimation() {
+      const tlExit = gsap.timeline();
+      tlExit
+        .to(".preloader-text", { autoAlpha: 0, duration: 0.3 })
+        .to(preloaderLogo, { autoAlpha: 0, duration: 0.4, y: -20 }, "-=0.2")
+        .to(preloaderLine, { autoAlpha: 0, duration: 0.3 }, "-=0.3")
+        .to(preloader, { yPercent: -100, duration: 0.8, ease: "power3.inOut" })
+        .call(() => {
+          initPageAnimations();
+        });
+    }
+
+    function initPageAnimations() {
+      const tlLoad = gsap.timeline();
+
+      tlLoad
+        .to(header, {
+          yPercent: 0,
+          opacity: 1,
+          duration: 0.8,
+          ease: "power3.out",
+        })
+        .to(
+          heroImg,
+          { scale: 1, opacity: 1, duration: 1.2, ease: "power3.out" },
+          "-=0.5"
+        )
+        .to(
+          heroHeading,
+          { autoAlpha: 1, y: 0, duration: 0.8, ease: "power2.out" },
+          "-=1"
+        )
+        .to(
+          heroText,
+          { autoAlpha: 1, y: 0, duration: 0.8, ease: "power2.out" },
+          "-=0.6"
+        )
+        .to(
+          heroBtn,
+          { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" },
+          "-=0.6"
+        )
+        .to(
+          ".heroDot",
+          {
+            autoAlpha: 1,
+            x: 0,
+            duration: 0.5,
+            stagger: 0.1,
+            ease: "power2.out",
+          },
+          "-=0.6"
+        );
+
+      initScrollAnimations();
+    }
+
+    function initScrollAnimations() {
+      // Scroll Progress
+      const handleScroll = () => {
+        const scrollPx = document.documentElement.scrollTop;
+        const winHeightPx =
+          document.documentElement.scrollHeight -
+          document.documentElement.clientHeight;
+        const scrolled = `${(scrollPx / winHeightPx) * 100}%`;
+        if (scrollProgress)
+          (scrollProgress as HTMLElement).style.width = scrolled;
+
+        if (scrollPx > 500) {
+          backToTop?.classList.add("visible");
+        } else {
+          backToTop?.classList.remove("visible");
+        }
+      };
+      window.addEventListener("scroll", handleScroll);
+
+      if (backToTop) {
+        backToTop.addEventListener("click", () => {
+          lenis.scrollTo(0, {
+            duration: 1.2,
+            easing: (t: number) =>
+              Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+          });
+        });
+      }
+      // Hero Parallax
+      gsap.to(".hero .swirl", {
+        yPercent: 30,
+        ease: "none",
+        scrollTrigger: {
+          trigger: ".hero",
+          start: "top top",
+          end: "bottom top",
+          scrub: true,
+        },
+      });
+
+      gsap.to(heroImg, {
+        yPercent: 15,
+        ease: "none",
+        scrollTrigger: {
+          trigger: ".hero",
+          start: "top top",
+          end: "bottom top",
+          scrub: true,
+        },
+      });
+
+      // Product Carousel Reveal
+      const productCards = document.querySelectorAll(
+        ".group.cursor-pointer, .group\\/card.cursor-pointer"
+      );
+      productCards.forEach((card) => card.classList.add("prod-item"));
+
+      if (productCards.length > 0) {
+        ScrollTrigger.batch(".prod-item", {
+          onEnter: (batch) =>
+            gsap.to(batch, {
+              opacity: 1,
+              y: 0,
+              stagger: 0.1,
+              duration: 0.8,
+              ease: "power3.out",
+            }),
+          start: "top 85%",
+        });
+      }
+
+      // Category Grid Reveal
+      ScrollTrigger.batch(".cat-tile", {
+        onEnter: (batch) =>
+          gsap.to(batch, {
+            clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
+            stagger: 0.1,
+            duration: 1,
+            ease: "power3.out",
+          }),
+        start: "top 80%",
+      });
+
+      // Featured Watch Reveal
+      gsap.fromTo(
+        ".grid.md\\:grid-cols-2 .watch-wrap",
+        { clipPath: "inset(10% 10% 10% 10%)", opacity: 0 },
+        {
+          clipPath: "inset(0% 0% 0% 0%)",
+          opacity: 1,
+          duration: 1.2,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: ".grid.md\\:grid-cols-2",
+            start: "top 75%",
+          },
+        }
+      );
+
+      // Quote Section
+      ScrollTrigger.batch(".bg-\\[\\#f4f4f2\\] *:not(img)", {
+        onEnter: (batch) =>
+          gsap.to(batch, {
+            opacity: 1,
+            y: 0,
+            stagger: 0.1,
+            duration: 0.8,
+            ease: "power2.out",
+          }),
+        start: "top 85%",
+      });
+
+      // Footer
+      ScrollTrigger.batch("footer .footer-col", {
+        onEnter: (batch) =>
+          gsap.to(batch, {
+            opacity: 1,
+            y: 0,
+            stagger: 0.1,
+            duration: 0.8,
+            ease: "power2.out",
+          }),
+        start: "top 95%",
+      });
+    }
+
+    if (skipIntro) {
+      showPageFully();
+      const y = getSavedScroll("/") ?? 0;
+      applyScroll(y);
+      lenis.scrollTo(y, { immediate: true });
+      initScrollAnimations();
+    } else {
+      gsap.set(header, { yPercent: -100, opacity: 0 });
+      gsap.set(heroHeading, { autoAlpha: 0, y: 30 });
+      gsap.set(heroText, { autoAlpha: 0, y: 30 });
+      gsap.set(heroBtn, { autoAlpha: 0, y: 30 });
+      gsap.set(heroImg, { scale: 1.08, opacity: 0 });
+      gsap.set(".heroDot", { autoAlpha: 0, x: -20 });
+
+      if (document.querySelectorAll(".prod-item").length > 0) {
+        gsap.set(".prod-item", { opacity: 0, y: 40 });
+      }
+      gsap.set(".cat-tile", { clipPath: "polygon(0 0, 100% 0, 100% 0, 0 0)" });
+      gsap.set("footer .footer-col", { opacity: 0, y: 20 });
+      document.querySelectorAll(".bg-\\[\\#f4f4f2\\] *").forEach((el) => {
+        if (el.tagName !== "IMG") gsap.set(el, { opacity: 0, y: 20 });
+      });
+
+      const checkAndExit = () => {
+        if (introFinishedRef.current && productsLoadedRef.current) {
+          playExitAnimation();
+        }
+      };
+
+      triggerExitRef.current = checkAndExit;
+
+      const tlPreload = gsap.timeline({
+        onComplete: () => {
+          introFinishedRef.current = true;
+          checkAndExit();
+        },
+      });
+
+      tlPreload
+        .to(preloaderLogo, { autoAlpha: 1, duration: 0.6, ease: "power2.out" })
+        .to(
+          preloaderLine,
+          { scaleX: 1, duration: 1.2, ease: "expo.inOut" },
+          "-=0.3"
+        );
+    }
+
+    // Button Press Animation
+    const allButtons = document.querySelectorAll("button");
+    const onMouseDown = (e: Event) =>
+      gsap.to(e.currentTarget, { scale: 0.98, duration: 0.1 });
+    const onMouseUp = (e: Event) =>
+      gsap.to(e.currentTarget, {
+        scale: 1,
+        duration: 0.2,
+        ease: "power2.out",
+      });
+
+    allButtons.forEach((btn) => {
+      btn.addEventListener("mousedown", onMouseDown);
+      btn.addEventListener("mouseup", onMouseUp);
+      btn.addEventListener("mouseleave", onMouseUp);
+    });
+
+    return () => {
+      allButtons.forEach((btn) => {
+        btn.removeEventListener("mousedown", onMouseDown);
+        btn.removeEventListener("mouseup", onMouseUp);
+        btn.removeEventListener("mouseleave", onMouseUp);
+      });
+      gsap.ticker.remove(onTicker);
+      lenis.destroy();
+      lenisRef.current = null;
+    };
+  }, { scope: containerRef, dependencies: [skipIntro, productsLoaded] });
 
   return (
-    <>
-      <Header overlay />
-      <main>
-        <WatchSequence
-          id="top"
-          src={BRAND_IMAGES.heroBlue}
-          width={1568}
-          height={2744}
-          alt="Timect watch with a silver dial, deep blue bezel and two-tone steel bracelet, set against dark mist"
-          desktopPath={DESKTOP_PATH}
-          mobilePath={MOBILE_PATH}
-          chapters={CHAPTERS}
-          intro={<Hero />}
-        />
-        <CraftsmanshipSection />
-        <WatchAnatomy />
-        <MaterialSection />
-        <CollectionShowcase products={newArrivals} />
-        <SelectionIndex products={selection} />
-        <CollectionsIndex />
-        <BrandStory />
-        <PrecisionSection />
-        <FinalCTA />
-      </main>
+    <div ref={containerRef}>
+      <div className="scroll-progress"></div>
+      {!skipIntro && <Preloader />}
+      <div className="back-to-top">↑</div>
+      <Header />
+      <Hero />
+      <NewArrivals products={newArrivals} />
+      <Recommended products={recommended} />
+      <ShopByCategory />
+      <ForHimHer />
+      <Quote />
       <Footer />
-      <SmoothScroll />
-      {newArrivals.length > 0 && (
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(itemList) }} />
-      )}
-    </>
+    </div>
   );
 }

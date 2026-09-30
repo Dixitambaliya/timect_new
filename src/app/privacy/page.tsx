@@ -3,8 +3,7 @@ import Link from "next/link";
 import StaticPage from "@/components/StaticPage";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy",
-  alternates: { canonical: "/privacy" },
+  title: "Privacy Policy | Timect",
   description:
     "How Timect collects, uses, and protects personal information when you shop for or inquire about our wristwatches.",
 };

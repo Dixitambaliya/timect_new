@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import StaticPage from "@/components/StaticPage";
 
 export const metadata: Metadata = {
-  title: "Contact Us",
-  alternates: { canonical: "/contact" },
+  title: "Contact Us | Timect",
   description:
     "Contact Timect for product questions, orders, warranty support, and after-sales service for your wristwatch.",
 };
@@ -13,51 +12,52 @@ export default function ContactPage() {
     <StaticPage
       title="Contact Us"
       subtitle="Questions about a Timect wristwatch, an order, or after-sales service? We are here to help."
-      eyebrow="Client Care"
-      maxWidth="max-w-none"
+      maxWidth="max-w-[1240px]"
+      headerPy="py-6 md:py-8"
+      contentPy="py-6 md:py-8"
     >
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
         {/* Left Column: Customer Care, Service & Warranty, Before you write, Response times */}
         <div className="lg:col-span-7 space-y-10">
           <div className="grid gap-6 sm:grid-cols-2">
-            <div className="border-t border-[var(--ink)] pt-6">
-              <h2 className="eyebrow text-[var(--champagne)] mb-5">
-                Customer care
+            <div className="border border-[var(--line)] p-6 rounded-xl bg-white shadow-xs">
+              <h2 className="tracked-sm text-[11px] font-semibold text-[var(--muted)] mb-3">
+                CUSTOMER CARE
               </h2>
-              <p className="eyebrow text-[0.58rem] text-[var(--muted)] mb-2">Email</p>
+              <p className="text-[#111] font-medium mb-1">Email</p>
               <a
                 href="mailto:care@timect.com"
-                className="display text-[1.6rem] leading-none hover:opacity-70 transition-opacity"
+                className="text-[#111] font-semibold underline underline-offset-4 hover:opacity-75 transition"
               >
                 care@timect.com
               </a>
-              <p className="text-[var(--muted)] text-[0.88rem] mt-4 leading-relaxed">
+              <p className="text-[var(--muted)] text-[13px] mt-4 leading-relaxed">
                 For orders, shipping, returns, and product questions.
               </p>
             </div>
 
-            <div className="border-t border-[var(--ink)] pt-6">
-              <h2 className="eyebrow text-[var(--champagne)] mb-5">
-                Service & warranty
+            <div className="border border-[var(--line)] p-6 rounded-xl bg-white shadow-xs">
+              <h2 className="tracked-sm text-[11px] font-semibold text-[var(--muted)] mb-3">
+                SERVICE & WARRANTY
               </h2>
-              <p className="eyebrow text-[0.58rem] text-[var(--muted)] mb-2">Email</p>
+              <p className="text-[#111] font-medium mb-1">Email</p>
               <a
                 href="mailto:service@timect.com"
-                className="display text-[1.6rem] leading-none hover:opacity-70 transition-opacity"
+                className="text-[#111] font-semibold underline underline-offset-4 hover:opacity-75 transition"
               >
                 service@timect.com
               </a>
-              <p className="text-[var(--muted)] text-[0.88rem] mt-4 leading-relaxed">
+              <p className="text-[var(--muted)] text-[13px] mt-4 leading-relaxed">
                 For repairs, movement service, and warranty claims.
               </p>
             </div>
           </div>
 
           <div className="border-t border-[var(--line)] pt-8">
-            <h2 className="mb-5">
+            <h2 className="serif text-[24px] font-medium text-[#111] mb-4">
               Before you write
             </h2>
-            <ul className="list-disc pl-5 space-y-2.5">
+            <ul className="list-disc pl-5 space-y-2.5 text-[#444] text-[14px]">
               <li>
                 Include your order number if your message is about a purchase.
               </li>
@@ -73,10 +73,10 @@ export default function ContactPage() {
           </div>
 
           <div className="border-t border-[var(--line)] pt-8">
-            <h2 className="mb-5">
+            <h2 className="serif text-[24px] font-medium text-[#111] mb-4">
               Response times
             </h2>
-            <p className="">
+            <p className="text-[#444] text-[14px] leading-relaxed">
               Our customer care team typically responds within 1–2 business days.
               Service assessments for mechanical or quartz issues may take
               additional time depending on workshop schedule and spare-part
@@ -86,66 +86,66 @@ export default function ContactPage() {
         </div>
 
         {/* Right Column: Send a message Form */}
-        <div className="lg:col-span-5 bg-[var(--ivory)] p-7 md:p-10 h-fit lg:sticky lg:top-[calc(var(--header-h)+2rem)]">
-          <h2 className="mb-2">
+        <div className="lg:col-span-5 bg-[#fafafa] border border-[var(--line)] p-7 md:p-8 rounded-2xl h-fit lg:sticky lg:top-28 shadow-xs">
+          <h2 className="serif text-[24px] font-medium text-[#111] mb-2">
             Send a message
           </h2>
-          <p className="text-[0.88rem] text-[var(--muted)] mb-8">
+          <p className="text-[13px] text-[var(--muted)] mb-6">
             Fill in the details below and our team will get in touch with you.
           </p>
-          <form className="space-y-7" action="#" method="post">
+          <form className="space-y-4" action="#" method="post">
             <div>
               <label
                 htmlFor="name"
-                className="block eyebrow text-[0.58rem] text-[var(--muted)] mb-1"
+                className="block text-[11px] font-semibold tracked-sm text-[var(--muted)] mb-2"
               >
-                Name
+                NAME
               </label>
               <input
                 id="name"
                 name="name"
                 type="text"
-                className="w-full bg-transparent border-0 border-b border-[var(--ink)]/25 px-0 py-3 text-[0.95rem] font-light outline-none focus:border-[var(--ink)] placeholder:text-[var(--muted)]/70 transition-colors"
+                className="w-full bg-white border border-[var(--line)] rounded-lg px-4 py-3 text-[14px] outline-none focus:border-[#111] transition"
                 placeholder="Your name"
               />
             </div>
             <div>
               <label
                 htmlFor="email"
-                className="block eyebrow text-[0.58rem] text-[var(--muted)] mb-1"
+                className="block text-[11px] font-semibold tracked-sm text-[var(--muted)] mb-2"
               >
-                Email
+                EMAIL
               </label>
               <input
                 id="email"
                 name="email"
                 type="email"
-                className="w-full bg-transparent border-0 border-b border-[var(--ink)]/25 px-0 py-3 text-[0.95rem] font-light outline-none focus:border-[var(--ink)] placeholder:text-[var(--muted)]/70 transition-colors"
+                className="w-full bg-white border border-[var(--line)] rounded-lg px-4 py-3 text-[14px] outline-none focus:border-[#111] transition"
                 placeholder="you@example.com"
               />
             </div>
             <div>
               <label
                 htmlFor="message"
-                className="block eyebrow text-[0.58rem] text-[var(--muted)] mb-1"
+                className="block text-[11px] font-semibold tracked-sm text-[var(--muted)] mb-2"
               >
-                Message
+                MESSAGE
               </label>
               <textarea
                 id="message"
                 name="message"
                 rows={5}
-                className="w-full bg-transparent border-0 border-b border-[var(--ink)]/25 px-0 py-3 text-[0.95rem] font-light outline-none focus:border-[var(--ink)] placeholder:text-[var(--muted)]/70 resize-y transition-colors"
+                className="w-full bg-white border border-[var(--line)] rounded-lg px-4 py-3 text-[14px] outline-none focus:border-[#111] resize-y transition"
                 placeholder="How can we help with your Timect watch?"
               />
             </div>
             <button
               type="button"
-              className="lux-btn lux-btn--solid w-full"
+              className="w-full bg-black text-white text-[12px] font-bold tracked-sm px-8 py-3.5 rounded-lg hover:bg-neutral-800 transition-colors cursor-pointer"
             >
-              Send message
+              SEND MESSAGE
             </button>
-            <p className="text-[0.72rem] text-[var(--muted)] text-center mt-3 leading-relaxed">
+            <p className="text-[11px] text-[var(--muted)] text-center mt-3">
               This form is a front-end placeholder. Please email us directly
               until live messaging is connected.
             </p>
