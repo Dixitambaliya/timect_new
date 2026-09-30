@@ -1,224 +1,64 @@
-'use client';
+"use client";
 
-import { useRef, useState, useEffect } from 'react';
-import HoverSwapImage from '@/components/product/HoverSwapImage';
-import { getRelatedProducts, Product } from '@/db/actions';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import WatchCard from "@/components/home/WatchCard";
+import { getRelatedProducts, type Product } from "@/db/actions";
 
-export default function RelatedProducts() {
-  const router = useRouter();
-  const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+/** "You may also consider" — a quiet rail at the end of the product story. */
+export default function RelatedProducts({ excludeSlug }: { excludeSlug?: string }) {
+  const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
-    getRelatedProducts().then(setRelatedProducts);
+    let cancelled = false;
+    getRelatedProducts()
+      .then((list) => !cancelled && setProducts(list))
+      .catch(() => undefined);
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const scrollbarRef = useRef<HTMLDivElement>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [isDraggingScrollbar, setIsDraggingScrollbar] = useState(false);
-  const [dragWidthPx, setDragWidthPx] = useState(0);
-  const [dragLeftPx, setDragLeftPx] = useState(0);
-
-  const dragInfo = useRef({
-    startX: 0,
-    scrollLeft: 0,
-    hasMoved: false,
-  });
-
-  const updateScrollIndicator = () => {
-    if (scrollRef.current && scrollbarRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-      const { clientWidth: trackWidth } = scrollbarRef.current;
-      
-      const dragWidth = (clientWidth / scrollWidth) * trackWidth;
-      setDragWidthPx(dragWidth);
-      
-      const maxScrollLeft = scrollWidth - clientWidth;
-      const maxDragLeft = trackWidth - dragWidth;
-      const dragLeft = maxScrollLeft > 0 ? (scrollLeft / maxScrollLeft) * maxDragLeft : 0;
-      setDragLeftPx(dragLeft);
-    }
-  };
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    if (scrollRef.current) {
-      setIsDragging(true);
-      dragInfo.current.startX = e.pageX - scrollRef.current.offsetLeft;
-      dragInfo.current.scrollLeft = scrollRef.current.scrollLeft;
-      dragInfo.current.hasMoved = false;
-    }
-  };
-
-  const handleScrollbarMouseDown = (e: React.MouseEvent) => {
-    setIsDraggingScrollbar(true);
-    if (scrollbarRef.current && scrollRef.current) {
-      const { clientWidth: trackWidth } = scrollbarRef.current;
-      const { scrollWidth, clientWidth: containerWidth } = scrollRef.current;
-      
-      const dragWidth = (containerWidth / scrollWidth) * trackWidth;
-      const maxDragLeft = trackWidth - dragWidth;
-      
-      const rect = scrollbarRef.current.getBoundingClientRect();
-      const clickX = e.clientX - rect.left - (dragWidth / 2);
-      const dragPercent = Math.max(0, Math.min(1, clickX / maxDragLeft));
-      
-      const scrollAmount = dragPercent * (scrollWidth - containerWidth);
-      scrollRef.current.scrollLeft = scrollAmount;
-    }
-  };
-
-  useEffect(() => {
-    updateScrollIndicator();
-    window.addEventListener('resize', updateScrollIndicator);
-
-    const handleMouseMoveGlobal = (e: MouseEvent) => {
-      if (isDragging && scrollRef.current) {
-        e.preventDefault();
-        const x = e.pageX - scrollRef.current.offsetLeft;
-        const walk = (x - dragInfo.current.startX) * 1.5;
-        scrollRef.current.scrollLeft = dragInfo.current.scrollLeft - walk;
-        if (Math.abs(walk) > 5) {
-          dragInfo.current.hasMoved = true;
-        }
-      }
-
-      if (isDraggingScrollbar && scrollbarRef.current && scrollRef.current) {
-        e.preventDefault();
-        const { clientWidth: trackWidth } = scrollbarRef.current;
-        const { scrollWidth, clientWidth: containerWidth } = scrollRef.current;
-        
-        const dragWidth = (containerWidth / scrollWidth) * trackWidth;
-        const maxDragLeft = trackWidth - dragWidth;
-        
-        const rect = scrollbarRef.current.getBoundingClientRect();
-        const clickX = e.clientX - rect.left - (dragWidth / 2);
-        const dragPercent = Math.max(0, Math.min(1, clickX / maxDragLeft));
-        
-        const scrollAmount = dragPercent * (scrollWidth - containerWidth);
-        scrollRef.current.scrollLeft = scrollAmount;
-      }
-    };
-
-    const handleMouseUpGlobal = () => {
-      setIsDragging(false);
-      setIsDraggingScrollbar(false);
-    };
-
-    if (isDragging || isDraggingScrollbar) {
-      window.addEventListener('mousemove', handleMouseMoveGlobal, { passive: false });
-      window.addEventListener('mouseup', handleMouseUpGlobal);
-    }
-
-    return () => {
-      window.removeEventListener('resize', updateScrollIndicator);
-      window.removeEventListener('mousemove', handleMouseMoveGlobal);
-      window.removeEventListener('mouseup', handleMouseUpGlobal);
-    };
-  }, [isDragging, isDraggingScrollbar, relatedProducts]);
-
-  const scroll = (direction: 'left' | 'right') => {
-    if (scrollRef.current) {
-      const { current } = scrollRef;
-      const scrollAmount = direction === 'left' ? -350 : 350;
-      current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    }
-  };
+  const visible = products.filter((p) => p.slug && p.slug !== excludeSlug).slice(0, 8);
+  if (!visible.length) return null;
 
   return (
-    <section className="w-full mt-24 border-t border-gray-100 pt-16">
-      <h2 className="text-xl font-bold text-[#0a1e36] tracking-wide mb-8 uppercase text-left">
-        You may also like
-      </h2>
-
-      <div className="relative group/slider">
-
-
-        {/* Scroll Container */}
-        <div
-          ref={scrollRef}
-          onMouseDown={handleMouseDown}
-          onScroll={updateScrollIndicator}
-          className={`flex gap-4 md:gap-8 overflow-x-auto pb-8 no-scrollbar select-none ${
-            isDragging ? 'cursor-grabbing' : 'cursor-grab'
-          } ${(!isDragging && !isDraggingScrollbar) ? 'snap-x snap-mandatory' : ''}`}
-          style={{ scrollBehavior: (isDragging || isDraggingScrollbar) ? 'auto' : 'smooth' }}
-        >
-          {relatedProducts.map((product) => (
-            <div
-              key={product.id}
-              onClick={() => {
-                if (!dragInfo.current.hasMoved) {
-                  router.push(`/product/${product.slug}`);
-                }
+    <section aria-labelledby="related-title" className="bg-[var(--ivory)] py-24 md:py-32 overflow-hidden">
+      <div className="lux-container flex flex-wrap items-end justify-between gap-6">
+        <div>
+          <p className="eyebrow text-[var(--champagne)]">Also consider</p>
+          <h2 id="related-title" className="display display-md mt-6">
+            From the <em>collection.</em>
+          </h2>
+        </div>
+        <Link href="/watches" className="lux-link">
+          All watches{" "}
+          <span className="lux-arrow" aria-hidden>
+            →
+          </span>
+        </Link>
+      </div>
+      <div className="rail gap-5 md:gap-8 mt-14 px-[var(--gutter)] scroll-px-[var(--gutter)]">
+        {visible.map((p, i) => (
+          <div key={p.slug} className="shrink-0 w-[68vw] sm:w-[42vw] md:w-[30vw] lg:w-[22vw] xl:w-[20rem]">
+            <WatchCard
+              index={i}
+              sizes="(min-width: 1024px) 22vw, 68vw"
+              product={{
+                slug: p.slug,
+                name: p.name,
+                title: p.title,
+                code: p.code,
+                price: p.price,
+                image: p.image,
+                hoverImage: p.hoverImage,
+                collection: p.collection,
+                gender: p.gender,
               }}
-              className="w-[calc((100vw-48px)/2)] sm:w-[240px] md:w-[280px] shrink-0 text-left cursor-pointer group snap-start"
-            >
-              {/* Product Image Container */}
-              <div className="relative aspect-square w-full bg-gray-50 mb-4 overflow-hidden">
-                <HoverSwapImage
-                  src={product.image}
-                  hoverSrc={product.hoverImage}
-                  alt={product.collection || 'Related Product'}
-                  priority={product.id <= 3}
-                />
-              </div>
-              
-              {/* Product Metadata */}
-              <div className="space-y-1">
-                <h3 className="text-xs font-bold tracking-widest text-[#0a1e36] uppercase">
-                  {product.collection || ''}
-                </h3>
-                <p className="text-xs text-gray-500 leading-4 font-light h-8 line-clamp-2 overflow-hidden">
-                  {product.description || ''}
-                </p>
-                <p className="text-sm font-semibold text-gray-900 mt-1">
-                  {product.price}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Swiper Scrollbar Structure */}
-        <div className="wrapper mt-4 border-t border-gray-100 pt-6">
-          <div className="flex items-center justify-between gap-8">
-            <div className="flex-grow">
-              <div
-                ref={scrollbarRef}
-                onMouseDown={handleScrollbarMouseDown}
-                className="py-4 cursor-pointer select-none"
-              >
-                <div className="swiper-scrollbar swiper-scrollbar-horizontal">
-                  <div
-                    className="swiper-scrollbar-drag"
-                    style={{
-                      width: `${dragWidthPx}px`,
-                      transform: `translate3d(${dragLeftPx}px, 0px, 0px)`,
-                      transitionDuration: isDraggingScrollbar ? '0ms' : '100ms',
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Navigation Buttons */}
-            <div className="flex gap-3 shrink-0">
-              <button
-                onClick={() => scroll('left')}
-                className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition shadow-sm text-gray-600 cursor-pointer pointer-events-auto text-sm"
-              >
-                ‹
-              </button>
-              <button
-                onClick={() => scroll('right')}
-                className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition shadow-sm text-gray-600 cursor-pointer pointer-events-auto text-sm"
-              >
-                ›
-              </button>
-            </div>
+            />
           </div>
-        </div>
+        ))}
+        <div className="shrink-0 w-px" aria-hidden />
       </div>
     </section>
   );

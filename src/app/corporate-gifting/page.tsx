@@ -3,7 +3,8 @@ import CorporateGiftingExperience from "@/components/immersive/CorporateGiftingE
 import { publicGetCorporateGiftingItems } from "@/admin/actions/corporate-gifting";
 
 export const metadata: Metadata = {
-  title: "Corporate Gifting | Timect",
+  title: "Corporate Gifting",
+  alternates: { canonical: "/corporate-gifting" },
   description:
     "Find the perfect Timect corporate gift — infinite collection of precision watches for employee recognition, client gifts, and milestone celebrations.",
   openGraph: {
