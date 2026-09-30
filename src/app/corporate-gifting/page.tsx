@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import CorporateGiftingExperience from "@/components/immersive/CorporateGiftingExperience";
-import { publicGetCorporateGiftingItems } from "@/admin/actions/corporate-gifting";
+import { GIFT_SAMPLES } from "@/data/giftSamples";
 
 export const metadata: Metadata = {
-  title: "Corporate Gifting | Timect",
+  title: "Corporate Gifting",
+  alternates: { canonical: "/corporate-gifting" },
   description:
     "Find the perfect Timect corporate gift — infinite collection of precision watches for employee recognition, client gifts, and milestone celebrations.",
   openGraph: {
@@ -15,10 +16,9 @@ export const metadata: Metadata = {
 };
 
 /**
- * Corporate gifting catalog dynamically loaded from admin management,
- * with zero-config fallback to default static samples.
+ * Corporate gifting uses static sample products only.
+ * No database queries, no products.json, no seed/write path.
  */
-export default async function CorporateGiftingPage() {
-  const products = await publicGetCorporateGiftingItems();
-  return <CorporateGiftingExperience products={products} />;
+export default function CorporateGiftingPage() {
+  return <CorporateGiftingExperience products={GIFT_SAMPLES} />;
 }

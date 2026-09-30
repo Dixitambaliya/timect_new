@@ -102,11 +102,6 @@ export default function RoutePreloader() {
       tryHide();
     };
 
-    if (typeof window !== "undefined" && (window as any).__timect_page_ready) {
-      pageReady = true;
-      tryHide();
-    }
-
     window.addEventListener(PAGE_READY_EVENT, onReady);
 
     hardTimer = setTimeout(() => {
@@ -126,20 +121,17 @@ export default function RoutePreloader() {
 
   return (
     <div
-      className={`route-preloader fixed inset-0 z-[99999] flex flex-col items-center justify-center bg-white ${
+      className={`route-preloader fixed inset-0 z-[99999] flex flex-col items-center justify-center bg-[var(--paper)] ${
         exiting ? "route-preloader--exit" : "route-preloader--enter"
       }`}
       aria-busy="true"
       aria-live="polite"
+      aria-label="Loading"
     >
-      <img
-        src="https://res.cloudinary.com/dphscxzb4/image/upload/v1784048492/timect/timect_logo.png"
-        alt="Timect"
-        className="route-preloader-logo w-24 h-24 rounded-full object-contain mb-2"
-      />
-      <div className="tracked-sm text-[12px] mb-1.5 text-gray-700">Loading...</div>
-      <div className="route-preloader-track w-48 h-[2px] bg-gray-200 overflow-hidden">
-        <div className="route-preloader-line h-full bg-black origin-left" />
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src="/images/timect_logo.png" alt="" className="route-preloader-logo h-10 w-auto mb-8" />
+      <div className="route-preloader-track w-40 h-px bg-[var(--line)] overflow-hidden">
+        <div className="route-preloader-line h-full bg-[var(--ink)] origin-left" />
       </div>
     </div>
   );

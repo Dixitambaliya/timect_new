@@ -43,58 +43,45 @@ export default function CorporateGiftingExperience({ products }: Props) {
   const [colour, setColour] = useState<string>("all");
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [overlayOpen, setOverlayOpen] = useState(false);
-  const [apiProducts, setApiProducts] = useState<GiftSample[]>(products);
-  const [loading, setLoading] = useState(false);
-
-  // Fetch corporate gifting products from API when colour swatch changes
-  useEffect(() => {
-    if (colour === "all") {
-      setApiProducts(products);
-      return;
-    }
-
-    let active = true;
-    setLoading(true);
-
-    fetch(`/api/corporate-gifting?colour=${encodeURIComponent(colour)}`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (active && data.success && Array.isArray(data.products)) {
-          setApiProducts(data.products);
-        }
-      })
-      .catch((err) => {
-        console.error("Failed to fetch /api/corporate-gifting:", err);
-      })
-      .finally(() => {
-        if (active) setLoading(false);
-      });
-
-    return () => {
-      active = false;
-    };
-  }, [colour, products]);
 
   const giftProducts = useMemo(() => {
-    const source = apiProducts.length ? apiProducts : products;
-    return source
-      .filter((p) => p.image)
-      .map((p): GiftProduct => ({
-        id: p.id,
-        slug: p.slug,
-        name: p.name,
-        title: p.title,
-        price: p.price,
-        image: p.image,
-        hoverImage: p.hoverImage,
-      }));
-  }, [apiProducts, products]);
+    const toGift = (p: GiftSample): GiftProduct => ({
+      id: p.id,
+      slug: p.slug,
+      name: p.name,
+      title: p.title,
+      price: p.price,
+      image: p.image,
+      hoverImage: p.hoverImage,
+    });
+
+    const base = products.filter((p) => p.image).map(toGift);
+
+    if (colour === "all") return base;
+
+    const keywords: Record<string, string[]> = {
+      silver: ["silver", "steel", "graphite", "line", "studio"],
+      gold: ["gold", "truton", "two-tone"],
+      black: ["black", "noir", "graphite"],
+      blue: ["blue", "azure", "heritage"],
+      green: ["green", "forest"],
+      rose: ["rose", "pink", "ladies"],
+    };
+    const keys = keywords[colour] || [];
+    if (!keys.length) return base;
+    const full = products.filter((p) => p.image);
+    const filtered = full.filter((p) => {
+      const t =
+        `${p.name || ""} ${p.title || ""} ${p.collection || ""}`.toLowerCase();
+      return keys.some((k) => t.includes(k));
+    });
+    return filtered.length ? filtered.map(toGift) : base;
+  }, [products, colour]);
 
   const selectedProduct = useMemo(() => {
     if (selectedId == null) return null;
-    const source = apiProducts.length ? apiProducts : products;
-    return source.find((p) => p.id === selectedId) ?? null;
-  }, [apiProducts, products, selectedId]);
+    return products.find((p) => p.id === selectedId) ?? null;
+  }, [products, selectedId]);
 
   const handleProductSelect = useCallback((product: GiftProduct) => {
     setSelectedId(product.id);
@@ -124,7 +111,34 @@ export default function CorporateGiftingExperience({ products }: Props) {
     };
   }, []);
 
+  useGSAP(
+    () => {
+      const root = rootRef.current;
+      if (!root) return;
 
+      const reduced = prefersReducedMotion();
+      const header = root.querySelector("header");
+      const field = root.querySelector(".cg-field-stage");
+      const panel = root.querySelector(".cg-colour-panel");
+
+      if (reduced) {
+        gsap.set([header, field], { autoAlpha: 1, y: 0 });
+        gsap.set(panel, { autoAlpha: 1, y: 0, xPercent: -50 });
+        return;
+      }
+
+      gsap.set(header, { yPercent: -100, opacity: 0 });
+      gsap.set(field, { autoAlpha: 0 });
+      gsap.set(panel, { autoAlpha: 0, y: 24, xPercent: -50 });
+
+      gsap
+        .timeline({ defaults: { ease: EASE.out } })
+        .to(header, { yPercent: 0, opacity: 1, duration: 0.8 })
+        .to(field, { autoAlpha: 1, duration: 1.1, ease: EASE.expo }, "-=0.4")
+        .to(panel, { autoAlpha: 1, y: 0, xPercent: -50, duration: 0.7 }, "-=0.5");
+    },
+    { scope: rootRef }
+  );
 
   return (
     <div ref={rootRef} className="cg-page cg-gifts-omega">
