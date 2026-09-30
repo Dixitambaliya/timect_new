@@ -2,6 +2,7 @@
 
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
@@ -13,12 +14,12 @@ import {
 import { catalogThumbUrl } from "@/lib/catalog-image";
 import HoverSwapImage from "@/components/product/HoverSwapImage";
 import { signalPageReady } from "@/lib/page-ready";
+import { displayCase, splitProductName } from "@/lib/product-display";
 import {
   LucideCheck,
   LucideChevronDown,
   LucideSearch,
   LucideSlidersHorizontal,
-  LucideStar,
   LucideX,
 } from "lucide-react";
 
@@ -41,23 +42,12 @@ const CACHE_TTL_MS = 60_000;
 
 function ProductCardSkeleton({ index = 0 }: { index?: number }) {
   return (
-    <div
-      className="bg-white rounded-2xl border border-gray-200 overflow-hidden flex flex-col p-4 min-w-0 animate-pulse"
-      style={{ animationDelay: `${index * 40}ms` }}
-      aria-hidden
-    >
-      <div className="aspect-square w-full bg-slate-100 rounded-xl mb-4" />
-      <div className="space-y-2 px-1">
-        <div className="flex justify-between">
-          <div className="h-3 w-16 bg-slate-100 rounded" />
-          <div className="h-3 w-8 bg-slate-100 rounded" />
-        </div>
-        <div className="h-3.5 w-3/4 bg-slate-100 rounded" />
-        <div className="h-3 w-1/2 bg-slate-100 rounded" />
-        <div className="flex justify-between items-center pt-4 mt-2">
-          <div className="h-4 w-20 bg-slate-100 rounded" />
-          <div className="h-9 w-24 bg-slate-100 rounded-lg" />
-        </div>
+    <div className="min-w-0 animate-pulse" style={{ animationDelay: `${index * 40}ms` }} aria-hidden>
+      <div className="aspect-[4/5] w-full bg-[#ebe6dc]" />
+      <div className="mt-5 space-y-3">
+        <div className="h-2.5 w-16 bg-[var(--stone)]" />
+        <div className="h-4 w-3/4 bg-[var(--stone)]" />
+        <div className="h-3 w-1/3 bg-[var(--stone)]" />
       </div>
     </div>
   );
@@ -75,22 +65,21 @@ function ProgressiveImage({
   alt: string;
   priority?: boolean;
 }) {
-  const primary = catalogThumbUrl(src);
-  const hover = hoverSrc ? catalogThumbUrl(hoverSrc, 480) : "";
+  const primary = catalogThumbUrl(src, 640);
+  const hover = hoverSrc ? catalogThumbUrl(hoverSrc, 640) : "";
   const [primaryLoaded, setPrimaryLoaded] = useState(false);
 
   return (
-    <div className="relative aspect-square w-full bg-slate-100 rounded-xl mb-4 overflow-hidden">
+    <div className="relative aspect-[4/5] w-full bg-[#ebe6dc] overflow-hidden catalog-media">
       <div
-        className={`absolute inset-0 bg-gradient-to-br from-slate-100 to-slate-200 product-hover-crossfade ${
-          primaryLoaded ? "opacity-0" : "opacity-100"
-        }`}
+        className={`absolute inset-0 bg-[var(--stone)] product-hover-crossfade ${primaryLoaded ? "opacity-0" : "opacity-100"}`}
         aria-hidden
       />
       <HoverSwapImage
         src={primary}
         hoverSrc={hover}
         alt={alt}
+        fit="cover"
         priority={priority}
         onPrimaryLoad={() => setPrimaryLoaded(true)}
       />
@@ -98,87 +87,58 @@ function ProgressiveImage({
   );
 }
 
-function ProductCard({
-  product,
-  index,
-  onOpen,
-}: {
-  product: CatalogCard;
-  index: number;
-  onOpen: (slug: string) => void;
-}) {
-  const displayBrand = product.brand || product.collection || "Seiko";
-  const displayName = product.name || product.title || "Exclusive Watch";
+function ProductCard({ product, index }: { product: CatalogCard; index: number }) {
+  const split = splitProductName(product.name || product.title, product.code);
+  const displayName = displayCase(split.title || product.collection || "Timect");
+  const kicker =
+    (split.title && (product.collection || (product.brand !== "Exclusive" ? product.brand : ""))) ||
+    (product.gender && product.gender !== "Unisex" ? `For ${product.gender === "Men" ? "Him" : "Her"}` : "Timect");
+  const badge = product.tag || (product.isMainProduct ? "Exclusive" : "");
 
   return (
-    <div
-      onClick={() => onOpen(product.slug)}
-      className="product-card-enter group bg-white rounded-2xl border border-gray-200 overflow-hidden flex flex-col p-4 cursor-pointer hover:shadow-xl transition-shadow duration-300 min-w-0"
+    <Link
+      href={`/product/${product.slug}`}
+      className="product-card-enter group block min-w-0"
       style={{ animationDelay: `${Math.min(index, 12) * 30}ms` }}
     >
       <div className="relative">
-        {product.tag && (
-          <span className="absolute top-3 left-3 bg-black text-white text-[9px] font-bold px-2 py-0.5 tracking-widest rounded-md uppercase z-10">
-            {product.tag}
-          </span>
+        {badge && (
+          <span className="absolute top-4 left-4 z-10 eyebrow text-[0.58rem] text-[var(--ink)]/70">{badge}</span>
         )}
-        {product.isMainProduct && !product.tag && (
-          <span className="absolute top-3 left-3 bg-[#0c2c42] text-white text-[9px] font-bold px-2 py-0.5 tracking-widest rounded-md uppercase z-10">
-            EXCLUSIVE
-          </span>
-        )}
-        <ProgressiveImage
-          src={product.image}
-          hoverSrc={product.hoverImage}
-          alt={displayName}
-          priority={index < 3}
-        />
-      </div>
-
-      {/* Text always renders immediately — never waits on images */}
-      <div className="flex-grow flex flex-col space-y-1 px-1">
-        <div className="flex items-center justify-between">
-          <span className="text-[10px] font-bold tracking-widest text-gray-400 uppercase truncate max-w-[70%]">
-            {displayBrand}
-          </span>
-          <div className="flex items-center gap-1 text-amber-500 shrink-0">
-            <LucideStar className="h-3 w-3 fill-amber-500" />
-            <span className="text-[10px] font-bold text-gray-600">
-              {product.rating || "4.5"}
-            </span>
-          </div>
-        </div>
-
-        <h3
-          className="text-xs font-bold text-gray-900 uppercase truncate leading-tight mt-1"
-          title={displayName}
+        <ProgressiveImage src={product.image} hoverSrc={product.hoverImage} alt={displayName} priority={index < 3} />
+        <span
+          className="absolute right-4 bottom-4 eyebrow text-[0.58rem] opacity-0 translate-y-2 transition-all duration-700 ease-[var(--ease-lux)] group-hover:opacity-100 group-hover:translate-y-0"
+          aria-hidden
         >
+          Discover →
+        </span>
+      </div>
+
+      <div className="mt-5">
+        <p className="eyebrow text-[0.58rem] text-[var(--muted)] truncate">{displayCase(kicker)}</p>
+        <h2 className="display text-[1.25rem] md:text-[1.4rem] leading-[1.15] mt-2 line-clamp-2" title={displayName}>
           {displayName}
-        </h3>
-
-        {product.code && (
-          <span className="text-[10px] font-medium text-gray-400">
-            Ref: {product.code}
-          </span>
-        )}
-        {product.gender && (
-          <span className="text-[9px] font-bold tracking-wider text-gray-400 uppercase">
-            {product.gender}
-          </span>
-        )}
-
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-4 mt-auto">
-          <span className="text-sm font-extrabold text-black">
-            {product.price}
-          </span>
-          <button
-            type="button"
-            className="bg-black hover:bg-neutral-800 text-white rounded-lg px-3 py-2.5 text-[10px] font-extrabold tracking-wider transition-all duration-300 w-full sm:w-auto text-center cursor-pointer"
-          >
-            VIEW DETAILS
-          </button>
+        </h2>
+        <div className="mt-2.5 flex items-baseline justify-between gap-3 text-[0.8rem] font-light text-[var(--muted)]">
+          <span className="truncate tracking-[0.08em]">{split.reference}</span>
+          <span className="text-[var(--ink)] whitespace-nowrap tracking-[0.03em]">{product.price}</span>
         </div>
       </div>
+    </Link>
+  );
+}
+
+/** Editorial title band — the heading follows the active collection. */
+function CatalogIntro({ label }: { label: string }) {
+  return (
+    <div className="pt-10 md:pt-16 pb-10 md:pb-14 mb-8 md:mb-12 border-b border-[var(--line)] grid grid-cols-1 md:grid-cols-12 gap-6 items-end">
+      <div className="md:col-span-8">
+        <p className="eyebrow text-[var(--champagne)]">The Collection</p>
+        <h1 className="display display-lg mt-6">{label}</h1>
+      </div>
+      <p className="md:col-span-4 lede text-[var(--muted)] md:pb-2">
+        Precision wristwatches, each chosen for the way it wears, reads and endures.
+      </p>
     </div>
   );
 }
@@ -430,6 +390,15 @@ function WatchesCatalogContent() {
   };
 
   const filterLabel = getCatalogFilterLabel(activeFilter);
+  const CATEGORY_TITLES: Record<string, string> = { new: "New Arrivals", recommended: "The Selection", related: "Collection" };
+  const activeFilterLabel =
+    (filterLabel && displayCase(filterLabel)) ||
+    CATEGORY_TITLES[activeCategory] ||
+    (selectedGenders.length === 1 && selectedGenders[0] !== "Unisex"
+      ? selectedGenders[0] === "Men"
+        ? "For Him"
+        : "For Her"
+      : "All Watches");
 
   const handleGenderChange = (gender: string) => {
     setSelectedGenders((prev) =>
@@ -511,21 +480,22 @@ function WatchesCatalogContent() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-[#111111]">
+    <div className="min-h-screen bg-[var(--paper)] text-[var(--ink)]">
       <Header />
 
-      <main className="max-w-[1450px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="lux-container pb-24 md:pb-32">
+        <CatalogIntro label={activeFilterLabel} />
         {/* Content Area */}
-        <div className="grid lg:grid-cols-4 gap-8">
+        <div className="grid lg:grid-cols-4 gap-8 xl:gap-14">
           {/* Sidebar Filters - Desktop */}
-          <aside className="hidden lg:block bg-white p-6 rounded-2xl border border-gray-200 h-fit sticky top-24 shadow-sm">
-            <div className="flex items-center justify-between pb-4 border-b border-gray-100 mb-6">
-              <h3 className="text-sm font-bold tracking-wider uppercase text-gray-900">
+          <aside className="hidden lg:block h-fit sticky top-[calc(var(--header-h)+1.5rem)] pr-8 border-r border-[var(--line)]">
+            <div className="flex items-center justify-between pb-5 border-b border-[var(--line)] mb-7">
+              <h3 className="eyebrow text-[var(--ink)]">
                 Filters
               </h3>
               <button
                 onClick={handleResetFilters}
-                className="text-xs text-gray-500 hover:text-black font-semibold hover:underline"
+                className="eyebrow text-[0.58rem] text-[var(--muted)] hover:text-[var(--ink)] transition-colors"
               >
                 Reset All
               </button>
@@ -533,7 +503,7 @@ function WatchesCatalogContent() {
 
             {/* Search filter */}
             <div className="mb-6">
-              <label className="block text-xs font-bold tracking-wider uppercase text-gray-700 mb-2">
+              <label className="block eyebrow text-[0.6rem] text-[var(--muted)] mb-3">
                 Search
               </label>
               <div className="relative">
@@ -542,19 +512,19 @@ function WatchesCatalogContent() {
                   placeholder="Search watches..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl py-2.5 pl-10 pr-4 text-xs focus:bg-white focus:border-black focus:outline-none transition-all"
+                  className="w-full bg-transparent border-0 border-b border-[var(--line)] py-2.5 pl-7 pr-2 text-[0.85rem] font-light placeholder:text-[var(--muted)] focus:border-[var(--ink)] focus:outline-none transition-colors"
                 />
-                <LucideSearch className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <LucideSearch className="absolute left-0 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--muted)]" />
               </div>
             </div>
 
             {/* Price Range Slider */}
             <div className="mb-6">
               <div className="flex items-center justify-between mb-2">
-                <label className="text-xs font-bold tracking-wider uppercase text-gray-700">
+                <label className="eyebrow text-[0.6rem] text-[var(--muted)]">
                   Max Price
                 </label>
-                <span className="text-xs font-bold text-gray-900">
+                <span className="text-[0.8rem] text-[var(--ink)]">
                   {formatPrice(priceRange[1])}
                 </span>
               </div>
@@ -567,9 +537,9 @@ function WatchesCatalogContent() {
                 onChange={(e) =>
                   setPriceRange([priceRange[0], parseInt(e.target.value, 10)])
                 }
-                className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black mb-1"
+                className="w-full h-px bg-[var(--line)] appearance-none cursor-pointer accent-[var(--ink)] mb-2"
               />
-              <div className="flex justify-between text-[10px] text-gray-400 font-semibold">
+              <div className="flex justify-between text-[0.65rem] text-[var(--muted)] tracking-[0.06em]">
                 <span>{formatPrice(0)}</span>
                 <span>{formatPrice(DEFAULT_PRICE_MAX / 2)}</span>
                 <span>{formatPrice(DEFAULT_PRICE_MAX)}</span>
@@ -577,21 +547,21 @@ function WatchesCatalogContent() {
             </div>
 
             {/* Gender filter */}
-            <div className="mb-6 border-t border-gray-100 pt-4">
-              <h4 className="text-xs font-bold tracking-wider uppercase text-gray-700 mb-3">
+            <div className="mb-6 border-t border-[var(--line)] pt-6">
+              <h4 className="eyebrow text-[0.6rem] text-[var(--muted)] mb-4">
                 Gender
               </h4>
               <div className="space-y-2">
                 {["Men", "Women", "Unisex"].map((gender) => (
                   <label
                     key={gender}
-                    className="flex items-center gap-3 text-xs text-gray-600 font-medium cursor-pointer"
+                    className="flex items-center gap-3 text-[0.85rem] font-light text-[var(--ink)]/75 hover:text-[var(--ink)] cursor-pointer transition-colors"
                   >
                     <input
                       type="checkbox"
                       checked={selectedGenders.includes(gender)}
                       onChange={() => handleGenderChange(gender)}
-                      className="h-4 w-4 rounded border-gray-300 text-black focus:ring-black cursor-pointer accent-black"
+                      className="h-3.5 w-3.5 cursor-pointer accent-[var(--ink)]"
                     />
                     {gender}
                   </label>
@@ -600,8 +570,8 @@ function WatchesCatalogContent() {
             </div>
 
             {/* Collection filters (Shop by Category) */}
-            <div className="mb-6 border-t border-gray-100 pt-4">
-              <h4 className="text-xs font-bold tracking-wider uppercase text-gray-700 mb-3">
+            <div className="mb-6 border-t border-[var(--line)] pt-6">
+              <h4 className="eyebrow text-[0.6rem] text-[var(--muted)] mb-4">
                 Collection
               </h4>
               <div className="space-y-2">
@@ -610,16 +580,16 @@ function WatchesCatalogContent() {
                   return (
                     <label
                       key={item.slug}
-                      className="flex items-center gap-3 text-xs text-gray-600 font-medium cursor-pointer"
+                      className="flex items-center gap-3 text-[0.85rem] font-light text-[var(--ink)]/75 hover:text-[var(--ink)] cursor-pointer transition-colors"
                     >
                       <input
                         type="checkbox"
                         checked={selected}
                         onChange={() => setCatalogFilter(item.slug)}
-                        className="h-4 w-4 rounded border-gray-300 text-black focus:ring-black cursor-pointer accent-black"
+                        className="h-3.5 w-3.5 cursor-pointer accent-[var(--ink)]"
                       />
-                      <span className={selected ? "text-black font-semibold" : ""}>
-                        {item.label}
+                      <span className={selected ? "text-[var(--ink)]" : ""}>
+                        {displayCase(item.label)}
                       </span>
                     </label>
                   );
@@ -628,8 +598,8 @@ function WatchesCatalogContent() {
             </div>
 
             {/* Brand filter */}
-            <div className="mb-8 border-t border-gray-100 pt-4">
-              <h4 className="text-xs font-bold tracking-wider uppercase text-gray-700 mb-3">
+            <div className="mb-8 border-t border-[var(--line)] pt-6">
+              <h4 className="eyebrow text-[0.6rem] text-[var(--muted)] mb-4">
                 Brand / Collection
               </h4>
               <div className="space-y-2 max-h-[160px] overflow-y-auto pr-2 no-scrollbar">
@@ -643,13 +613,13 @@ function WatchesCatalogContent() {
                 ].map((brand) => (
                   <label
                     key={brand}
-                    className="flex items-center gap-3 text-xs text-gray-600 font-medium cursor-pointer"
+                    className="flex items-center gap-3 text-[0.85rem] font-light text-[var(--ink)]/75 hover:text-[var(--ink)] cursor-pointer transition-colors"
                   >
                     <input
                       type="checkbox"
                       checked={selectedBrands.includes(brand)}
                       onChange={() => handleBrandChange(brand)}
-                      className="h-4 w-4 rounded border-gray-300 text-black focus:ring-black cursor-pointer accent-black"
+                      className="h-3.5 w-3.5 cursor-pointer accent-[var(--ink)]"
                     />
                     {brand}
                   </label>
@@ -666,24 +636,24 @@ function WatchesCatalogContent() {
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => setMobileSidebarOpen(true)}
-                    className="lg:hidden flex items-center gap-2 bg-white px-3 py-1.5 border border-gray-200 rounded-lg text-xs font-bold tracking-wider hover:border-black transition shadow-sm"
+                    className="lg:hidden flex items-center gap-2.5 h-10 px-4 border border-[var(--line)] eyebrow text-[0.6rem] hover:border-[var(--ink)] transition-colors"
                   >
                     <LucideSlidersHorizontal className="h-4 w-4" />
                     Filters
                   </button>
 
-                  <p className="text-xs text-gray-500 font-medium flex items-center gap-2 flex-wrap">
+                  <p className="text-[0.8rem] font-light text-[var(--muted)] flex items-center gap-3 flex-wrap">
                     <span>
                       Showing{" "}
-                      <span className="font-bold text-gray-900">
+                      <span className="text-[var(--ink)]">
                         {products.length}
                         {hasMore ? "+" : ""}
                       </span>{" "}
-                      luxury watches
+                      watches
                     </span>
                     {(loading || loadingMore) && (
-                      <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-gray-400">
-                        <span className="h-3 w-3 border-2 border-gray-300 border-t-black rounded-full animate-spin" />
+                      <span className="inline-flex items-center gap-2 eyebrow text-[0.56rem] text-[var(--muted)]">
+                        <span className="h-3 w-3 border border-[var(--line)] border-t-[var(--ink)] rounded-full animate-spin" />
                         Loading…
                       </span>
                     )}
@@ -695,22 +665,22 @@ function WatchesCatalogContent() {
                   <button
                     type="button"
                     onClick={() => setSortOpen((prev) => !prev)}
-                    className={`flex items-center gap-2 bg-white px-3.5 py-2 border rounded-xl text-xs shadow-sm transition-all duration-200 cursor-pointer select-none ${
+                    className={`flex items-center gap-2.5 h-10 px-4 border text-[0.8rem] transition-colors duration-300 cursor-pointer select-none ${
                       sortOpen
-                        ? "border-black ring-2 ring-black/5"
-                        : "border-gray-200 hover:border-gray-900"
+                        ? "border-[var(--ink)]"
+                        : "border-[var(--line)] hover:border-[var(--ink)]"
                     }`}
                     aria-expanded={sortOpen}
                     aria-haspopup="listbox"
                   >
-                    <span className="text-gray-500 font-medium">Sort:</span>
-                    <span className="font-bold text-gray-900">
+                    <span className="eyebrow text-[0.56rem] text-[var(--muted)]">Sort</span>
+                    <span className="text-[var(--ink)]">
                       {SORT_OPTIONS.find((opt) => opt.value === sortBy)?.label ||
                         "Newest"}
                     </span>
                     <LucideChevronDown
-                      className={`h-3.5 w-3.5 text-gray-500 transition-transform duration-200 ${
-                        sortOpen ? "rotate-180 text-black" : ""
+                      className={`h-3.5 w-3.5 text-[var(--muted)] transition-transform duration-300 ${
+                        sortOpen ? "rotate-180 text-[var(--ink)]" : ""
                       }`}
                     />
                   </button>
@@ -718,7 +688,7 @@ function WatchesCatalogContent() {
                   {sortOpen && (
                     <div
                       role="listbox"
-                      className="absolute right-0 mt-2 w-52 bg-white rounded-xl border border-gray-100 shadow-2xl py-1.5 z-40 ring-1 ring-black/5 overflow-hidden animate-in fade-in zoom-in-95 duration-150"
+                      className="absolute right-0 mt-2 w-56 bg-[var(--paper)] border border-[var(--line)] shadow-[0_24px_60px_-30px_rgba(0,0,0,0.35)] py-2 z-40 overflow-hidden"
                     >
                       {SORT_OPTIONS.map((option) => {
                         const isSelected = sortBy === option.value;
@@ -732,15 +702,15 @@ function WatchesCatalogContent() {
                               setSortBy(option.value);
                               setSortOpen(false);
                             }}
-                            className={`w-full flex items-center justify-between px-4 py-2.5 text-xs text-left transition-colors cursor-pointer ${
+                            className={`w-full flex items-center justify-between px-5 py-3 text-[0.82rem] text-left transition-colors cursor-pointer ${
                               isSelected
-                                ? "bg-slate-50 text-black font-bold"
-                                : "text-gray-600 hover:bg-slate-50 hover:text-black font-medium"
+                                ? "bg-[var(--ivory)] text-[var(--ink)]"
+                                : "text-[var(--ink)]/70 font-light hover:bg-[var(--ivory)] hover:text-[var(--ink)]"
                             }`}
                           >
                             <span>{option.label}</span>
                             {isSelected && (
-                              <LucideCheck className="h-3.5 w-3.5 text-black ml-2 flex-shrink-0" />
+                              <LucideCheck className="h-3.5 w-3.5 text-[var(--champagne)] ml-2 flex-shrink-0" />
                             )}
                           </button>
                         );
@@ -757,7 +727,7 @@ function WatchesCatalogContent() {
                       key={chip.id}
                       type="button"
                       onClick={chip.onRemove}
-                      className="inline-flex items-center gap-1.5 bg-black text-white text-[10px] font-bold tracking-wider uppercase px-3 py-1.5 rounded-full hover:bg-neutral-800 transition"
+                      className="inline-flex items-center gap-2 h-8 px-3.5 border border-[var(--ink)] eyebrow text-[0.56rem] hover:bg-[var(--ink)] hover:text-[var(--paper)] transition-colors"
                     >
                       {chip.label}
                       <LucideX className="h-3 w-3" />
@@ -766,7 +736,7 @@ function WatchesCatalogContent() {
                   <button
                     type="button"
                     onClick={handleResetFilters}
-                    className="text-[10px] font-bold tracking-wider uppercase text-gray-500 hover:text-black underline underline-offset-2"
+                    className="eyebrow text-[0.56rem] text-[var(--muted)] hover:text-[var(--ink)] underline underline-offset-4"
                   >
                     Clear all
                   </button>
@@ -778,27 +748,22 @@ function WatchesCatalogContent() {
             {loading && products.length === 0 ? (
               <div className="min-h-[320px] bg-transparent" aria-busy="true" />
             ) : !loading && products.length === 0 ? (
-              <div className="min-h-[400px] flex flex-col items-center justify-center bg-white rounded-2xl border border-gray-200 p-8 text-center">
-                <p className="text-gray-500 font-medium mb-4">
+              <div className="min-h-[400px] flex flex-col items-center justify-center border-y border-[var(--line)] p-8 text-center">
+                <p className="display text-[1.8rem] mb-6">
                   No watches found matching the selected filters.
                 </p>
                 <button
                   onClick={handleResetFilters}
-                  className="bg-black text-white px-6 py-2.5 rounded-lg text-xs font-bold tracking-wider hover:bg-neutral-800 transition"
+                  className="lux-btn lux-btn--dark"
                 >
                   Clear All Filters
                 </button>
               </div>
             ) : (
               <>
-                <div className="grid grid-cols-2 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
+                <div className="grid grid-cols-2 xl:grid-cols-3 gap-x-4 gap-y-12 sm:gap-x-6 md:gap-y-16">
                   {products.map((product, index) => (
-                    <ProductCard
-                      key={product.id}
-                      product={product}
-                      index={index % PAGE_SIZE}
-                      onOpen={(slug) => router.push(`/product/${slug}`)}
-                    />
+                    <ProductCard key={product.id} product={product} index={index % PAGE_SIZE} />
                   ))}
                   {/* Placeholder cards while more batches stream in */}
                   {loadingMore &&
@@ -814,13 +779,13 @@ function WatchesCatalogContent() {
                     <button
                       type="button"
                       onClick={() => void loadMore()}
-                      className="bg-black hover:bg-neutral-800 text-white px-8 py-3.5 rounded-xl text-xs font-bold tracking-widest uppercase transition-all duration-300 shadow-md flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                      className="lux-btn lux-btn--dark disabled:opacity-50"
                     >
-                      LOAD MORE PRODUCTS
+                      Load more
                     </button>
                   )}
                   {loadingMore && hasMore && (
-                    <p className="text-xs text-gray-400 font-medium tracking-wide">
+                    <p className="eyebrow text-[0.58rem] text-[var(--muted)]">
                       Fetching more watches…
                     </p>
                   )}
@@ -835,20 +800,20 @@ function WatchesCatalogContent() {
       {mobileSidebarOpen && (
         <div
           onClick={() => setMobileSidebarOpen(false)}
-          className="fixed inset-0 bg-black/50 z-[9999] flex justify-end"
+          className="fixed inset-0 bg-black/40 z-[9999] flex justify-end"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-[300px] bg-white h-full p-6 flex flex-col animate-slide-in"
+            className="w-[min(340px,88vw)] bg-[var(--paper)] h-full p-7 flex flex-col animate-slide-in"
           >
             {/* Header (Sticky / Non-scrollable) */}
-            <div className="flex items-center justify-between pb-4 border-b border-gray-150 mb-6 shrink-0">
-              <h3 className="text-sm font-bold tracking-wider uppercase text-gray-900">
+            <div className="flex items-center justify-between pb-5 border-b border-[var(--line)] mb-7 shrink-0">
+              <h3 className="eyebrow text-[var(--ink)]">
                 Filters
               </h3>
               <button
                 onClick={() => setMobileSidebarOpen(false)}
-                className="text-xs text-gray-500 hover:text-black font-bold uppercase cursor-pointer"
+                className="eyebrow text-[0.58rem] text-[var(--muted)] hover:text-[var(--ink)] cursor-pointer"
               >
                 Close
               </button>
@@ -858,7 +823,7 @@ function WatchesCatalogContent() {
             <div className="flex-1 overflow-y-auto pr-1 no-scrollbar space-y-6 mb-6">
               {/* Search filter */}
               <div>
-                <label className="block text-xs font-bold tracking-wider uppercase text-gray-700 mb-2">
+                <label className="block eyebrow text-[0.6rem] text-[var(--muted)] mb-3">
                   Search
                 </label>
                 <div className="relative">
@@ -867,19 +832,19 @@ function WatchesCatalogContent() {
                     placeholder="Search watches..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl py-2.5 pl-10 pr-4 text-xs focus:bg-white focus:border-black focus:outline-none transition-all"
+                    className="w-full bg-transparent border-0 border-b border-[var(--line)] py-2.5 pl-7 pr-2 text-[0.85rem] font-light placeholder:text-[var(--muted)] focus:border-[var(--ink)] focus:outline-none transition-colors"
                   />
-                  <LucideSearch className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <LucideSearch className="absolute left-0 top-1/2 -translate-y-1/2 h-4 w-4 text-[var(--muted)]" />
                 </div>
               </div>
 
               {/* Price Range Slider */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="text-xs font-bold tracking-wider uppercase text-gray-700">
+                  <label className="eyebrow text-[0.6rem] text-[var(--muted)]">
                     Max Price
                   </label>
-                  <span className="text-xs font-bold text-gray-900">
+                  <span className="text-[0.8rem] text-[var(--ink)]">
                     {formatPrice(priceRange[1])}
                   </span>
                 </div>
@@ -892,30 +857,30 @@ function WatchesCatalogContent() {
                   onChange={(e) =>
                     setPriceRange([priceRange[0], parseInt(e.target.value, 10)])
                   }
-                  className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-black mb-1"
+                  className="w-full h-px bg-[var(--line)] appearance-none cursor-pointer accent-[var(--ink)] mb-2"
                 />
-                <div className="flex justify-between text-[10px] text-gray-400 font-semibold">
+                <div className="flex justify-between text-[0.65rem] text-[var(--muted)] tracking-[0.06em]">
                   <span>{formatPrice(0)}</span>
                   <span>{formatPrice(DEFAULT_PRICE_MAX)}</span>
                 </div>
               </div>
 
               {/* Gender filter */}
-              <div className="border-t border-gray-100 pt-4">
-                <h4 className="text-xs font-bold tracking-wider uppercase text-gray-700 mb-3">
+              <div className="border-t border-[var(--line)] pt-6">
+                <h4 className="eyebrow text-[0.6rem] text-[var(--muted)] mb-4">
                   Gender
                 </h4>
                 <div className="space-y-2">
                   {["Men", "Women", "Unisex"].map((gender) => (
                     <label
                       key={gender}
-                      className="flex items-center gap-3 text-xs text-gray-600 font-medium cursor-pointer"
+                      className="flex items-center gap-3 text-[0.85rem] font-light text-[var(--ink)]/75 hover:text-[var(--ink)] cursor-pointer transition-colors"
                     >
                       <input
                         type="checkbox"
                         checked={selectedGenders.includes(gender)}
                         onChange={() => handleGenderChange(gender)}
-                        className="h-4 w-4 rounded border-gray-300 text-black focus:ring-black cursor-pointer accent-black"
+                        className="h-3.5 w-3.5 cursor-pointer accent-[var(--ink)]"
                       />
                       {gender}
                     </label>
@@ -924,8 +889,8 @@ function WatchesCatalogContent() {
               </div>
 
               {/* Collection filters */}
-              <div className="border-t border-gray-100 pt-4">
-                <h4 className="text-xs font-bold tracking-wider uppercase text-gray-700 mb-3">
+              <div className="border-t border-[var(--line)] pt-6">
+                <h4 className="eyebrow text-[0.6rem] text-[var(--muted)] mb-4">
                   Collection
                 </h4>
                 <div className="space-y-2">
@@ -934,20 +899,20 @@ function WatchesCatalogContent() {
                     return (
                       <label
                         key={item.slug}
-                        className="flex items-center gap-3 text-xs text-gray-600 font-medium cursor-pointer"
+                        className="flex items-center gap-3 text-[0.85rem] font-light text-[var(--ink)]/75 hover:text-[var(--ink)] cursor-pointer transition-colors"
                       >
                         <input
                           type="checkbox"
                           checked={selected}
                           onChange={() => setCatalogFilter(item.slug)}
-                          className="h-4 w-4 rounded border-gray-300 text-black focus:ring-black cursor-pointer accent-black"
+                          className="h-3.5 w-3.5 cursor-pointer accent-[var(--ink)]"
                         />
                         <span
                           className={
-                            selected ? "text-black font-semibold" : ""
+                            selected ? "text-[var(--ink)]" : ""
                           }
                         >
-                          {item.label}
+                          {displayCase(item.label)}
                         </span>
                       </label>
                     );
@@ -956,8 +921,8 @@ function WatchesCatalogContent() {
               </div>
 
               {/* Brand filter */}
-              <div className="border-t border-gray-100 pt-4">
-                <h4 className="text-xs font-bold tracking-wider uppercase text-gray-700 mb-3">
+              <div className="border-t border-[var(--line)] pt-6">
+                <h4 className="eyebrow text-[0.6rem] text-[var(--muted)] mb-4">
                   Brand / Collection
                 </h4>
                 <div className="space-y-2">
@@ -971,13 +936,13 @@ function WatchesCatalogContent() {
                   ].map((brand) => (
                     <label
                       key={brand}
-                      className="flex items-center gap-3 text-xs text-gray-600 font-medium cursor-pointer"
+                      className="flex items-center gap-3 text-[0.85rem] font-light text-[var(--ink)]/75 hover:text-[var(--ink)] cursor-pointer transition-colors"
                     >
                       <input
                         type="checkbox"
                         checked={selectedBrands.includes(brand)}
                         onChange={() => handleBrandChange(brand)}
-                        className="h-4 w-4 rounded border-gray-300 text-black focus:ring-black cursor-pointer accent-black"
+                        className="h-3.5 w-3.5 cursor-pointer accent-[var(--ink)]"
                       />
                       {brand}
                     </label>
@@ -987,16 +952,16 @@ function WatchesCatalogContent() {
             </div>
 
             {/* Bottom Buttons (Non-scrollable) */}
-            <div className="mt-auto pt-4 flex gap-4 border-t border-gray-100 shrink-0">
+            <div className="mt-auto pt-5 flex gap-3 border-t border-[var(--line)] shrink-0">
               <button
                 onClick={handleResetFilters}
-                className="flex-1 bg-white border border-gray-200 text-black py-3 rounded-xl text-xs font-bold tracking-widest uppercase hover:border-black transition cursor-pointer"
+                className="flex-1 lux-btn lux-btn--dark !px-0"
               >
                 Reset
               </button>
               <button
                 onClick={handleApplyFilters}
-                className="flex-1 bg-black text-white py-3 rounded-xl text-xs font-bold tracking-widest uppercase hover:bg-neutral-800 transition cursor-pointer"
+                className="flex-1 lux-btn lux-btn--solid !px-0"
               >
                 Apply
               </button>
@@ -1012,7 +977,7 @@ function WatchesCatalogContent() {
 
 export default function WatchesCatalogPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-white" aria-busy="true" />}>
+    <Suspense fallback={<div className="min-h-screen bg-[var(--paper)]" aria-busy="true" />}>
       <WatchesCatalogContent />
     </Suspense>
   );
