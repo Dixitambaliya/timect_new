@@ -10,12 +10,11 @@ function emit() {
   listeners.forEach((listener) => listener());
 }
 
-/** Routes that use the storefront Timect overlay (home & corporate gifting have their own experience). */
+/** Routes that use the storefront Timect overlay (home has its own GSAP preloader). */
 export function shouldCoverPath(pathname: string | null) {
   if (!pathname) return false;
   if (pathname.startsWith("/admin")) return false;
   if (pathname === "/") return false;
-  if (pathname === "/corporate-gifting") return false;
   return true;
 }
 
