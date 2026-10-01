@@ -43,7 +43,7 @@ export default function AdminProductsPage() {
             { label: "Products" },
           ]}
         />
-        <h1 className="text-2xl font-semibold tracking-tight">Products</h1>
+        <h1 className="text-[28px] font-bold leading-tight tracking-tight md:text-[34px]">Products</h1>
         <p className="mt-1 text-sm text-[var(--admin-muted)]">
           Search, filter, bulk edit, and manage the full catalog
         </p>

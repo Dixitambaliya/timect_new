@@ -51,7 +51,7 @@ export default function SizeEditor({
       </div>
 
       {sizes.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-[var(--admin-line)] py-12 text-center text-sm text-[var(--admin-muted)]">
+        <div className="rounded-fuse-md border border-dashed border-[var(--admin-line)] py-12 text-center text-sm text-[var(--admin-muted)]">
           No sizes yet. Use presets or add custom values.
         </div>
       ) : (

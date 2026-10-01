@@ -1,49 +1,39 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Jost } from "next/font/google";
-import StorefrontProviders from "@/components/StorefrontProviders";
+import { Archivo, Chivo } from "next/font/google";
 import "./globals.css";
 
-const cormorantGaramond = Cormorant_Garamond({
-  weight: ["400", "500", "600"],
+const archivo = Archivo({
   subsets: ["latin"],
-  variable: "--font-cormorant",
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-archivo-face",
+  display: "swap",
 });
 
-const jost = Jost({
-  weight: ["300", "400", "500", "600", "700"],
+const chivo = Chivo({
   subsets: ["latin"],
-  variable: "--font-jost",
+  weight: ["400", "700", "900"],
+  variable: "--font-chivo-face",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Timect - Official Online Store",
-  description: "Celebrating 145 Years of Craftsmanship",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
+  title: {
+    default: "Timect — Official Online Store",
+    template: "%s | Timect",
+  },
+  description: "Celebrating 145 Years of Craftsmanship — precision wristwatches by Timect.",
   icons: {
-    icon: [
-      { url: "/images/timect_logo.png", type: "image/png" },
-      {
-        url: "https://res.cloudinary.com/dphscxzb4/image/upload/v1784048492/timect/timect_logo.png",
-        type: "image/png",
-      },
-    ],
+    icon: [{ url: "/images/timect_logo.png", type: "image/png" }],
     shortcut: "/images/timect_logo.png",
     apple: "/images/timect_logo.png",
   },
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html
-      lang="en"
-      className={`${cormorantGaramond.variable} ${jost.variable}`}
-    >
-      <body className="bg-white text-[#111111] antialiased">
-        <StorefrontProviders>{children}</StorefrontProviders>
-      </body>
+    <html lang="en" className={`${archivo.variable} ${chivo.variable}`}>
+      <body>{children}</body>
     </html>
   );
 }

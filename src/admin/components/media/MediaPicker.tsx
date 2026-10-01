@@ -228,7 +228,7 @@ export default function MediaPicker({
                     key={item.id}
                     type="button"
                     onClick={() => toggle(item.url)}
-                    className={`group relative aspect-square overflow-hidden rounded-xl border-2 bg-[var(--admin-bg)] ${
+                    className={`group relative aspect-square overflow-hidden rounded-fuse-md border-2 bg-[var(--admin-bg)] ${
                       isOn
                         ? "border-[var(--admin-accent)]"
                         : "border-transparent hover:border-[var(--admin-line)]"

@@ -11,11 +11,8 @@
     "db:admin-migrate": "tsx src/db/admin-migrate.ts"
   },
   "dependencies": {
-    "@gsap/react": "^2.1.2",
     "@neondatabase/serverless": "^1.1.0",
-    "@studio-freight/lenis": "^1.0.42",
     "bcryptjs": "^3.0.3",
-    "gsap": "^3.15.0",
     "jose": "^6.2.4",
     "lucide-react": "^1.24.0",
     "next": "16.2.10",

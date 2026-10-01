@@ -98,7 +98,7 @@ export default function CollectionsPage() {
             { label: "Collections" },
           ]}
         />
-        <h1 className="text-2xl font-semibold tracking-tight">
+        <h1 className="text-[28px] font-bold leading-tight tracking-tight md:text-[34px]">
           Collections & categories
         </h1>
         <p className="mt-1 text-sm text-[var(--admin-muted)]">

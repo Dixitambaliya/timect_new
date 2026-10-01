@@ -27,3 +27,9 @@ export function formatPrice(price: string | number | undefined | null): string {
     return priceStr.startsWith("₹") ? priceStr : `₹${priceStr}`;
   }
 }
+
+/** Storefront label: zero / missing prices read as "Price on request". */
+export function displayPrice(price: string | number | undefined | null): string {
+  const n = parseFloat(String(price ?? "").replace(/[^\d.]/g, ""));
+  return Number.isFinite(n) && n > 0 ? formatPrice(price) : "Price on request";
+}

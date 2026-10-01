@@ -84,7 +84,7 @@ export default function VariantEditor({
       </div>
 
       {variants.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-[var(--admin-line)] py-12 text-center text-sm text-[var(--admin-muted)]">
+        <div className="rounded-fuse-md border border-dashed border-[var(--admin-line)] py-12 text-center text-sm text-[var(--admin-muted)]">
           No variants yet. Add Blue, Green, Gold, etc.
         </div>
       ) : (
@@ -290,7 +290,7 @@ function ProductSelect({
       </div>
 
       {isOpen && (
-        <div className="absolute left-0 right-0 z-50 mt-1 rounded-xl border border-[var(--admin-line)] bg-[var(--admin-surface)] p-2 shadow-lg max-h-80 overflow-hidden flex flex-col">
+        <div className="absolute left-0 right-0 z-50 mt-1 rounded-fuse-md border border-[var(--admin-line)] bg-[var(--admin-surface)] p-2 shadow-lg max-h-80 overflow-hidden flex flex-col">
           <div className="relative mb-2 shrink-0">
             <Search className="absolute left-3 top-2.5 h-4 w-4 text-[var(--admin-muted)]" />
             <input

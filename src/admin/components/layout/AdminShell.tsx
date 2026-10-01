@@ -14,42 +14,60 @@ export default function AdminShell({
   search,
   onSearch,
   searchPlaceholder,
+  unread = 0,
 }: {
   user: AdminSession;
   children: ReactNode;
   search?: string;
   onSearch?: (v: string) => void;
   searchPlaceholder?: string;
+  unread?: number;
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [dark, setDark] = useState(false);
 
   useEffect(() => {
-    const stored = localStorage.getItem(THEME_KEY);
-    if (stored === "dark") setDark(true);
+    try {
+      if (localStorage.getItem(THEME_KEY) === "dark") setDark(true);
+    } catch {
+      /* storage unavailable */
+    }
   }, []);
 
+  // Mirror the theme on <html> so portaled dialogs (outside .admin-root) match.
   useEffect(() => {
-    localStorage.setItem(THEME_KEY, dark ? "dark" : "light");
+    document.documentElement.dataset.adminTheme = dark ? "dark" : "light";
+    return () => {
+      delete document.documentElement.dataset.adminTheme;
+    };
   }, [dark]);
+
+  const toggleDark = () => {
+    setDark((d) => {
+      try {
+        localStorage.setItem(THEME_KEY, d ? "light" : "dark");
+      } catch {
+        /* storage unavailable */
+      }
+      return !d;
+    });
+  };
 
   return (
     <ToastProvider>
-      <div className={`admin-root flex min-h-screen ${dark ? "admin-dark" : ""}`}>
-        <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-        <div className="flex min-w-0 flex-1 flex-col">
+      <div className={`admin-root flex min-h-screen gap-3 p-2 md:p-3 ${dark ? "admin-dark" : ""}`}>
+        <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} unread={unread} />
+        <div className="flex min-w-0 flex-1 flex-col gap-3">
           <TopNavbar
             user={user}
             dark={dark}
-            onToggleDark={() => setDark((d) => !d)}
+            onToggleDark={toggleDark}
             onMenu={() => setSidebarOpen(true)}
             search={search}
             onSearch={onSearch}
             searchPlaceholder={searchPlaceholder}
           />
-          <main className="admin-scrollbar flex-1 overflow-auto p-4 lg:p-6">
-            {children}
-          </main>
+          <main className="flex-1 px-1 pb-6 pt-2 md:px-2 lg:px-3">{children}</main>
         </div>
       </div>
     </ToastProvider>

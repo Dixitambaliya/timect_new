@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import Image from "next/image";
 import {
   Gift,
   Plus,
@@ -11,7 +10,6 @@ import {
   ImageIcon,
   Loader2,
   X,
-  Tag,
   CheckCircle2,
 } from "lucide-react";
 import type { GiftSample } from "@/data/giftSamples";
@@ -215,11 +213,11 @@ export default function CorporateGiftingManager({ initialItems }: Props) {
               { label: "Corporate Gifting" },
             ]}
           />
-          <h1 className="text-2xl font-semibold tracking-tight">
+          <h1 className="text-[28px] font-bold leading-tight tracking-tight md:text-[34px]">
             Corporate Gifting Catalog
           </h1>
           <p className="mt-1 text-sm text-[var(--admin-muted)]">
-            Create, edit, and manage luxury corporate gifting items displayed in the storefront orbital animation.
+            Create, edit, and manage luxury corporate gifting items shown on the storefront Corporate Gifting page.
           </p>
         </div>
         <button
@@ -251,11 +249,7 @@ export default function CorporateGiftingManager({ initialItems }: Props) {
               key={g}
               type="button"
               onClick={() => setGenderFilter(g)}
-              className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
-                genderFilter === g
-                  ? "bg-[var(--admin-ink)] text-white"
-                  : "bg-[var(--admin-bg)] text-[var(--admin-muted)] hover:text-[var(--admin-ink)]"
-              }`}
+              className={`admin-pill !py-1.5 ${genderFilter === g ? "is-active" : ""}`}
             >
               {g}
             </button>
@@ -276,7 +270,7 @@ export default function CorporateGiftingManager({ initialItems }: Props) {
             rel="noreferrer"
             className="text-xs text-[var(--admin-muted)] hover:text-[var(--admin-ink)] underline"
           >
-            Preview Animation Page ↗
+            Preview gifting page ↗
           </a>
         </div>
 
@@ -293,7 +287,7 @@ export default function CorporateGiftingManager({ initialItems }: Props) {
               >
                 <div className="flex items-center gap-4 min-w-[280px] flex-1">
                   {/* Thumbnail */}
-                  <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-[var(--admin-line)] bg-[#faf9f6]">
+                  <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-fuse-md border border-[var(--admin-line)] bg-[#faf9f6]">
                     {item.image ? (
                       <img
                         src={item.image}
@@ -311,7 +305,7 @@ export default function CorporateGiftingManager({ initialItems }: Props) {
                         {item.name}
                       </h3>
                       {item.collection && (
-                        <span className="rounded bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-600">
+                        <span className="rounded bg-[var(--admin-bg)] px-2 py-0.5 text-[10px] font-medium text-[var(--admin-muted)]">
                           {item.collection}
                         </span>
                       )}
@@ -373,11 +367,11 @@ export default function CorporateGiftingManager({ initialItems }: Props) {
       {isFormOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            className="absolute inset-0 bg-[#23232314] backdrop-blur-[12px]"
             onClick={() => setIsFormOpen(false)}
           />
 
-          <div className="admin-card relative z-10 flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden">
+          <div className="admin-card relative z-10 flex max-h-[90vh] w-full max-w-2xl animate-rise-in flex-col overflow-hidden shadow-[var(--admin-shadow-lg)]">
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-[var(--admin-line)] px-6 py-4">
               <div>

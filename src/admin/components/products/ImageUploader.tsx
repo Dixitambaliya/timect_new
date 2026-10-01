@@ -123,7 +123,7 @@ export default function ImageUploader({
       </div>
 
       <div
-        className="rounded-xl border-2 border-dashed border-[var(--admin-line)] bg-[var(--admin-bg)] p-6 text-center text-sm text-[var(--admin-muted)]"
+        className="rounded-fuse-md border-2 border-dashed border-[var(--admin-line)] bg-[var(--admin-bg)] p-6 text-center text-sm text-[var(--admin-muted)]"
         onDragOver={(e) => e.preventDefault()}
         onDrop={(e) => {
           e.preventDefault();
@@ -145,7 +145,7 @@ export default function ImageUploader({
                 if (dragIndex != null) reorder(dragIndex, idx);
                 setDragIndex(null);
               }}
-              className={`group relative aspect-square overflow-hidden rounded-xl border bg-[var(--admin-bg)] ${
+              className={`group relative aspect-square overflow-hidden rounded-fuse-md border bg-[var(--admin-bg)] ${
                 primary === url
                   ? "border-[var(--admin-accent)] ring-2 ring-[var(--admin-accent)]/20"
                   : "border-[var(--admin-line)]"

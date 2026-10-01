@@ -1,7 +1,7 @@
 "use server";
 
 import { sql } from "./neon";
-import { getCatalogFilter } from "@/data/categoryFilters";
+import { resolveCatalogFilter } from "./content";
 import { formatPrice } from "@/lib/price";
 import {
   catalogFilterSqlKeywords,
@@ -253,7 +253,7 @@ export async function getCatalogCards(filters: {
     const offset = (page - 1) * pageSize;
     const limit = pageSize + 1; // +1 to detect hasMore without COUNT
 
-    const catalogFilter = getCatalogFilter(filters.filter);
+    const catalogFilter = await resolveCatalogFilter(filters.filter);
     const noExtraFilters =
       !filters.search?.trim() &&
       !(filters.brands && filters.brands.length) &&
@@ -444,7 +444,7 @@ export async function getFilteredProducts(filters: {
   pageSize?: number;
 }): Promise<{ products: Product[]; total: number; hasMore: boolean }> {
   try {
-    const catalogFilter = getCatalogFilter(filters.filter);
+    const catalogFilter = await resolveCatalogFilter(filters.filter);
     const sqlKeywords = catalogFilter
       ? catalogFilterSqlKeywords(catalogFilter)
       : [];

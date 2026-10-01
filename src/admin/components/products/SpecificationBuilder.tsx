@@ -8,8 +8,7 @@ import {
   Layers, 
   Tag, 
   Info, 
-  Trash2,
-  Plus
+  Trash2
 } from "lucide-react";
 import type { Specification } from "@/db/actions";
 
@@ -411,7 +410,7 @@ export default function SpecificationBuilder({
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-lg font-bold text-gray-900">Product Specifications</h2>
+        <h2 className="text-lg font-bold text-[var(--admin-heading)]">Product Specifications</h2>
         <p className="text-sm text-[var(--admin-muted)] mt-1">
           Enter the specifications for the watch. Fields left empty will not be shown on the product page.
         </p>
@@ -422,7 +421,7 @@ export default function SpecificationBuilder({
         <div className="admin-card p-5 space-y-4">
           <div className="flex items-center gap-2 border-b border-[var(--admin-line)] pb-3 mb-2">
             <Watch className="h-5 w-5 text-blue-600" />
-            <h3 className="font-semibold text-gray-900">Case</h3>
+            <h3 className="font-semibold text-[var(--admin-heading)]">Case</h3>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <PresetDropdown
@@ -480,7 +479,7 @@ export default function SpecificationBuilder({
         <div className="admin-card p-5 space-y-4">
           <div className="flex items-center gap-2 border-b border-[var(--admin-line)] pb-3 mb-2">
             <Disc className="h-5 w-5 text-indigo-600" />
-            <h3 className="font-semibold text-gray-900">Dial & Hands</h3>
+            <h3 className="font-semibold text-[var(--admin-heading)]">Dial & Hands</h3>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
@@ -530,7 +529,7 @@ export default function SpecificationBuilder({
         <div className="admin-card p-5 space-y-4">
           <div className="flex items-center gap-2 border-b border-[var(--admin-line)] pb-3 mb-2">
             <Cpu className="h-5 w-5 text-emerald-600" />
-            <h3 className="font-semibold text-gray-900">Movement & Functions</h3>
+            <h3 className="font-semibold text-[var(--admin-heading)]">Movement & Functions</h3>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <PresetDropdown
@@ -583,7 +582,7 @@ export default function SpecificationBuilder({
         <div className="admin-card p-5 space-y-4">
           <div className="flex items-center gap-2 border-b border-[var(--admin-line)] pb-3 mb-2">
             <Layers className="h-5 w-5 text-amber-600" />
-            <h3 className="font-semibold text-gray-900">Strap & Style</h3>
+            <h3 className="font-semibold text-[var(--admin-heading)]">Strap & Style</h3>
           </div>
           <div className="space-y-4">
             <div>
@@ -612,7 +611,7 @@ export default function SpecificationBuilder({
         <div className="admin-card p-5 space-y-4 md:col-span-2">
           <div className="flex items-center gap-2 border-b border-[var(--admin-line)] pb-3 mb-2">
             <Tag className="h-5 w-5 text-rose-600" />
-            <h3 className="font-semibold text-gray-900">General Information</h3>
+            <h3 className="font-semibold text-[var(--admin-heading)]">General Information</h3>
           </div>
           <div>
             <label className="admin-label" htmlFor="generalContent">General Info / Extra Notes</label>

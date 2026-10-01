@@ -58,10 +58,10 @@ const TOAST_STYLES: Record<
   },
   info: {
     container:
-      "border border-slate-200 bg-white text-slate-900 shadow-lg shadow-slate-900/10",
-    icon: "text-slate-600",
-    text: "text-slate-900",
-    close: "text-slate-500 hover:bg-slate-100 hover:text-slate-900",
+      "border border-slate-200 bg-white text-[var(--admin-heading)] shadow-lg shadow-slate-900/10",
+    icon: "text-[var(--admin-muted)]",
+    text: "text-[var(--admin-heading)]",
+    close: "text-[var(--admin-muted)] hover:bg-[var(--admin-bg)] hover:text-[var(--admin-heading)]",
     Icon: Info,
   },
 };
@@ -109,7 +109,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             <div
               key={t.id}
               role="status"
-              className={`pointer-events-auto flex w-full items-start gap-3 rounded-xl px-4 py-3.5 text-sm font-medium ${style.container} animate-[admin-toast-in_0.25s_ease-out]`}
+              className={`pointer-events-auto flex w-full items-start gap-3 rounded-fuse-md px-4 py-3.5 text-sm font-medium ${style.container} animate-[admin-toast-in_0.25s_ease-out]`}
             >
               <Icon
                 className={`mt-0.5 h-5 w-5 shrink-0 ${style.icon}`}

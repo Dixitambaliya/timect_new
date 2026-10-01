@@ -15,7 +15,7 @@ export default function NewProductPage() {
             { label: "New" },
           ]}
         />
-        <h1 className="text-2xl font-semibold tracking-tight">New product</h1>
+        <h1 className="text-[28px] font-bold leading-tight tracking-tight md:text-[34px]">New product</h1>
         <p className="mt-1 text-sm text-[var(--admin-muted)]">
           Multi-step editor · matches storefront product model
         </p>

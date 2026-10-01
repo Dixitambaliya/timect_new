@@ -134,6 +134,49 @@ async function main() {
     console.log("✓ seeded catalog_filters from static data");
   }
 
+  await sql`
+    CREATE TABLE IF NOT EXISTS contact_messages (
+      id SERIAL PRIMARY KEY,
+      name TEXT NOT NULL,
+      email TEXT NOT NULL,
+      phone TEXT,
+      subject TEXT,
+      message TEXT NOT NULL,
+      product_slug TEXT,
+      status TEXT NOT NULL DEFAULT 'new'
+        CHECK (status IN ('new', 'read', 'archived')),
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+  `;
+  console.log("✓ contact_messages");
+
+  await sql`
+    CREATE TABLE IF NOT EXISTS newsletter_subscribers (
+      id SERIAL PRIMARY KEY,
+      email TEXT NOT NULL UNIQUE,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+  `;
+  console.log("✓ newsletter_subscribers");
+
+  // Seed a super admin from env when the table is empty
+  const admins = await sql`SELECT COUNT(*)::int AS n FROM admin_users`;
+  if (Number((admins[0] as { n: number }).n) === 0) {
+    const email = (process.env.ADMIN_SEED_EMAIL || "").trim().toLowerCase();
+    const password = process.env.ADMIN_SEED_PASSWORD || "";
+    if (email && password.length >= 8) {
+      const bcrypt = (await import("bcryptjs")).default;
+      const hash = await bcrypt.hash(password, 12);
+      await sql`
+        INSERT INTO admin_users (full_name, email, password_hash, role)
+        VALUES ('Super Admin', ${email}, ${hash}, 'super_admin')
+      `;
+      console.log(`✓ seeded super admin ${email}`);
+    } else {
+      console.log("! No admin users. Set ADMIN_SEED_EMAIL and ADMIN_SEED_PASSWORD (8+ chars) and re-run.");
+    }
+  }
+
   console.log("\nAdmin migration complete.");
 }
 

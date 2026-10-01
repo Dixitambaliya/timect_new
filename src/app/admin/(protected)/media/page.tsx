@@ -110,7 +110,7 @@ export default function MediaPage() {
             { label: "Media" },
           ]}
         />
-        <h1 className="text-2xl font-semibold tracking-tight">Media manager</h1>
+        <h1 className="text-[28px] font-bold leading-tight tracking-tight md:text-[34px]">Media manager</h1>
         <p className="mt-1 text-sm text-[var(--admin-muted)]">
           Upload, organize, and copy Cloudinary-compatible image URLs
         </p>

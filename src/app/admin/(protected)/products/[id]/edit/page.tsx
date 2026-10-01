@@ -55,7 +55,7 @@ export default function EditProductPage() {
             { label: "Edit" },
           ]}
         />
-        <h1 className="text-2xl font-semibold tracking-tight">
+        <h1 className="text-[28px] font-bold leading-tight tracking-tight md:text-[34px]">
           Edit product
         </h1>
         <p className="mt-1 text-sm text-[var(--admin-muted)]">

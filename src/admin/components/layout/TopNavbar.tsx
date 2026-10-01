@@ -6,6 +6,9 @@ import { logoutAdmin } from "@/admin/actions/auth";
 import type { AdminSession } from "@/admin/lib/session";
 import ConfirmDialog from "@/admin/components/ui/ConfirmDialog";
 
+const iconBtn =
+  "flex h-11 w-11 items-center justify-center rounded-fuse-md border border-[var(--admin-line-strong)] bg-[var(--admin-surface-2)] text-[var(--admin-ink)] transition-colors duration-400 hover:border-[#8c8c8c] hover:bg-[var(--admin-surface)]";
+
 export default function TopNavbar({
   user,
   dark,
@@ -25,40 +28,23 @@ export default function TopNavbar({
 }) {
   const [confirmLogout, setConfirmLogout] = useState(false);
   const [pending, startTransition] = useTransition();
-
-  const handleLogout = () => {
-    startTransition(async () => {
-      await logoutAdmin();
-    });
-  };
-
   const searchValue = search || "";
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-[var(--admin-line)] bg-[var(--admin-surface)]/90 px-4 backdrop-blur-md lg:px-6">
-      <button
-        type="button"
-        className="admin-btn admin-btn-ghost px-2 lg:hidden"
-        onClick={onMenu}
-        aria-label="Open menu"
-      >
+    <header className="sticky top-3 z-30 flex h-[68px] items-center gap-3 rounded-fuse bg-[var(--admin-surface)] px-3 shadow-[var(--admin-shadow)] md:px-4">
+      <button type="button" className={`${iconBtn} lg:hidden`} onClick={onMenu} aria-label="Open menu">
         <Menu className="h-5 w-5" />
       </button>
 
       {onSearch && (
-        <div className="relative hidden min-w-0 flex-1 md:block md:max-w-md">
-          <Search
-            className="pointer-events-none absolute left-3 top-1/2 z-[1] h-4 w-4 -translate-y-1/2 text-[var(--admin-muted)]"
-            aria-hidden
-          />
+        <div className="relative hidden min-w-0 flex-1 md:block md:max-w-lg">
+          <Search className="pointer-events-none absolute left-4 top-1/2 z-[1] h-4 w-4 -translate-y-1/2 text-[var(--admin-muted)]" aria-hidden />
           <input
             type="text"
             role="searchbox"
             name="admin_catalog_search"
             inputMode="search"
             autoComplete="off"
-            autoCorrect="off"
-            autoCapitalize="off"
             spellCheck={false}
             data-1p-ignore
             data-lpignore="true"
@@ -67,56 +53,39 @@ export default function TopNavbar({
             onChange={(e) => onSearch(e.target.value)}
             placeholder={searchPlaceholder}
             aria-label={searchPlaceholder}
-            className="admin-input w-full"
-            style={{ paddingLeft: "2.25rem", paddingRight: "2.25rem" }}
+            className="admin-input w-full !border-transparent !bg-[var(--admin-bg)]"
+            style={{ paddingLeft: "2.6rem", paddingRight: "2.6rem" }}
           />
           {searchValue ? (
             <button
               type="button"
               onClick={() => onSearch("")}
-              className="absolute right-2 top-1/2 z-[1] flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-md text-[var(--admin-muted)] hover:bg-[var(--admin-bg)] hover:text-[var(--admin-ink)]"
+              className="absolute right-2 top-1/2 z-[1] flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-fuse-sm text-[var(--admin-muted)] hover:bg-[var(--admin-surface)] hover:text-[var(--admin-ink)]"
               aria-label="Clear search"
-              title="Clear search"
             >
-              <X className="h-3.5 w-3.5" />
+              <X className="h-4 w-4" />
             </button>
           ) : null}
         </div>
       )}
 
       <div className="ml-auto flex items-center gap-2">
-        <button
-          type="button"
-          className="admin-btn admin-btn-ghost px-2"
-          onClick={onToggleDark}
-          aria-label="Toggle dark mode"
-          title="Toggle theme"
-        >
-          {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+        <button type="button" className={iconBtn} onClick={onToggleDark} aria-label="Toggle dark mode" title="Toggle theme">
+          {dark ? <Sun className="h-[18px] w-[18px]" /> : <Moon className="h-[18px] w-[18px]" />}
         </button>
 
-        <div className="hidden items-center gap-2 rounded-full border border-[var(--admin-line)] py-1 pl-1 pr-3 sm:flex">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--admin-accent)] text-xs font-semibold text-white">
+        <div className="hidden items-center gap-3 rounded-fuse-md bg-[var(--admin-bg)] py-1.5 pl-1.5 pr-4 sm:flex">
+          <div className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-[var(--admin-accent)] text-sm font-bold text-[var(--admin-surface)]">
             {(user.fullName || user.email).slice(0, 1).toUpperCase()}
           </div>
-          <div className="min-w-0">
-            <p className="truncate text-xs font-medium text-[var(--admin-ink)]">
-              {user.fullName || "Admin"}
-            </p>
-            <p className="truncate text-[10px] uppercase tracking-wider text-[var(--admin-muted)]">
-              {user.role.replace("_", " ")}
-            </p>
+          <div className="min-w-0 leading-tight">
+            <p className="truncate text-[13px] font-semibold text-[var(--admin-ink)]">{user.fullName || "Admin"}</p>
+            <p className="truncate text-[11px] capitalize text-[var(--admin-muted)]">{user.role.replace("_", " ")}</p>
           </div>
         </div>
 
-        <button
-          type="button"
-          className="admin-btn admin-btn-ghost px-2"
-          title="Log out"
-          aria-label="Log out"
-          onClick={() => setConfirmLogout(true)}
-        >
-          <LogOut className="h-4 w-4" />
+        <button type="button" className={iconBtn} title="Log out" aria-label="Log out" onClick={() => setConfirmLogout(true)}>
+          <LogOut className="h-[18px] w-[18px]" />
         </button>
       </div>
 
@@ -129,7 +98,9 @@ export default function TopNavbar({
         danger
         loading={pending}
         onCancel={() => setConfirmLogout(false)}
-        onConfirm={handleLogout}
+        onConfirm={() => startTransition(async () => {
+          await logoutAdmin();
+        })}
       />
     </header>
   );
