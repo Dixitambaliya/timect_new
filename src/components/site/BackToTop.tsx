@@ -1,5 +1,6 @@
 "use client";
 
+import { smoothScrollTo } from "@/lib/smooth-scroll";
 import { useEffect, useState } from "react";
 import { cx } from "@/lib/cx";
 import { useScrollY } from "@/components/fuse/hooks";
@@ -20,7 +21,7 @@ export default function BackToTop() {
     <button
       type="button"
       aria-label="Back to top"
-      onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+      onClick={() => smoothScrollTo(0)}
       className={cx(
         "group fixed bottom-4 right-4 z-[45] flex h-14 w-14 items-center justify-center rounded-full bg-white text-ink shadow-[0_8px_30px_rgba(0,0,0,.12)] transition-[transform,opacity] duration-400 ease-fuse-out md:bottom-6 md:right-6",
         show ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-6 opacity-0",

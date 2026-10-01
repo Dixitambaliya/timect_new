@@ -54,7 +54,7 @@ function GiftCard({ item, onOpen, index }: { item: GiftSample; onOpen: () => voi
     <button
       type="button"
       onClick={onOpen}
-      className="group/g flex h-full w-full animate-rise-in flex-col overflow-hidden rounded-fuse bg-white text-start"
+      className="hover-lift group/g flex h-full w-full animate-rise-in flex-col overflow-hidden rounded-fuse bg-white text-start"
       style={{ animationDelay: `${Math.min(index, 12) * 45}ms` }}
     >
       <span className="relative block aspect-square overflow-hidden">

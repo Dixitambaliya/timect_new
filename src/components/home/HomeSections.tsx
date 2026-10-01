@@ -90,7 +90,7 @@ export function ProductTabs({ heading, tabs }: { heading: string; tabs: ProductT
       <ul
         key={tab.id}
         ref={car.ref}
-        className="no-scrollbar flex snap-x snap-mandatory gap-2 overflow-x-auto md:gap-3"
+        className="no-scrollbar -my-3 flex snap-x snap-mandatory gap-2 overflow-x-auto py-3 md:gap-3"
       >
         {tab.products.map((p, i) => (
           <li
@@ -139,7 +139,7 @@ export function CategoryCarousel({ categories }: { categories: ShopCategory[] })
           <h2 className="reveal-wipe fuse-h2 max-w-[520px]">Shop by category</h2>
           <SliderArrows carousel={car} glass className="hidden md:flex" />
         </div>
-        <ul ref={car.ref} className="no-scrollbar flex snap-x snap-mandatory scroll-px-4 gap-2 overflow-x-auto px-4 md:scroll-px-12 md:px-12">
+        <ul ref={car.ref} className="no-scrollbar flex snap-x snap-mandatory scroll-px-4 gap-2 overflow-x-auto px-4 py-3 md:scroll-px-12 md:px-12">
           {categories.map((c, i) => (
             <li
               key={c.slug}
@@ -150,7 +150,7 @@ export function CategoryCarousel({ categories }: { categories: ShopCategory[] })
             >
               <Link
                 href={watchesFilterHref(c.slug)}
-                className="group/c block rounded-fuse bg-white p-2 transition-shadow duration-400 hover:shadow-[0_12px_30px_rgba(0,0,0,.1)]"
+                className="hover-lift group/c block rounded-fuse bg-white p-2"
               >
                 <span className="relative block aspect-[193/246] overflow-hidden rounded-fuse-md" style={{ background: c.bg }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -158,7 +158,7 @@ export function CategoryCarousel({ categories }: { categories: ShopCategory[] })
                     src={catalogThumbUrl(c.image, 480)}
                     alt=""
                     loading="lazy"
-                    className="img-fill transition-transform duration-700 ease-fuse group-hover/c:scale-110"
+                    className="img-fill transition-transform duration-[1100ms] ease-fuse-out group-hover/c:scale-110"
                   />
                 </span>
                 <span className="block px-3 pb-8 pt-5 text-[16px] font-semibold capitalize">

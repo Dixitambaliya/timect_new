@@ -85,7 +85,7 @@ export default function ProductCard({
 
   return (
     <article
-      className={cx("group/card relative flex h-full flex-col overflow-hidden rounded-fuse bg-white", className)}
+      className={cx("hover-lift group/card relative flex h-full flex-col overflow-hidden rounded-fuse bg-white", className)}
       onMouseEnter={() => {
         setHovered(true);
         setHoverSeen(true);
@@ -101,9 +101,9 @@ export default function ProductCard({
             loading={priority ? "eager" : "lazy"}
             decoding="async"
             className={cx(
-              "img-fill object-contain p-4 transition-[opacity,transform] duration-[600ms] ease-fuse md:p-6",
+              "img-fill object-contain p-4 transition-[opacity,transform] duration-[900ms] ease-fuse-out md:p-6",
               hover && hovered ? "opacity-0" : "opacity-100",
-              hovered ? "scale-[1.03]" : "scale-100",
+              hovered ? "scale-[1.05]" : "scale-100",
             )}
           />
           {hover && hoverSeen && (
@@ -113,8 +113,8 @@ export default function ProductCard({
               alt=""
               decoding="async"
               className={cx(
-                "img-fill object-contain p-4 transition-[opacity,transform] duration-[600ms] ease-fuse md:p-6",
-                hovered ? "scale-[1.03] opacity-100" : "scale-100 opacity-0",
+                "img-fill object-contain p-4 transition-[opacity,transform] duration-[900ms] ease-fuse-out md:p-6",
+                hovered ? "scale-[1.05] opacity-100" : "scale-100 opacity-0",
               )}
             />
           )}
@@ -160,7 +160,7 @@ export default function ProductCard({
           <span className="truncate text-[12px] font-bold uppercase tracking-[0.12em] text-muted">{productBrand(product)}</span>
           <Rating value={product.rating} />
         </div>
-        <Link href={url} className="mt-2 line-clamp-2 text-[14px] font-medium leading-[1.4] md:text-[16px]">
+        <Link href={url} className="mt-2 line-clamp-2 text-[14px] font-medium leading-[1.4] transition-colors duration-400 hover:text-heading md:text-[16px]">
           {name}
         </Link>
         {(product.code || product.gender) && (

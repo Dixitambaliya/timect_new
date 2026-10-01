@@ -61,7 +61,7 @@ export default function AboutPage() {
       </div>
       <ul className="mt-3 grid gap-3 md:grid-cols-3">
         {PILLARS.map(({ icon: Icon, title, text }, i) => (
-          <li key={title} className="animate-rise-in rounded-fuse bg-white p-6 md:p-10" style={{ animationDelay: `${150 + i * 80}ms` }}>
+          <li key={title} className="hover-lift animate-rise-in rounded-fuse bg-white p-6 md:p-10" style={{ animationDelay: `${150 + i * 80}ms` }}>
             <span className="flex h-14 w-14 items-center justify-center rounded-fuse-md bg-bg text-heading">
               <Icon />
             </span>

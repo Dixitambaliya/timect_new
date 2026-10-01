@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, type RefObject } from "react";
+import { lockSmoothScroll, unlockSmoothScroll } from "@/lib/smooth-scroll";
 
 /** One-shot IntersectionObserver used by the Fuse entrance-animation system. */
 export function useInView<T extends HTMLElement = HTMLDivElement>({
@@ -71,7 +72,9 @@ export function useScrollLock(locked: boolean) {
     const prev = { overflow: body.style.overflow, pr: body.style.paddingRight };
     body.style.overflow = "hidden";
     if (gap > 0) body.style.paddingRight = `${gap}px`;
+    lockSmoothScroll();
     return () => {
+      unlockSmoothScroll();
       body.style.overflow = prev.overflow;
       body.style.paddingRight = prev.pr;
     };

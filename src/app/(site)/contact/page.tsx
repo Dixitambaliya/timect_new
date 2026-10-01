@@ -39,7 +39,7 @@ export default async function ContactPage({
             ]
               .filter(([, email]) => email)
               .map(([title, email, text]) => (
-                <div key={title} className="rounded-fuse bg-white p-6 md:p-8">
+                <div key={title} className="hover-lift rounded-fuse bg-white p-6 md:p-8">
                   <span className="flex h-12 w-12 items-center justify-center rounded-fuse-md bg-bg text-heading">
                     <Mail />
                   </span>

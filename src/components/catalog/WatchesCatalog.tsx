@@ -1,5 +1,6 @@
 "use client";
 
+import { smoothScrollTo } from "@/lib/smooth-scroll";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { getCatalogCards, type CatalogCard } from "@/db/actions";
@@ -87,7 +88,7 @@ function CategoryRail({
   if (!categories.length) return null;
   return (
     <div className="mt-10 md:mt-14">
-      <ul ref={car.ref} className="no-scrollbar flex snap-x gap-2 overflow-x-auto">
+      <ul ref={car.ref} className="no-scrollbar -my-2 flex snap-x gap-2 overflow-x-auto py-2">
         {categories.map((c, i) => {
           const on = active === c.slug;
           return (
@@ -97,7 +98,7 @@ function CategoryRail({
                 onClick={() => onToggle(c.slug)}
                 aria-pressed={on}
                 className={cx(
-                  "group/sc flex w-full gap-2 rounded-fuse p-2 text-start transition-colors duration-400",
+                  "hover-lift group/sc flex w-full gap-2 rounded-fuse p-2 text-start transition-colors duration-400",
                   on ? "bg-accent-soft ring-1 ring-accent-border" : "bg-[#dfe3e8]",
                 )}
               >
@@ -446,7 +447,7 @@ export default function WatchesCatalog({
         </div>
         <button
           type="button"
-          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          onClick={() => smoothScrollTo(0)}
           className={cx(
             "glass-dark pointer-events-auto hidden rounded-fuse !bg-[#232323cc] px-6 font-semibold text-white transition-opacity duration-400 md:block md:px-8",
             y > 600 ? "opacity-100" : "pointer-events-none opacity-0",

@@ -83,7 +83,7 @@ function MegaMenu({ open, onEnter, onLeave, onNavigate }: {
               <Link
                 href={watchesFilterHref(c.slug)}
                 onClick={onNavigate}
-                className="group/m flex h-full flex-col rounded-fuse-md bg-bg p-2"
+                className="hover-lift group/m flex h-full flex-col rounded-fuse-md bg-bg p-2"
               >
                 <span className="relative block aspect-[4/5] overflow-hidden rounded-fuse-sm bg-placeholder">
                   {c.image && (

@@ -87,7 +87,7 @@ export function Drawer({
   if (!mounted) return null;
   const from = side === "left" ? "-translate-x-[calc(100%+32px)]" : "translate-x-[calc(100%+32px)]";
   return createPortal(
-    <div className="fixed inset-0 z-[80]" role="dialog" aria-modal="true" aria-label={label}>
+    <div className="fixed inset-0 z-[80]" data-lenis-prevent role="dialog" aria-modal="true" aria-label={label}>
       <Scrim visible={visible} onClick={onClose} />
       <div
         className={cx(
@@ -145,6 +145,7 @@ export function Modal({
   return createPortal(
     <div
       className="fixed inset-0 z-[90] flex items-end justify-center p-2 md:items-center md:p-6"
+      data-lenis-prevent
       role="dialog"
       aria-modal="true"
       aria-label={label}

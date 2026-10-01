@@ -1,5 +1,6 @@
 "use client";
 
+import { smoothScrollTo } from "@/lib/smooth-scroll";
 import Link from "next/link";
 import { useActionState, useState, type CSSProperties } from "react";
 import { cx } from "@/lib/cx";
@@ -180,7 +181,7 @@ export default function Footer() {
           <div className="flex justify-center">
             <button
               type="button"
-              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              onClick={() => smoothScrollTo(0)}
               aria-label="Back to top"
               className="group/t flex h-14 w-[148px] items-center justify-center overflow-hidden rounded-fuse border border-line transition-colors duration-400 hover:border-line-hover"
             >
