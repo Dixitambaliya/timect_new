@@ -15,7 +15,21 @@ function delayOf(el: HTMLElement) {
 function animate(el: HTMLElement): () => void {
   const ctx = gsap.context(() => {
     const delay = delayOf(el);
-    const once = { trigger: el, start: START, once: true };
+    // If the element is an item inside a horizontal scroll container,
+    // trigger on the container's vertical position so offscreen items trigger properly.
+    const trigger = el.closest(".overflow-x-auto") || el;
+
+    const markRevealed = () => {
+      el.classList.add("is-revealed");
+    };
+
+    const once = {
+      trigger,
+      start: START,
+      once: true,
+      fastScrollEnd: true,
+      onEnter: markRevealed,
+    };
 
     if (el.hasAttribute("data-parallax")) {
       // Image drifts against the scroll inside its overflow-hidden frame.
@@ -34,12 +48,20 @@ function animate(el: HTMLElement): () => void {
 
     if (el.classList.contains("reveal-wipe")) {
       gsap.set(el, { opacity: 1, clipPath: "none" });
+      markRevealed();
       // background-clip:text wordmarks can't be split — sweep a clip mask instead.
       if (el.classList.contains("text-image")) {
         gsap.fromTo(
           el,
           { clipPath: "inset(0% 100% 0% 0%)" },
-          { clipPath: "inset(0% 0% 0% 0%)", duration: 1.8, ease: "expo.inOut", delay, scrollTrigger: once },
+          {
+            clipPath: "inset(0% 0% 0% 0%)",
+            duration: 1.8,
+            ease: "expo.inOut",
+            delay,
+            scrollTrigger: once,
+            onComplete: markRevealed,
+          },
         );
         return;
       }
@@ -55,6 +77,7 @@ function animate(el: HTMLElement): () => void {
             stagger: 0.12,
             delay,
             scrollTrigger: once,
+            onComplete: markRevealed,
           }),
       });
       return;
@@ -65,7 +88,9 @@ function animate(el: HTMLElement): () => void {
       autoAlpha: 1,
       delay,
       scrollTrigger: once,
-      clearProps: "transform,opacity,visibility",
+      onStart: markRevealed,
+      onComplete: markRevealed,
+      clearProps: "transform,visibility",
     };
     if (el.classList.contains("reveal-rise")) {
       Object.assign(from, { y: 60 });
@@ -105,6 +130,7 @@ export default function ScrollMotion() {
       document.querySelectorAll<HTMLElement>(SELECTOR).forEach((el) => {
         if (!active.has(el)) active.set(el, animate(el));
       });
+      ScrollTrigger.refresh();
     };
     const queueScan = () => {
       if (!frame) frame = requestAnimationFrame(scan);
@@ -121,9 +147,13 @@ export default function ScrollMotion() {
     const ro = new ResizeObserver(queueRefresh);
     ro.observe(document.body);
 
+    document.fonts?.ready?.then(queueRefresh);
+    window.addEventListener("load", queueRefresh);
+
     return () => {
       mo.disconnect();
       ro.disconnect();
+      window.removeEventListener("load", queueRefresh);
       cancelAnimationFrame(frame);
       clearTimeout(refreshTimer);
       active.forEach((cleanup) => cleanup());
