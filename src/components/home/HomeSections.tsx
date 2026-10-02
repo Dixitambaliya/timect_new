@@ -193,13 +193,15 @@ export function GridBanner({ banners }: { banners: PromoBanner[] }) {
             className="reveal-fade group/gb relative aspect-[708/780] overflow-hidden rounded-fuse md:rounded-none"
             style={{ "--delay": `${i * 0.15}s` } as CSSProperties}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={catalogThumbUrl(b.image, 1400)}
-              alt=""
-              loading="lazy"
-              className="img-fill transition-transform duration-[1.6s] ease-fuse group-hover/gb:scale-[1.06]"
-            />
+            <div data-parallax="8" className="absolute inset-x-0 -inset-y-[12%]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={catalogThumbUrl(b.image, 1400)}
+                alt=""
+                loading="lazy"
+                className="img-fill transition-transform duration-[1.6s] ease-fuse group-hover/gb:scale-[1.06]"
+              />
+            </div>
             <div className="absolute inset-0 bg-[#0000001a]" />
             <div className="absolute inset-x-0 bottom-0 flex flex-col items-start bg-[linear-gradient(180deg,rgba(35,35,35,0),rgba(35,35,35,.65))] p-6 pt-32 text-white transition-[opacity,transform] duration-[600ms] ease-fuse-out md:translate-y-10 md:p-12 md:pt-48 md:opacity-0 md:group-focus-within/gb:translate-y-0 md:group-focus-within/gb:opacity-100 md:group-hover/gb:translate-y-0 md:group-hover/gb:opacity-100">
               <h2 className="text-[28px] font-bold text-white md:text-[44px] md:leading-[1.09]">{b.title}</h2>

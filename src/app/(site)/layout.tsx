@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { getShopCategories, getStorefront } from "@/db/content";
 import SmoothScroll from "@/components/site/SmoothScroll";
+import ScrollMotion from "@/components/site/ScrollMotion";
 import { SiteProvider } from "@/components/site/SiteProvider";
 import AnnouncementBar from "@/components/site/AnnouncementBar";
 import Header from "@/components/site/Header";
@@ -28,6 +29,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       <Suspense fallback={null}>
         <SmoothScroll />
       </Suspense>
+      <ScrollMotion />
       <AnnouncementBar />
       <Header />
       <main id="main" className="min-h-[60vh]">

@@ -2,12 +2,12 @@
 
 import type { CSSProperties, ElementType, ReactNode } from "react";
 import { cx } from "@/lib/cx";
-import { useInView, type Carousel } from "./hooks";
+import type { Carousel } from "./hooks";
 import { ArrowLeft, ArrowRight } from "./icons";
 
 type RevealType = "rise" | "fade" | "wipe" | "zoom";
 
-/** Wraps children with the Fuse entrance animation (rise / fade / wipe / zoom). */
+/** Wraps children with the Fuse entrance animation (rise / fade / wipe / zoom), played by GSAP. */
 export function Reveal({
   as: Tag = "div",
   type = "rise",
@@ -25,11 +25,9 @@ export function Reveal({
   children?: ReactNode;
   [key: string]: unknown;
 }) {
-  const [ref, inView] = useInView<HTMLElement>();
   return (
     <Tag
-      ref={ref}
-      className={cx(`reveal-${type}`, inView && "is-inview", className)}
+      className={cx(`reveal-${type}`, className)}
       style={{ "--delay": `${delay}s`, ...style } as CSSProperties}
       {...rest}
     >
@@ -38,7 +36,7 @@ export function Reveal({
   );
 }
 
-/** Section wrapper that flips `is-inview` so nested .reveal-* children animate in. */
+/** Plain section wrapper; nested .reveal-* children are animated by ScrollMotion. */
 export function Section({
   as: Tag = "section",
   className,
@@ -50,9 +48,8 @@ export function Section({
   children?: ReactNode;
   [key: string]: unknown;
 }) {
-  const [ref, inView] = useInView<HTMLElement>({ threshold: 0.08 });
   return (
-    <Tag ref={ref} className={cx(inView && "is-inview", className)} {...rest}>
+    <Tag className={className} {...rest}>
       {children}
     </Tag>
   );
