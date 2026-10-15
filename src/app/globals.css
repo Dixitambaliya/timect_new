@@ -358,6 +358,39 @@
   -webkit-background-clip: text; background-clip: text; color: transparent;
 }
 
+/* Footer wordmark — solid type, photo through irregular crops, gold second hand.
+   Every part is sized in em so the composition scales as one unit. */
+.wordmark {
+  position: relative; display: inline-block;
+  font-family: var(--font-chivo), sans-serif; font-weight: 900; line-height: 1; letter-spacing: .06em;
+  font-size: clamp(3rem, 14vw, 15rem);
+}
+.wordmark-base { display: block; color: #1c1f26; }
+.wordmark-photo {
+  --shift: 0px;
+  position: absolute; inset: 0;
+  background-image: var(--text-image);
+  background-size: calc(100% + 64px) auto; background-position: calc(50% + var(--shift)) 50%;
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  /* Crop map is set inline by FooterWordmark; Turbopack fails on SVG data URIs in this file. */
+  -webkit-mask-image: var(--wordmark-mask); mask-image: var(--wordmark-mask);
+  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+}
+/* Pivot sits at the M/E baseline; the hand runs up-right past the C/T. GSAP rotates this box. */
+.wordmark-hand { position: absolute; left: 45%; top: 76%; width: 0; height: 0; transform-origin: 0 0; pointer-events: none; }
+.wordmark-hand::before {
+  content: ""; position: absolute; left: -.18em; top: 0;
+  width: 2.05em; height: clamp(1px, .008em, 2px);
+  background: #c8a46a; opacity: .9;
+  transform-origin: .18em 50%; transform: translateY(-50%) rotate(-27deg);
+}
+.wordmark-hand i {
+  position: absolute; left: 0; top: 0; width: .055em; height: .055em; border-radius: 50%;
+  background: #c8a46a; box-shadow: 0 0 0 clamp(1px, .01em, 2px) #1c1f26;
+  transform: translate(-50%, -50%);
+}
+
 .page-enter { animation: page-in 0.6s var(--ease-out) backwards; }
 @keyframes page-in {
   from { opacity: 0; transform: translateY(12px); }

@@ -8,6 +8,7 @@ import { subscribeNewsletter, type NewsletterState } from "@/db/inquiries";
 import { Reveal, Section } from "@/components/fuse/ui";
 import { ArrowRight, ArrowUp, Clock, Facebook, Instagram, Mail, Phone, Plus, WhatsApp, YouTube } from "@/components/fuse/icons";
 import { FOOTER_MENUS } from "./navigation";
+import FooterWordmark from "./FooterWordmark";
 import { useSite, whatsappLink } from "./SiteProvider";
 
 const WORDMARK_IMG =
@@ -162,15 +163,7 @@ export default function Footer() {
       </div>
 
       <div className="mt-3 rounded-fuse bg-white px-4 pb-8 pt-10 md:px-8 md:pt-24">
-        <Reveal
-          as="p"
-          type="wipe"
-          aria-label="Timect"
-          className="text-image text-center font-chivo text-[64px] font-black leading-[1] tracking-[.06em] md:text-[150px] xl:text-[240px]"
-          style={{ "--text-image": `url(${WORDMARK_IMG})` } as CSSProperties}
-        >
-          TIMECT
-        </Reveal>
+        <FooterWordmark image={WORDMARK_IMG} />
         <p className="mt-10 text-center text-[16px] font-medium text-heading md:mt-14">
           «{storefront.quote.text}» <span className="text-muted">— {storefront.quote.author}</span>
         </p>

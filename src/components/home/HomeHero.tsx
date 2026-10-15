@@ -119,7 +119,7 @@ export default function HomeHero({ slides }: { slides: HeroSlide[] }) {
                 />
                 <div
                   className={cx(
-                    "group/media relative h-[220px] w-[190px] overflow-hidden rounded-fuse bg-[radial-gradient(circle_at_50%_40%,#ffffff,#e6eaef_70%)] shadow-[0_40px_80px_rgba(0,0,0,.35)] transition-[opacity,transform] duration-1000 ease-fuse md:h-[460px] md:w-[400px]",
+                    "group/media relative h-[270px] w-[240px] transition-[opacity,transform] duration-1000 ease-fuse md:h-[640px] md:w-[560px]",
                     active && loaded ? "translate-y-0 opacity-100" : "translate-y-6 scale-90 opacity-0",
                   )}
                   style={{ transitionDelay: active ? "0.35s" : "0s" }}
@@ -130,7 +130,7 @@ export default function HomeHero({ slides }: { slides: HeroSlide[] }) {
                       src={catalogThumbUrl(s.image, 900)}
                       alt={`${s.title} ${s.subtitle}`}
                       loading={active ? "eager" : "lazy"}
-                      className="img-fill object-contain p-6 transition-transform duration-1000 ease-fuse group-hover/media:scale-110"
+                      className="img-fill object-contain drop-shadow-[0_40px_50px_rgba(0,0,0,.45)] transition-transform duration-1000 ease-fuse group-hover/media:scale-105"
                     />
                   )}
                 </div>

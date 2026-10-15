@@ -31,7 +31,7 @@ export function HomeStatement({
           <p className="reveal-rise text-[14px] font-medium leading-[1.6] text-heading md:text-[20px] md:font-semibold md:leading-[1.5]">
             {text}
           </p>
-          <ul className="no-scrollbar -mx-3 flex gap-2 overflow-x-auto px-3 md:mx-0 md:flex-wrap md:px-0">
+          <ul className="no-scrollbar -mx-3 -my-1 flex gap-2 overflow-x-auto px-3 py-1 md:m-0 md:flex-wrap md:overflow-visible md:p-0">
             {categories.map((c, i) => (
               <li key={c.slug} className="reveal-rise shrink-0" style={{ "--delay": `${0.1 + i * 0.05}s` } as CSSProperties}>
                 <Link href={watchesFilterHref(c.slug)} className="btn-chip capitalize">
@@ -229,10 +229,10 @@ export function QuoteTicker({ text, images }: { text: string; images: string[] }
         <span key={i} className="flex shrink-0 items-center">
           <Link
             href="/watches"
-            className="mx-4 block h-[60px] w-[80px] shrink-0 overflow-hidden rounded-fuse-md bg-white md:mx-10 md:h-[150px] md:w-[204px] md:rounded-fuse"
+            className="mx-4 block h-[60px] w-[80px] shrink-0 md:mx-10 md:h-[150px] md:w-[204px]"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={catalogThumbUrl(src, 420)} alt="" loading="lazy" className="h-full w-full object-contain p-2 transition-transform duration-700 hover:scale-110" />
+            <img src={catalogThumbUrl(src, 420)} alt="" loading="lazy" className="h-full w-full object-contain drop-shadow-[0_12px_18px_rgba(0,0,0,.18)] transition-transform duration-700 hover:scale-110" />
           </Link>
           <p className="whitespace-nowrap font-chivo text-[44px] font-bold leading-[1.1] text-heading md:text-[110px] xl:text-[160px]">{text}</p>
         </span>

@@ -2,6 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { sql } from "./neon";
+import { getStorefront } from "./content";
+import { escapeHtml, sendMail } from "@/lib/mailer";
 
 /**
  * Public form handlers: contact messages and newsletter sign-ups.
@@ -75,7 +77,7 @@ export async function submitContactMessage(
 
   try {
     await ensureInquiryTables();
-    await sql`
+    const rows = await sql`
       INSERT INTO contact_messages (name, email, phone, subject, message, product_slug)
       VALUES (
         ${values.name.slice(0, 200)},
@@ -85,7 +87,10 @@ export async function submitContactMessage(
         ${values.message},
         ${productSlug}
       )
+      RETURNING id
     `;
+    // Saved to the admin inbox; email failures are logged but don't fail the form.
+    await sendContactEmails(Number((rows[0] as { id: number }).id), values, productSlug);
     revalidatePath("/admin/inbox");
     revalidatePath("/admin/dashboard");
     return {
@@ -100,6 +105,65 @@ export async function submitContactMessage(
       errors: { form: "We couldn’t send your message right now. Please email us directly." },
     };
   }
+}
+
+async function sendContactEmails(
+  id: number,
+  v: NonNullable<NonNullable<ContactFormState>["values"]>,
+  productSlug: string | null,
+): Promise<void> {
+  const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL || "").replace(/\/$/, "");
+  let to = process.env.CONTACT_TO_EMAIL || "";
+  if (!to) {
+    try {
+      to = (await getStorefront()).contact.careEmail || "";
+    } catch {
+      /* fall through */
+    }
+  }
+  const subject = v.subject || "New enquiry";
+  const rows: [string, string][] = [
+    ["Name", v.name],
+    ["Email", v.email],
+    ["Phone", v.phone || "—"],
+    ["Subject", v.subject || "—"],
+    ...(productSlug ? [["Product", siteUrl ? `${siteUrl}/product/${productSlug}` : productSlug] as [string, string]] : []),
+  ];
+  const adminLink = siteUrl ? `${siteUrl}/admin/inbox?open=${id}` : "";
+  const msgHtml = escapeHtml(v.message).replace(/\n/g, "<br>");
+
+  await Promise.all([
+    to
+      ? sendMail({
+          to,
+          replyTo: v.email,
+          subject: `[Timect enquiry] ${subject} — ${v.name}`,
+          text: [...rows.map(([k, val]) => `${k}: ${val}`), "", v.message, ...(adminLink ? ["", `View in admin: ${adminLink}`] : [])].join("\n"),
+          html: `
+            <div style="font-family:Arial,sans-serif;font-size:15px;color:#1a1d23;max-width:600px">
+              <h2 style="margin:0 0 16px">New contact enquiry</h2>
+              <table cellpadding="6" style="border-collapse:collapse">
+                ${rows.map(([k, val]) => `<tr><td style="color:#6b7280">${k}</td><td><strong>${escapeHtml(val)}</strong></td></tr>`).join("")}
+              </table>
+              <p style="margin:20px 0;padding:16px;background:#f5f5f4;border-radius:8px;line-height:1.6">${msgHtml}</p>
+              ${adminLink ? `<p><a href="${adminLink}">View in admin inbox</a></p>` : ""}
+            </div>`,
+        })
+      : Promise.resolve(console.warn("sendContactEmails: no CONTACT_TO_EMAIL or storefront care email set")),
+    sendMail({
+      to: v.email,
+      subject: "We received your message — Timect",
+      text: `Hi ${v.name},\n\nThank you for contacting Timect. Our team will reply within 1–2 business days.\n\nYour message:\n${v.message}\n\n— Timect Customer Care`,
+      html: `
+        <div style="font-family:Arial,sans-serif;font-size:15px;color:#1a1d23;max-width:600px;line-height:1.6">
+          <p>Hi ${escapeHtml(v.name)},</p>
+          <p>Thank you for contacting Timect. Our team will reply within 1–2 business days.</p>
+          <p style="color:#6b7280;margin-bottom:4px">Your message:</p>
+          <p style="margin:0;padding:16px;background:#f5f5f4;border-radius:8px">${msgHtml}</p>
+          <p>— Timect Customer Care</p>
+        </div>`,
+    }),
+  ]);
 }
 
 export type NewsletterState = { ok: boolean; message: string } | null;

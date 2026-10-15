@@ -205,7 +205,7 @@ export function useDragScroll(ref: RefObject<HTMLElement | null>) {
     let startLeft = 0;
     let moved = false;
     const onDown = (e: PointerEvent) => {
-      if (e.pointerType !== "mouse") return;
+      if (e.pointerType !== "mouse" || e.button !== 0) return;
       down = true;
       moved = false;
       startX = e.clientX;
@@ -214,6 +214,8 @@ export function useDragScroll(ref: RefObject<HTMLElement | null>) {
     };
     const onMove = (e: PointerEvent) => {
       if (!down) return;
+      // Button released outside our listeners (e.g. a native drag swallowed pointerup).
+      if ((e.buttons & 1) === 0) return onUp();
       const dx = e.clientX - startX;
       if (Math.abs(dx) > 5) moved = true;
       el.scrollLeft = startLeft - dx;
@@ -230,14 +232,22 @@ export function useDragScroll(ref: RefObject<HTMLElement | null>) {
         moved = false;
       }
     };
+    // Native image/link drags would hijack the gesture and fire pointercancel instead of pointerup.
+    const onDragStart = (e: DragEvent) => e.preventDefault();
     el.addEventListener("pointerdown", onDown);
+    el.addEventListener("dragstart", onDragStart);
     window.addEventListener("pointermove", onMove);
     window.addEventListener("pointerup", onUp);
+    window.addEventListener("pointercancel", onUp);
+    window.addEventListener("blur", onUp);
     el.addEventListener("click", onClick, true);
     return () => {
       el.removeEventListener("pointerdown", onDown);
+      el.removeEventListener("dragstart", onDragStart);
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerup", onUp);
+      window.removeEventListener("pointercancel", onUp);
+      window.removeEventListener("blur", onUp);
       el.removeEventListener("click", onClick, true);
     };
   }, [ref]);
