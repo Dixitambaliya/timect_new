@@ -9,14 +9,16 @@ import { gsap, ScrollTrigger } from "@/lib/gsap";
 
 /**
  * Lenis smooth scrolling for the storefront. Disabled for users who prefer
- * reduced motion; nested scroll areas (drawers, carousels) keep native scroll.
+ * reduced motion and on touch devices (native momentum scroll is smoother there
+ * and Lenis fights the mobile address bar); nested scroll areas (drawers,
+ * carousels) keep native scroll.
  */
 export default function SmoothScroll() {
   const pathname = usePathname();
   const search = useSearchParams();
 
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce), (hover: none), (pointer: coarse)").matches) return;
     // Lenis is driven by GSAP's ticker so ScrollTrigger reads the same
     // smoothed scroll position on every frame (no jitter between the two).
     const lenis = new Lenis({
@@ -44,9 +46,10 @@ export default function SmoothScroll() {
   // New page → jump to top instantly and re-measure the page height.
   useEffect(() => {
     const lenis = getLenis();
-    if (!lenis) return;
-    lenis.resize();
-    if (!window.location.hash) lenis.scrollTo(0, { immediate: true, force: true });
+    if (lenis) {
+      lenis.resize();
+      if (!window.location.hash) lenis.scrollTo(0, { immediate: true, force: true });
+    }
     ScrollTrigger.refresh();
   }, [pathname]);
 
