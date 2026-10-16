@@ -187,8 +187,9 @@ export async function adminCreateProduct(
     ]);
     if (imageErr) return { ok: false, error: imageErr };
 
+    // Slug is always generated from the product name — never entered by hand.
     const slugs = await existingSlugs();
-    const base = data.slug?.trim() || data.name || data.title || "product";
+    const base = data.name || data.title || "product";
     const slug = uniqueSlug(base, slugs);
     data.variants = (data.variants || []).filter((v) => v.slug !== slug);
 
@@ -285,8 +286,14 @@ export async function adminUpdateProduct(
     );
 
     const slugs = await existingSlugs(id);
-    const base = data.slug?.trim() || data.name || data.title || `product-${id}`;
-    let slug = slugify(base) || `product-${id}`;
+    const base = data.name || data.title || `product-${id}`;
+    const root = slugify(base) || `product-${id}`;
+    // Keep the current URL when it already derives from this name (e.g. "foo-3"),
+    // so saving without renaming never changes a product's link.
+    const keepsRoot =
+      previousSlug === root ||
+      (previousSlug.startsWith(`${root}-`) && /^\d+$/.test(previousSlug.slice(root.length + 1)));
+    let slug = keepsRoot && !slugs.has(previousSlug) ? previousSlug : root;
     if (slugs.has(slug)) slug = uniqueSlug(base, slugs, id);
     data.variants = (data.variants || []).filter((v) => v.slug !== slug);
 

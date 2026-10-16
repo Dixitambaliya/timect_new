@@ -31,6 +31,8 @@ export default function CollectionsPage() {
   const [renameFrom, setRenameFrom] = useState("");
   const [renameTo, setRenameTo] = useState("");
   const [pickerIdx, setPickerIdx] = useState<number | null>(null);
+  // Filters added this session get their slug from the label; saved ones keep theirs (live URLs).
+  const [newFilterKeys, setNewFilterKeys] = useState<Set<string>>(new Set());
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -64,7 +66,11 @@ export default function CollectionsPage() {
     startTransition(async () => {
       const res = await adminSaveCatalogFilters(filters);
       if (!res.ok) error(res.error);
-      else success("Catalog filters saved");
+      else {
+        success("Catalog filters saved");
+        setNewFilterKeys(new Set());
+        await load();
+      }
     });
   };
 
@@ -256,29 +262,31 @@ export default function CollectionsPage() {
                     value={card.label}
                     onChange={(e) => {
                       const next = [...cards];
-                      next[idx] = {
-                        ...card,
-                        label: e.target.value,
-                        slug: slugify(e.target.value) || card.slug,
-                      };
+                      next[idx] = { ...card, label: e.target.value };
                       setCards(next);
                     }}
                   />
                 </div>
                 <div>
-                  <label className="admin-label">Filter slug</label>
-                  <input
-                    className="admin-input font-mono text-sm"
+                  <label className="admin-label">Links to filter</label>
+                  <select
+                    className="admin-input"
                     value={card.slug}
                     onChange={(e) => {
                       const next = [...cards];
-                      next[idx] = {
-                        ...card,
-                        slug: slugify(e.target.value) || card.slug,
-                      };
+                      next[idx] = { ...card, slug: e.target.value };
                       setCards(next);
                     }}
-                  />
+                  >
+                    {!filters[card.slug] && (
+                      <option value={card.slug}>{card.label || card.slug}</option>
+                    )}
+                    {Object.values(filters).map((f) => (
+                      <option key={f.slug} value={f.slug}>
+                        {f.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <button
                   type="button"
@@ -316,6 +324,7 @@ export default function CollectionsPage() {
               className="admin-btn admin-btn-secondary"
               onClick={() => {
                 const slug = `filter-${Date.now()}`;
+                setNewFilterKeys((prev) => new Set(prev).add(slug));
                 setFilters((prev) => ({
                   ...prev,
                   [slug]: {
@@ -353,26 +362,22 @@ export default function CollectionsPage() {
                       onChange={(e) =>
                         setFilters((prev) => ({
                           ...prev,
-                          [key]: { ...f, label: e.target.value },
+                          [key]: {
+                            ...f,
+                            label: e.target.value,
+                            slug: newFilterKeys.has(key)
+                              ? slugify(e.target.value) || f.slug
+                              : f.slug,
+                          },
                         }))
                       }
                     />
                   </div>
                   <div>
-                    <label className="admin-label">Slug</label>
-                    <input
-                      className="admin-input font-mono text-sm"
-                      value={f.slug}
-                      onChange={(e) =>
-                        setFilters((prev) => ({
-                          ...prev,
-                          [key]: {
-                            ...f,
-                            slug: slugify(e.target.value) || f.slug,
-                          },
-                        }))
-                      }
-                    />
+                    <label className="admin-label">URL</label>
+                    <p className="admin-input truncate bg-[var(--admin-bg)] font-mono text-sm text-[var(--admin-muted)]">
+                      /watches?filter={f.slug}
+                    </p>
                   </div>
                   <div className="flex items-end justify-end">
                     <button

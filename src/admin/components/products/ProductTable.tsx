@@ -25,6 +25,7 @@ import EmptyState from "@/admin/components/ui/EmptyState";
 import Pagination from "@/admin/components/ui/Pagination";
 import { TableSkeleton } from "@/admin/components/ui/Skeleton";
 import { GENDER_OPTIONS } from "@/admin/lib/constants";
+import ProductImportExport from "./ProductImportExport";
 
 export default function ProductTable({
   initialSearch = "",
@@ -210,10 +211,13 @@ export default function ProductTable({
             <option value="price-desc">Price ↓</option>
           </select>
         </div>
-        <Link href="/admin/products/new" className="admin-btn admin-btn-primary">
-          <Plus className="h-4 w-4" />
-          Add product
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          <ProductImportExport onImported={() => void load()} />
+          <Link href="/admin/products/new" className="admin-btn admin-btn-primary">
+            <Plus className="h-4 w-4" />
+            Add product
+          </Link>
+        </div>
       </div>
 
       {selected.size > 0 && (

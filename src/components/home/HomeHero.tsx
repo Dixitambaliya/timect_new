@@ -9,6 +9,15 @@ import { ArrowLeft, ArrowRight } from "@/components/fuse/icons";
 
 const AUTOPLAY = 8000;
 
+/** Backdrop palette cycled per slide: deep base + glow tint layered over the blurred image. */
+const BACKDROPS = [
+  { base: "#0f2a2a", glow: "#1f6f63" }, // emerald
+  { base: "#141b3a", glow: "#3b4fa8" }, // midnight
+  { base: "#2a0f18", glow: "#8a2a3e" }, // burgundy
+  { base: "#221a10", glow: "#9a6b2f" }, // bronze
+  { base: "#1b1430", glow: "#6a44a8" }, // amethyst
+];
+
 function Marquee({ text, className }: { text: string; className?: string }) {
   const items = Array.from({ length: 4 }, () => text);
   return (
@@ -69,14 +78,15 @@ export default function HomeHero({ slides }: { slides: HeroSlide[] }) {
 
   return (
     <section
-      className="container-fuse pb-[10px] md:pb-5"
+      className="container-fuse pb-[10px] md:max-w-none md:px-0 md:pb-5"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       aria-roledescription="carousel"
       aria-label="Featured watches"
     >
       <div
-        className="relative isolate h-[max(680px,min(calc(100svh-var(--announcement-h)-40px),900px))] overflow-hidden rounded-fuse bg-[#2b3342] text-white md:h-[max(780px,min(calc(100vh-20px),1000px))]"
+        className="relative isolate h-[max(680px,min(calc(100svh-var(--announcement-h)-40px),900px))] overflow-hidden rounded-fuse text-white transition-colors duration-1000 md:h-[max(720px,calc(100svh-var(--announcement-h)))] md:rounded-none"
+        style={{ backgroundColor: BACKDROPS[index % BACKDROPS.length].base }}
         onTouchStart={(e) => (touch.current = e.touches[0].clientX)}
         onTouchEnd={(e) => {
           if (touch.current == null) return;
@@ -88,6 +98,7 @@ export default function HomeHero({ slides }: { slides: HeroSlide[] }) {
         {slides.map((s, i) => {
           const active = i === index;
           const near = active || Math.abs(i - index) === 1 || (index === 0 && i === slides.length - 1);
+          const bd = BACKDROPS[i % BACKDROPS.length];
           return (
             <div
               key={s.id || i}
@@ -104,12 +115,17 @@ export default function HomeHero({ slides }: { slides: HeroSlide[] }) {
                   src={catalogThumbUrl(s.image, 600)}
                   alt=""
                   className={cx(
-                    "img-fill blur-[60px] transition-transform duration-[2s] ease-fuse-out md:blur-[100px]",
+                    "img-fill opacity-40 blur-[60px] transition-transform duration-[2s] ease-fuse-out md:blur-[100px]",
                     active && loaded ? "scale-[1.4]" : "scale-[1.6]",
                   )}
                 />
               )}
-              <div className="absolute inset-0 bg-[#1a1f2a]/45" />
+              <div
+                className="absolute inset-0"
+                style={{
+                  background: `radial-gradient(ellipse 70% 60% at 50% 45%, ${bd.glow}cc 0%, transparent 70%), linear-gradient(160deg, ${bd.base}d9 0%, ${bd.base}66 45%, ${bd.base}f2 100%)`,
+                }}
+              />
 
               {/* oversized marquee + floating watch card */}
               <div className="absolute inset-0 z-[2] flex items-center justify-center pb-[310px] pt-[90px] md:pb-0 md:pt-0">
@@ -146,7 +162,7 @@ export default function HomeHero({ slides }: { slides: HeroSlide[] }) {
                   style={{ transitionDelay: active ? "0.6s" : "0s" }}
                 >
                   {s.specs.map((spec) => (
-                    <li key={spec.label} className="glass rounded-fuse-md !bg-[#1a1f2a]/55 px-4 py-3">
+                    <li key={spec.label} className="glass rounded-fuse-md !bg-black/30 px-4 py-3">
                       <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-white/70">{spec.label}</p>
                       <p className="mt-1 text-[16px] font-semibold">{spec.value}</p>
                     </li>

@@ -190,7 +190,7 @@ export function GridBanner({ banners }: { banners: PromoBanner[] }) {
         {banners.map((b, i) => (
           <div
             key={b.id || b.title}
-            className="reveal-fade group/gb relative aspect-[708/780] overflow-hidden rounded-fuse md:rounded-none"
+            className="reveal-fade group/gb relative aspect-[708/780] overflow-hidden rounded-fuse md:aspect-auto md:h-[min(70svh,640px)] md:rounded-none"
             style={{ "--delay": `${i * 0.15}s` } as CSSProperties}
           >
             <div data-parallax="8" className="absolute inset-x-0 -inset-y-[12%]">

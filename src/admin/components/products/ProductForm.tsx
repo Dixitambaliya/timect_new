@@ -44,18 +44,16 @@ export default function ProductForm({
   const { success, error } = useToast();
   const [step, setStep] = useState(1);
   const [data, setData] = useState<ProductInput>(initial);
-  const [slugManual, setSlugManual] = useState(Boolean(initial.slug));
   const [pending, startTransition] = useTransition();
 
   const patch = (p: Partial<ProductInput>) =>
     setData((prev) => ({ ...prev, ...p }));
 
+  // Slug is always derived from the name on the server; this is only a preview.
   const autoSlug = useMemo(() => {
     const base = data.name || data.title || "";
     return slugify(base);
   }, [data.name, data.title]);
-
-  const displaySlug = slugManual ? data.slug || "" : autoSlug;
 
   const validateStep = (s: number): string | null => {
     if (s === 1) {
@@ -84,7 +82,6 @@ export default function ProductForm({
 
     const payload: ProductInput = {
       ...data,
-      slug: displaySlug,
       image: data.image || data.images?.[0] || "",
       title: data.title || data.name,
       subtitle: data.subtitle || data.description,
@@ -169,24 +166,8 @@ export default function ProductForm({
                 placeholder="HYDROCONQUEST EXCLUSIVE EDITION"
                 autoFocus
               />
-            </div>
-            <div>
-              <label className="admin-label" htmlFor="slug">
-                Slug
-              </label>
-              <input
-                id="slug"
-                className="admin-input font-mono text-sm"
-                value={displaySlug}
-                onChange={(e) => {
-                  setSlugManual(true);
-                  patch({ slug: slugify(e.target.value) });
-                }}
-                placeholder="auto-generated-from-name"
-              />
-              <p className="mt-1 text-[11px] text-[var(--admin-muted)]">
-                /product/{displaySlug || "…"}
-                {!slugManual && " · auto"}
+              <p className="mt-1 font-mono text-[11px] text-[var(--admin-muted)]">
+                /product/{autoSlug || "…"} · URL is generated from the name
               </p>
             </div>
             <div>
@@ -367,7 +348,7 @@ export default function ProductForm({
           <VariantEditor
             variants={data.variants || []}
             onChange={(variants) => patch({ variants })}
-            currentSlug={displaySlug}
+            currentSlug={initial.slug || autoSlug}
           />
         )}
 
@@ -385,7 +366,7 @@ export default function ProductForm({
           />
         )}
 
-        {step === 7 && <ProductPreview data={{ ...data, slug: displaySlug }} />}
+        {step === 7 && <ProductPreview data={{ ...data, slug: autoSlug }} />}
       </div>
 
       {/* Footer actions */}
