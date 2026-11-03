@@ -186,7 +186,7 @@ function ImportDialog({
           {result?.ok && !pending && (
             <div className="mt-4 space-y-3 pb-2">
               <p className="text-sm">
-                {done ? "Done — " : "Preview — "}
+                {done ? "Done -" : "Preview -"}
                 <strong>{result.created}</strong> {done ? "created" : "to create"}, <strong>{result.updated}</strong>{" "}
                 {done ? "updated" : "to update"}
                 {result.failed > 0 && (

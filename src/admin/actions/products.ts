@@ -187,7 +187,7 @@ export async function adminCreateProduct(
     ]);
     if (imageErr) return { ok: false, error: imageErr };
 
-    // Slug is always generated from the product name — never entered by hand.
+    // Slug is always generated from the product name -never entered by hand.
     const slugs = await existingSlugs();
     const base = data.name || data.title || "product";
     const slug = uniqueSlug(base, slugs);

@@ -122,7 +122,7 @@ export default function ProductCard({
 
         <Labels product={product} />
 
-        {/* Desktop glass bar: Quick view + details — slides up on hover */}
+        {/* Desktop glass bar: Quick view + details -slides up on hover */}
         <div className="absolute inset-x-0 bottom-0 hidden justify-center px-4 pb-3 md:flex">
           <div className="glass flex translate-y-[calc(100%+16px)] gap-1 rounded-fuse bg-[#f0f2f452] p-1 opacity-0 transition-[transform,opacity] duration-400 ease-fuse-out group-focus-within/card:translate-y-0 group-focus-within/card:opacity-100 group-hover/card:translate-y-0 group-hover/card:opacity-100">
             <button

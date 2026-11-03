@@ -28,19 +28,19 @@ export default function PrivacyPage() {
         <p>We may collect:</p>
         <ul>
           <li>
-            <strong>Identity &amp; contact data</strong> — name, email address, phone number, and shipping or billing
+            <strong>Identity &amp; contact data</strong> -name, email address, phone number, and shipping or billing
             address when you order or contact us.
           </li>
           <li>
-            <strong>Order data</strong> — products purchased, order history, and payment status (payment card details are
+            <strong>Order data</strong> -products purchased, order history, and payment status (payment card details are
             processed by our payment providers; we do not store full card numbers).
           </li>
           <li>
-            <strong>Service data</strong> — model information, serial or case references, and issue descriptions when you
+            <strong>Service data</strong> -model information, serial or case references, and issue descriptions when you
             request warranty or repair support.
           </li>
           <li>
-            <strong>Technical data</strong> — browser type, device information, and approximate location derived from IP
+            <strong>Technical data</strong> -browser type, device information, and approximate location derived from IP
             address, collected automatically when you browse our site.
           </li>
         </ul>
@@ -56,7 +56,7 @@ export default function PrivacyPage() {
 
         <h2>4. Sharing of information</h2>
         <p>
-          We share personal data only with trusted service providers who help us operate the store — for example payment
+          We share personal data only with trusted service providers who help us operate the store -for example payment
           processors, shipping carriers, hosting providers, and authorized service partners. We do not sell your personal
           information. We may disclose data when required by law or to protect our rights and customers.
         </p>

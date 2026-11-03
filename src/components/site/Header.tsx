@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { cx } from "@/lib/cx";
-import { useScrollY } from "@/components/fuse/hooks";
+import { useScrolledPast } from "@/components/fuse/hooks";
 import { ChevronDown, MenuIcon, SearchIcon, Mail, ArrowRight } from "@/components/fuse/icons";
 import { catalogThumbUrl } from "@/lib/catalog-image";
 import Logo from "./Logo";
@@ -30,7 +30,7 @@ function HeaderIcon({
 }) {
   const cls = cx(
     "relative inline-flex h-12 min-w-12 items-center justify-center gap-2 rounded-fuse-md border px-3 transition-[background-color,border-color,color] duration-400 md:h-[54px] md:min-w-[54px]",
-    variant === "glass" && "glass border-transparent bg-white/[.04] text-white hover:bg-white/[.14]",
+    variant === "glass" && "glass border-transparent bg-white/[.16] text-ink hover:bg-white/[.3]",
     variant === "solid" && "border-line bg-btn text-ink hover:border-line-hover hover:bg-white",
     variant === "dark" && "border-white/10 bg-white/[.06] text-white hover:bg-white/[.16]",
     className,
@@ -112,7 +112,6 @@ function MegaMenu({ open, onEnter, onLeave, onNavigate }: {
 export default function Header() {
   const pathname = usePathname();
   const transparent = pathname === "/";
-  const y = useScrollY();
   const { openPanel } = useSite();
   const [mega, setMega] = useState(false);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -132,7 +131,7 @@ export default function Header() {
 
   useEffect(() => setMega(false), [pathname]);
 
-  const stacked = y > headerH + 40;
+  const stacked = useScrolledPast(headerH + 40);
   const light = transparent;
   const iconVariant = light ? "glass" : "solid";
 
@@ -152,7 +151,7 @@ export default function Header() {
 
   return (
     <>
-      {/* Static header — sits inside the hero on the home page */}
+      {/* Static header -sits inside the hero on the home page */}
       <header
         ref={headerRef}
         className={cx(
@@ -173,7 +172,7 @@ export default function Header() {
               <MenuIcon />
             </HeaderIcon>
             <Link href="/" aria-label="Timect home" className="block shrink-0">
-              <Logo light={light} />
+              <Logo />
             </Link>
 
             <nav className="hidden items-center gap-1 xl:flex" aria-label="Main">
@@ -185,7 +184,7 @@ export default function Header() {
                       aria-expanded={mega}
                       className={cx(
                         "flex items-center gap-1.5 rounded-[10px] px-4 py-2 font-semibold transition-[background-color,color] duration-400",
-                        mega ? "bg-[#f0f2f4eb] text-ink" : light ? "text-white" : "text-ink hover:bg-bg",
+                        mega ? "bg-[#f0f2f4eb] text-ink" : light ? "text-ink hover:bg-white/30" : "text-ink hover:bg-bg",
                       )}
                     >
                       {item.title}
@@ -199,7 +198,7 @@ export default function Header() {
                     onMouseEnter={scheduleClose}
                     className={cx(
                       "rounded-[10px] px-4 py-2 font-semibold transition-[background-color,color] duration-400",
-                      light ? "text-white hover:bg-white/10" : "text-ink hover:bg-bg",
+                      light ? "text-ink hover:bg-white/30" : "text-ink hover:bg-bg",
                       !light && isActive(item.href) && "bg-bg",
                     )}
                   >
@@ -244,7 +243,7 @@ export default function Header() {
           document.body,
         )}
 
-      {/* Stacked sticky header — compact dark glass pill */}
+      {/* Stacked sticky header -compact dark glass pill */}
       <div
         className={cx(
           "fixed inset-x-2 top-2 z-[55] mx-auto max-w-[480px] transition-[transform,opacity] duration-[600ms] ease-fuse-out md:top-4",

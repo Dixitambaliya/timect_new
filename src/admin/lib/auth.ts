@@ -17,7 +17,7 @@ function getJwtSecret(): Uint8Array {
   const secret =
     process.env.ADMIN_JWT_SECRET ||
     process.env.JWT_SECRET ||
-    // Dev fallback — set ADMIN_JWT_SECRET in production
+    // Dev fallback -set ADMIN_JWT_SECRET in production
     "timect-dev-admin-jwt-secret-change-me";
   return new TextEncoder().encode(secret);
 }

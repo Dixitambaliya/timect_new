@@ -9,7 +9,7 @@ import { cx } from "@/lib/cx";
 import { catalogThumbUrl } from "@/lib/catalog-image";
 import { Breadcrumbs } from "@/components/fuse/buttons";
 import { Drawer } from "@/components/fuse/Overlay";
-import { useCarousel, useDragScroll, useScrollY } from "@/components/fuse/hooks";
+import { useCarousel, useDragScroll, useScrolledPast } from "@/components/fuse/hooks";
 import { CarouselProgress, Reveal } from "@/components/fuse/ui";
 import { ChevronDown, CloseIcon, FilterIcon, SearchIcon, SortIcon, Spinner } from "@/components/fuse/icons";
 import ProductCard, { ProductCardSkeleton } from "@/components/site/ProductCard";
@@ -136,7 +136,7 @@ export default function WatchesCatalog({
   const sp = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-  const y = useScrollY();
+  const scrolled = useScrolledPast(600);
 
   // ---- URL is the single source of truth for every filter ----
   const category = sp.get("category") || "all";
@@ -450,7 +450,7 @@ export default function WatchesCatalog({
           onClick={() => smoothScrollTo(0)}
           className={cx(
             "glass-dark pointer-events-auto hidden rounded-fuse !bg-[#232323cc] px-6 font-semibold text-white transition-opacity duration-400 md:block md:px-8",
-            y > 600 ? "opacity-100" : "pointer-events-none opacity-0",
+            scrolled ? "opacity-100" : "pointer-events-none opacity-0",
           )}
         >
           Up

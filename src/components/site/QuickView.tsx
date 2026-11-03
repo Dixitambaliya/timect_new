@@ -130,7 +130,7 @@ export default function QuickView() {
               <a
                 href={whatsappLink(
                   whatsappNumber,
-                  `Hi, I need help with ${name}${size ? ` (${size})` : ""} — ${displayPrice(product.price)}\n${typeof window !== "undefined" ? window.location.origin : ""}/product/${product.slug}`,
+                  `Hi, I need help with ${name}${size ? ` (${size})` : ""} -${displayPrice(product.price)}\n${typeof window !== "undefined" ? window.location.origin : ""}/product/${product.slug}`,
                 )}
                 target="_blank"
                 rel="noreferrer"

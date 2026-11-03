@@ -1,7 +1,7 @@
 import { getProductSlugByImage, type Product } from "@/db/actions";
 import type { CardProduct } from "@/components/site/ProductCard";
 
-/** Lean card projection — keeps client payloads small. */
+/** Lean card projection -keeps client payloads small. */
 export function toCard(p: Product): CardProduct {
   return {
     id: p.id,
@@ -22,7 +22,7 @@ export function toCard(p: Product): CardProduct {
   };
 }
 
-/** Older variants were linked by image only — resolve them to product slugs. */
+/** Older variants were linked by image only -resolve them to product slugs. */
 export async function resolveVariants(product: Product): Promise<Product> {
   if (!product.variants?.length) return product;
   const variants = await Promise.all(

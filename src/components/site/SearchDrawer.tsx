@@ -25,7 +25,7 @@ function Skeleton() {
 
 type Tab = "products" | "categories" | "pages";
 
-/** Predictive search drawer — live product search against the catalog DB. */
+/** Predictive search drawer -live product search against the catalog DB. */
 export default function SearchDrawer() {
   const { panel, closePanel, categories } = useSite();
   const router = useRouter();

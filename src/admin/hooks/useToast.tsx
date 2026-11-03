@@ -29,7 +29,7 @@ const ToastContext = createContext<ToastContextValue | null>(null);
 
 let toastSeq = 0;
 
-/** Solid, high-contrast styles — do not rely on admin CSS vars (they can wash out). */
+/** Solid, high-contrast styles -do not rely on admin CSS vars (they can wash out). */
 const TOAST_STYLES: Record<
   ToastKind,
   {
@@ -96,7 +96,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     <ToastContext.Provider value={value}>
       {children}
 
-      {/* Top-right toast stack — high contrast, readable on light admin UI */}
+      {/* Top-right toast stack -high contrast, readable on light admin UI */}
       <div
         className="pointer-events-none fixed top-4 right-4 z-[200] flex w-[min(100vw-2rem,24rem)] flex-col items-stretch gap-2"
         aria-live="polite"

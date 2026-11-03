@@ -6,7 +6,7 @@ import { Box, Shield, Watch } from "@/components/fuse/icons";
 export const metadata: Metadata = {
   title: "About Us",
   description:
-    "Discover Timect — a wristwatch manufacturer dedicated to precision movements, refined design, and enduring craftsmanship.",
+    "Discover Timect -a wristwatch manufacturer dedicated to precision movements, refined design, and enduring craftsmanship.",
 };
 
 const IMAGE =
@@ -26,7 +26,7 @@ const PILLARS = [
   {
     icon: Shield,
     title: "Our promise",
-    text: "Whether you choose a classic dress piece, a daily sports watch, or a refined ladies model, Timect stands behind the workmanship of every watch we produce. We build for years of regular wear — not for a season.",
+    text: "Whether you choose a classic dress piece, a daily sports watch, or a refined ladies model, Timect stands behind the workmanship of every watch we produce. We build for years of regular wear -not for a season.",
   },
 ];
 

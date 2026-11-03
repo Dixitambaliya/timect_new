@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const product = /^\d+$/.test(slug) ? await getProductById(Number(slug)) : await getProductBySlug(decodeURIComponent(slug));
   if (!product) return { title: "Watch not found" };
   const title = product.title || product.name || "Timect watch";
-  const description = product.subtitle || product.description || `${title} — ${product.price}`;
+  const description = product.subtitle || product.description || `${title} -${product.price}`;
   const image = product.image || product.images?.[0];
   return {
     title,

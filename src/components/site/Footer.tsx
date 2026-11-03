@@ -165,7 +165,7 @@ export default function Footer() {
       <div className="mt-3 rounded-fuse bg-white px-4 pb-8 pt-10 md:px-8 md:pt-24">
         <FooterWordmark image={WORDMARK_IMG} />
         <p className="mt-10 text-center text-[16px] font-medium text-heading md:mt-14">
-          «{storefront.quote.text}» <span className="text-muted">— {storefront.quote.author}</span>
+          «{storefront.quote.text}» <span className="text-muted">-{storefront.quote.author}</span>
         </p>
         <div className="mt-10 grid items-center gap-6 lg:grid-cols-3">
           <p className="flex flex-wrap items-center justify-center gap-3 text-[16px] text-muted lg:justify-start">

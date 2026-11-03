@@ -63,7 +63,7 @@ export async function submitContactMessage(
 
   // Honeypot: bots fill hidden fields, people don't.
   if (String(formData.get("company") || "").trim()) {
-    return { ok: true, message: "Thank you — your message has been sent." };
+    return { ok: true, message: "Thank you -your message has been sent." };
   }
 
   const errors: NonNullable<ContactFormState>["errors"] = {};
@@ -95,7 +95,7 @@ export async function submitContactMessage(
     revalidatePath("/admin/dashboard");
     return {
       ok: true,
-      message: "Thank you — your message has been sent. Our team will reply within 1–2 business days.",
+      message: "Thank you -your message has been sent. Our team will reply within 1–2 business days.",
     };
   } catch (err) {
     console.error("submitContactMessage:", err);
@@ -137,7 +137,7 @@ async function sendContactEmails(
       ? sendMail({
           to,
           replyTo: v.email,
-          subject: `[Timect enquiry] ${subject} — ${v.name}`,
+          subject: `[Timect enquiry] ${subject} -${v.name}`,
           text: [...rows.map(([k, val]) => `${k}: ${val}`), "", v.message, ...(adminLink ? ["", `View in admin: ${adminLink}`] : [])].join("\n"),
           html: `
             <div style="font-family:Arial,sans-serif;font-size:15px;color:#1a1d23;max-width:600px">
@@ -152,15 +152,15 @@ async function sendContactEmails(
       : Promise.resolve(console.warn("sendContactEmails: no CONTACT_TO_EMAIL or storefront care email set")),
     sendMail({
       to: v.email,
-      subject: "We received your message — Timect",
-      text: `Hi ${v.name},\n\nThank you for contacting Timect. Our team will reply within 1–2 business days.\n\nYour message:\n${v.message}\n\n— Timect Customer Care`,
+      subject: "We received your message -Timect",
+      text: `Hi ${v.name},\n\nThank you for contacting Timect. Our team will reply within 1–2 business days.\n\nYour message:\n${v.message}\n\n-Timect Customer Care`,
       html: `
         <div style="font-family:Arial,sans-serif;font-size:15px;color:#1a1d23;max-width:600px;line-height:1.6">
           <p>Hi ${escapeHtml(v.name)},</p>
           <p>Thank you for contacting Timect. Our team will reply within 1–2 business days.</p>
           <p style="color:#6b7280;margin-bottom:4px">Your message:</p>
           <p style="margin:0;padding:16px;background:#f5f5f4;border-radius:8px">${msgHtml}</p>
-          <p>— Timect Customer Care</p>
+          <p>-Timect Customer Care</p>
         </div>`,
     }),
   ]);
@@ -183,7 +183,7 @@ export async function subscribeNewsletter(
       ON CONFLICT (email) DO NOTHING
     `;
     revalidatePath("/admin/inbox");
-    return { ok: true, message: "Thanks for subscribing — watch your inbox for new releases." };
+    return { ok: true, message: "Thanks for subscribing -watch your inbox for new releases." };
   } catch (err) {
     console.error("subscribeNewsletter:", err);
     return { ok: false, message: "Subscription failed. Please try again later." };

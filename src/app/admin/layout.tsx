@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 /**
- * Admin root layout — isolated from storefront chrome.
+ * Admin root layout -isolated from storefront chrome.
  * Does not render Header/Footer/Preloader.
  */
 export default function AdminRootLayout({

@@ -19,10 +19,10 @@ const chivo = Chivo({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
   title: {
-    default: "Timect — Official Online Store",
+    default: "Timect -Official Online Store",
     template: "%s | Timect",
   },
-  description: "Celebrating 145 Years of Craftsmanship — precision wristwatches by Timect.",
+  description: "Celebrating 145 Years of Craftsmanship -precision wristwatches by Timect.",
   icons: {
     icon: [{ url: "/images/timect_logo.png", type: "image/png" }],
     shortcut: "/images/timect_logo.png",

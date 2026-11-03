@@ -58,7 +58,7 @@ function useFocusTrap(active: boolean, ref: RefObject<HTMLDivElement | null>) {
 
 /**
  * Inset frosted drawer (16px from the viewport edges, 16px radius) that slides
- * in from the side — the signature Fuse panel used for menu, search and filters.
+ * in from the side -the signature Fuse panel used for menu, search and filters.
  */
 export function Drawer({
   open,

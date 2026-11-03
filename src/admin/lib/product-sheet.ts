@@ -5,7 +5,7 @@ import { GENDER_OPTIONS } from "@/admin/lib/constants";
 
 /**
  * Shopify-style product spreadsheet: one row per product, keyed by Handle.
- * Export writes every product; import upserts — a row whose Handle matches an
+ * Export writes every product; import upserts -a row whose Handle matches an
  * existing product replaces that product's data, otherwise a new one is made.
  */
 
@@ -43,7 +43,7 @@ export type SheetRow = {
 };
 
 export const COLUMNS: Col[] = [
-  { header: "Handle", key: "handle", width: 32, note: "Product URL id. Matches an existing product to update it. Leave blank for new products — it is generated from the name." },
+  { header: "Handle", key: "handle", width: 32, note: "Product URL id. Matches an existing product to update it. Leave blank for new products -it is generated from the name." },
   { header: "Name", key: "name", width: 34, note: "Required. The URL is generated from this." },
   { header: "Title", key: "title", width: 34, note: "Display title. Defaults to Name." },
   { header: "Subtitle", key: "subtitle", width: 30, note: "Short line under the title." },

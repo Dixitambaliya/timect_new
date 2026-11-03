@@ -1,4 +1,4 @@
-# Timect — Next.js + Fuse
+# Timect -Next.js + Fuse
 
 The Timect storefront and admin panel, rebuilt on the **Fuse** design system
 (Fuse tokens, glass surfaces, 16px radii, Archivo/Chivo type, Fuse buttons,
@@ -42,11 +42,11 @@ and roles) · Settings. Light/dark theme, JWT session guarded by `src/proxy.ts`.
 
 ## Data
 
-* `products` — catalog (`src/db/actions.ts`); filters use the JSONB `specifications`.
-* `cms_settings` — `shop_by_category`, `catalog_filters`, `corporate_gifting`,
+* `products` -catalog (`src/db/actions.ts`); filters use the JSONB `specifications`.
+* `cms_settings` -`shop_by_category`, `catalog_filters`, `corporate_gifting`,
   `storefront` (all editable in the admin; static defaults in `src/data/*`).
-* `contact_messages`, `newsletter_subscribers` — created on first use or by the migration.
+* `contact_messages`, `newsletter_subscribers` -created on first use or by the migration.
 * `admin_users`, `media_library`, `audit_logs`.
 
 `src/db/seed.ts` **drops and recreates** `products` from `src/data/products.json`
-— don't run it against the live database unless you intend to reset the catalog.
+-don't run it against the live database unless you intend to reset the catalog.

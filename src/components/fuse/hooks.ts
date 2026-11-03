@@ -33,22 +33,19 @@ export function useInView<T extends HTMLElement = HTMLDivElement>({
   return [ref, inView] as const;
 }
 
-export function useScrollY(): number {
-  const [y, setY] = useState(0);
+/**
+ * True once the page is scrolled past `offset` px. Only re-renders when that
+ * flips, so it's cheap to use in large components (unlike tracking scrollY).
+ */
+export function useScrolledPast(offset: number): boolean {
+  const [past, setPast] = useState(false);
   useEffect(() => {
-    let raf = 0;
-    const on = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => setY(window.scrollY));
-    };
+    const on = () => setPast(window.scrollY > offset);
     on();
     window.addEventListener("scroll", on, { passive: true });
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener("scroll", on);
-    };
-  }, []);
-  return y;
+    return () => window.removeEventListener("scroll", on);
+  }, [offset]);
+  return past;
 }
 
 export function useMediaQuery(query: string): boolean {

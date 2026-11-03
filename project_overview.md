@@ -1,8 +1,8 @@
-# Timect — Project Overview
+# Timect -Project Overview
 
 > One-time project context document for AI agents and developers.  
 > Generated from the codebase as of 2026-07-22.  
-> Brand: **Timect** — wristwatch manufacturer / luxury e-commerce storefront.
+> Brand: **Timect** -wristwatch manufacturer / luxury e-commerce storefront.
 
 ---
 
@@ -35,7 +35,7 @@ There is **no cart, checkout, payments, or authentication** yet. The contact for
 | Images | **Cloudinary** CDN (`res.cloudinary.com`) + local `public/images` |
 | Lint | ESLint + `eslint-config-next` |
 
-**Important:** Project notes in `AGENTS.md` / `CLAUDE.md` warn this is not classic Next.js training data — check `node_modules/next/dist/docs/` before relying on outdated APIs.
+**Important:** Project notes in `AGENTS.md` / `CLAUDE.md` warn this is not classic Next.js training data -check `node_modules/next/dist/docs/` before relying on outdated APIs.
 
 ---
 
@@ -69,11 +69,11 @@ There is **no cart, checkout, payments, or authentication** yet. The contact for
 
 ### Architecture principles
 
-1. **Server Actions as data API** — no REST `app/api` routes; client pages call functions from `src/db/actions.ts`.
-2. **Single products table** — flags (`is_new_arrival`, etc.) segment homepage shelves; flexible attrs live in JSONB.
-3. **Catalog filters from specs** — shop-by-category uses `specifications` JSONB + keyword recipes, not new columns.
-4. **Seed-driven content** — rebuild DB from `products.json` via `seed.ts` (drops/recreates table).
-5. **Layout per page** — root layout is fonts + metadata only; Header/Footer are composed inside each page or `StaticPage`.
+1. **Server Actions as data API** -no REST `app/api` routes; client pages call functions from `src/db/actions.ts`.
+2. **Single products table** -flags (`is_new_arrival`, etc.) segment homepage shelves; flexible attrs live in JSONB.
+3. **Catalog filters from specs** -shop-by-category uses `specifications` JSONB + keyword recipes, not new columns.
+4. **Seed-driven content** -rebuild DB from `products.json` via `seed.ts` (drops/recreates table).
+5. **Layout per page** -root layout is fonts + metadata only; Header/Footer are composed inside each page or `StaticPage`.
 
 ---
 
@@ -117,8 +117,8 @@ timect_new/
 
 ### Unused / legacy
 
-- `src/components/CollectionBanners.tsx` — no longer mounted on homepage (collections merged into Shop by Category).
-- `src/components/CustomCursor.tsx` — present; usage depends on homepage wiring.
+- `src/components/CollectionBanners.tsx` -no longer mounted on homepage (collections merged into Shop by Category).
+- `src/components/CustomCursor.tsx` -present; usage depends on homepage wiring.
 
 ---
 
@@ -457,16 +457,16 @@ Isolated Timect catalog CMS under `src/app/admin` + `src/admin/*`. Storefront ro
 |------|----------|
 | Routes | `src/app/admin/**` (login, dashboard, products, collections, media, settings) |
 | Logic / UI | `src/admin/{actions,components,lib,hooks,styles}` |
-| Route protection | `src/proxy.ts` (Next.js 16 Proxy) — JWT cookie on `/admin/*` except login |
+| Route protection | `src/proxy.ts` (Next.js 16 Proxy) -JWT cookie on `/admin/*` except login |
 | Auth | JWT (httpOnly cookie `timect_admin_token`) + bcrypt password hashes |
 | Schema migrate | `npx tsx src/db/admin-migrate.ts` (non-destructive; does **not** drop products) |
 
 ### Admin tables
 
-- `admin_users` — full_name, email, password_hash, role (`super_admin` \| `admin` \| `manager` \| `viewer`), is_active, timestamps, last_login
-- `media_library` — uploaded / registered image URLs (Cloudinary-compatible)
-- `cms_settings` — JSONB key/value (homepage cards, catalog filters)
-- `audit_logs` — optional action log
+- `admin_users` -full_name, email, password_hash, role (`super_admin` \| `admin` \| `manager` \| `viewer`), is_active, timestamps, last_login
+- `media_library` -uploaded / registered image URLs (Cloudinary-compatible)
+- `cms_settings` -JSONB key/value (homepage cards, catalog filters)
+- `audit_logs` -optional action log
 
 ### Auth env vars
 
@@ -476,7 +476,7 @@ Isolated Timect catalog CMS under `src/app/admin` + `src/admin/*`. Storefront ro
 | `ADMIN_SEED_EMAIL` / `ADMIN_SEED_PASSWORD` / `ADMIN_SEED_NAME` | First super admin (seeded only if no users) |
 | `CLOUDINARY_*` | Optional; media upload uses signed Cloudinary API |
 
-Default seed (if empty table): `admin@timect.com` / see migrate output — change after first login.
+Default seed (if empty table): `admin@timect.com` / see migrate output -change after first login.
 
 ### Product admin
 
@@ -502,16 +502,16 @@ No S3/blob SDK, no file upload API in the Next app.
 
 ## 14. Existing business logic
 
-1. **Product segmentation** — boolean flags drive homepage shelves and catalog “category” pills.
-2. **Slug generation** — seed slugifies names; duplicate base slugs append `-{dbId}`.
-3. **Legacy product URLs** — numeric `/product/123` loads by id then `router.replace` to slug URL.
-4. **Specification-driven discovery** — category cards and sidebar “Collection” use JSONB + recipe matchers (`anyOfGroups`, `keywordsAny`, `keywordsAll`, optional `genders`).
-5. **SQL prefilter + JS refine** — broad `~*` on specs/text, then precise structured match.
-6. **Price filtering** — parse display price to number for range sort/filter.
-7. **Brand filter** — matches `brand` or `collection` (fallback label `"Seiko"` in some UI paths).
-8. **Pagination** — client “Load more” increments `page`; server returns `hasMore`.
-9. **Contact form** — front-end only; emails listed as placeholders (`care@timect.com`, `service@timect.com`).
-10. **Warranty / shipping** — documented on FAQs, privacy, terms as content only (no order system).
+1. **Product segmentation** -boolean flags drive homepage shelves and catalog “category” pills.
+2. **Slug generation** -seed slugifies names; duplicate base slugs append `-{dbId}`.
+3. **Legacy product URLs** -numeric `/product/123` loads by id then `router.replace` to slug URL.
+4. **Specification-driven discovery** -category cards and sidebar “Collection” use JSONB + recipe matchers (`anyOfGroups`, `keywordsAny`, `keywordsAll`, optional `genders`).
+5. **SQL prefilter + JS refine** -broad `~*` on specs/text, then precise structured match.
+6. **Price filtering** -parse display price to number for range sort/filter.
+7. **Brand filter** -matches `brand` or `collection` (fallback label `"Seiko"` in some UI paths).
+8. **Pagination** -client “Load more” increments `page`; server returns `hasMore`.
+9. **Contact form** -front-end only; emails listed as placeholders (`care@timect.com`, `service@timect.com`).
+10. **Warranty / shipping** -documented on FAQs, privacy, terms as content only (no order system).
 
 ---
 
@@ -522,7 +522,7 @@ No S3/blob SDK, no file upload API in the Next app.
 - **TypeScript** throughout; path alias `@/*` → `src/*`
 - Prefer **Server Actions** for data, not new Route Handlers, unless you introduce a real external API surface
 - **Client components** only when needed (`"use client"` for hooks, router, interactive filters)
-- **Do not invent schema columns** for filter facets — use `specifications` JSONB + `categoryFilters.ts`
+- **Do not invent schema columns** for filter facets -use `specifications` JSONB + `categoryFilters.ts`
 
 ### Naming
 
@@ -586,5 +586,5 @@ npx tsx src/db/seed.ts   # recreate + seed products (destructive)
 2. **Products** live in one table; **specs JSONB** is the flexible attribute store.
 3. **Filtering** = Server Action `getFilteredProducts` + `categoryFilters` + `specifications` helpers.
 4. **UI** = black/white, serif+sans, Tailwind, GSAP homepage flourishes.
-5. **No auth, no cart, no REST API** — extend carefully without breaking that model unless asked.
-6. **Seed is destructive** — treat `products.json` as content source of truth for catalog data.
+5. **No auth, no cart, no REST API** -extend carefully without breaking that model unless asked.
+6. **Seed is destructive** -treat `products.json` as content source of truth for catalog data.

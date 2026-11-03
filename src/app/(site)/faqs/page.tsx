@@ -19,7 +19,7 @@ const FAQS = [
   },
   {
     q: "What does the water-resistance rating mean?",
-    a: "Water-resistance ratings indicate tested resistance under laboratory conditions — not a guarantee for all swimming or diving use. Avoid operating the crown underwater. After exposure to water, rinse with fresh water if needed and dry the watch carefully. Gaskets should be checked during routine service.",
+    a: "Water-resistance ratings indicate tested resistance under laboratory conditions -not a guarantee for all swimming or diving use. Avoid operating the crown underwater. After exposure to water, rinse with fresh water if needed and dry the watch carefully. Gaskets should be checked during routine service.",
   },
   {
     q: "How should I care for my Timect wristwatch?",
@@ -51,7 +51,7 @@ export default function FaqsPage() {
   return (
     <ContentPage
       title="FAQs"
-      subtitle="Answers about Timect wristwatches, care, service, and shopping — written for owners and collectors of precision timepieces."
+      subtitle="Answers about Timect wristwatches, care, service, and shopping -written for owners and collectors of precision timepieces."
       bare
     >
       <FaqAccordion items={FAQS} />

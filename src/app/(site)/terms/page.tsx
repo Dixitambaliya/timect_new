@@ -73,7 +73,7 @@ export default function TermsPage() {
 
         <h2>7. Intellectual property</h2>
         <p>
-          All content on this website — including the Timect name, logos, product photography, dial designs, and copy — is
+          All content on this website -including the Timect name, logos, product photography, dial designs, and copy -is
           owned by Timect or its licensors. You may not copy, reproduce, or use our materials for commercial purposes
           without prior written consent.
         </p>

@@ -140,7 +140,7 @@ export default function ProductMain({
   const panels = [...specs.map((s) => s.title), ...Object.keys(SERVICE_PANELS)];
   const Heading = headingAs;
 
-  const message = `Hi, I need help with ${title}${size ? ` (${size})` : ""}${subtitle ? ` — ${subtitle}` : ""} — ${displayPrice(product.price)}\n${pageUrl}`;
+  const message = `Hi, I need help with ${title}${size ? ` (${size})` : ""}${subtitle ? ` -${subtitle}` : ""} -${displayPrice(product.price)}\n${pageUrl}`;
 
   const share = async () => {
     try {
@@ -319,7 +319,7 @@ export default function ProductMain({
                 </span>
               )}
             </button>
-            <a href={`https://wa.me/?text=${encodeURIComponent(`${title} — ${pageUrl}`)}`} target="_blank" rel="noreferrer" aria-label="Share on WhatsApp" className="icon-btn h-16 w-16 bg-white">
+            <a href={`https://wa.me/?text=${encodeURIComponent(`${title} -${pageUrl}`)}`} target="_blank" rel="noreferrer" aria-label="Share on WhatsApp" className="icon-btn h-16 w-16 bg-white">
               <WhatsApp />
             </a>
             <a href={`mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(pageUrl)}`} aria-label="Share by email" className="icon-btn h-16 w-16 bg-white">

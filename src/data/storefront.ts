@@ -56,7 +56,7 @@ export const DEFAULT_STOREFRONT: StorefrontSettings = {
   heroSlides: [
     {
       id: "anniversary",
-      eyebrow: "No. 01 — 145th Anniversary Edition",
+      eyebrow: "No. 01 -145th Anniversary Edition",
       title: "Anniversary",
       subtitle: "Heritage",
       description:
@@ -74,11 +74,11 @@ export const DEFAULT_STOREFRONT: StorefrontSettings = {
     },
     {
       id: "hydroconquest",
-      eyebrow: "No. 02 — Deep Sea Chronometer",
+      eyebrow: "No. 02 -Deep Sea Chronometer",
       title: "HydroConquest",
       subtitle: "Edition",
       description:
-        "Engineered for marine depth and refined urban prestige — high-grade stainless steel under a scratch-resistant ceramic bezel.",
+        "Engineered for marine depth and refined urban prestige -high-grade stainless steel under a scratch-resistant ceramic bezel.",
       price: "₹2,25,000",
       image: `${CDN}/v1784048474/timect/image_4.png`,
       href: "/watches?category=new",
@@ -92,7 +92,7 @@ export const DEFAULT_STOREFRONT: StorefrontSettings = {
     },
     {
       id: "king-seiko",
-      eyebrow: "No. 03 — High-Beat Masterpiece",
+      eyebrow: "No. 03 -High-Beat Masterpiece",
       title: "King Seiko",
       subtitle: "Mechanical",
       description:

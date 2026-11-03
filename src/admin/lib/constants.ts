@@ -1,4 +1,4 @@
-/** Admin roles — ready for future RBAC expansion */
+/** Admin roles -ready for future RBAC expansion */
 export type AdminRole = "super_admin" | "admin" | "manager" | "viewer";
 
 export const ADMIN_ROLES: { value: AdminRole; label: string }[] = [

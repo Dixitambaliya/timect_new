@@ -1,5 +1,5 @@
 /**
- * Corporate gifting sample catalog — static, in-code data.
+ * Corporate gifting sample catalog -static, in-code data.
  * No database reads/writes and no products.json dependency.
  * Images use existing Timect Cloudinary assets.
  */

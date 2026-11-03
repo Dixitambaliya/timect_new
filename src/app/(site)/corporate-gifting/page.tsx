@@ -5,7 +5,7 @@ import CorporateGifting from "@/components/gifting/CorporateGifting";
 export const metadata: Metadata = {
   title: "Corporate Gifting",
   description:
-    "Find the perfect Timect corporate gift — precision watches for employee recognition, client gifts, and milestone celebrations.",
+    "Find the perfect Timect corporate gift -precision watches for employee recognition, client gifts, and milestone celebrations.",
   openGraph: {
     title: "Find your gift | Timect Corporate Gifting",
     description: "A gallery of Timect timepieces for recognition, clients, and milestones.",

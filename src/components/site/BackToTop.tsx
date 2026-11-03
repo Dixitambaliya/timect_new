@@ -1,22 +1,50 @@
 "use client";
 
 import { smoothScrollTo } from "@/lib/smooth-scroll";
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import { cx } from "@/lib/cx";
-import { useScrollY } from "@/components/fuse/hooks";
+import { useScrolledPast } from "@/components/fuse/hooks";
 import { ArrowUp } from "@/components/fuse/icons";
+
+const r = 25;
+const c = 2 * Math.PI * r;
 
 /** Floating back-to-top button with circular scroll-progress ring. */
 export default function BackToTop() {
-  const y = useScrollY();
-  const [max, setMax] = useState(1);
+  const show = useScrolledPast(800);
+  const ring = useRef<SVGCircleElement>(null);
+
+  // Drive the ring straight from scroll -re-rendering React every frame
+  // makes touch scrolling stutter on phones.
   useEffect(() => {
-    setMax(Math.max(1, document.documentElement.scrollHeight - window.innerHeight));
-  }, [y]);
-  const progress = Math.min(1, y / max);
-  const show = y > 800;
-  const r = 25;
-  const c = 2 * Math.PI * r;
+    let raf = 0;
+    let max = 1;
+    const measure = () => {
+      max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+    };
+    const paint = () => {
+      raf = 0;
+      const progress = Math.min(1, window.scrollY / max);
+      ring.current?.setAttribute("stroke-dashoffset", String(c * (1 - progress)));
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(paint);
+    };
+    const ro = new ResizeObserver(() => {
+      measure();
+      onScroll();
+    });
+    ro.observe(document.body);
+    measure();
+    paint();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+      window.removeEventListener("scroll", onScroll);
+    };
+  }, []);
+
   return (
     <button
       type="button"
@@ -30,6 +58,7 @@ export default function BackToTop() {
       <svg className="absolute inset-0 -rotate-90" viewBox="0 0 56 56" aria-hidden>
         <circle cx="28" cy="28" r={r} fill="none" stroke="#e6e8ea" strokeWidth="2" />
         <circle
+          ref={ring}
           cx="28"
           cy="28"
           r={r}
@@ -37,7 +66,7 @@ export default function BackToTop() {
           stroke="#343d50"
           strokeWidth="2"
           strokeDasharray={c}
-          strokeDashoffset={c * (1 - progress)}
+          strokeDashoffset={c}
           strokeLinecap="round"
         />
       </svg>

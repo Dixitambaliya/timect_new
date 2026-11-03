@@ -1,277 +1,197 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { HeroSlide } from "@/data/storefront";
 import { cx } from "@/lib/cx";
 import { catalogThumbUrl } from "@/lib/catalog-image";
-import { ButtonPrimary } from "@/components/fuse/buttons";
 import { ArrowLeft, ArrowRight } from "@/components/fuse/icons";
 
-const AUTOPLAY = 8000;
+const AUTOPLAY = 5500;
 
-/** Backdrop palette cycled per slide: deep base + glow tint layered over the blurred image. */
-const BACKDROPS = [
-  { base: "#0f2a2a", glow: "#1f6f63" }, // emerald
-  { base: "#141b3a", glow: "#3b4fa8" }, // midnight
-  { base: "#2a0f18", glow: "#8a2a3e" }, // burgundy
-  { base: "#221a10", glow: "#9a6b2f" }, // bronze
-  { base: "#1b1430", glow: "#6a44a8" }, // amethyst
-];
+function BackgroundTitle({ slide }: { slide: HeroSlide }) {
+  const primary = slide.title.trim() || "TIMECT";
+  const secondary = slide.subtitle.trim() || "COLLECTION";
 
-function Marquee({ text, className }: { text: string; className?: string }) {
-  const items = Array.from({ length: 4 }, () => text);
   return (
-    <div className={cx("marquee pointer-events-none overflow-hidden whitespace-nowrap", className)} aria-hidden>
-      <div className="marquee-track" style={{ ["--speed" as string]: "60s" }}>
-        {[0, 1].map((k) => (
-          <div key={k} className="flex shrink-0">
-            {items.map((t, i) => (
-              <span key={i} className="px-[.18em]">
-                {t}
-              </span>
-            ))}
-          </div>
-        ))}
-      </div>
+    <div
+      className="pointer-events-none absolute -right-[34%] top-[13%] z-[1] w-[110%] select-none text-right font-chivo uppercase leading-[0.76] tracking-[-0.075em] text-[#102852] opacity-[0.14] md:-right-[14%] md:top-[14%] md:w-[82%] md:opacity-25 lg:-right-[3vw] lg:top-[9%] lg:w-[66%] lg:leading-[0.72] lg:opacity-100"
+      aria-hidden
+    >
+      <span
+        className="block whitespace-nowrap text-[clamp(58px,17vw,92px)] font-light text-transparent md:text-[clamp(80px,12vw,124px)] lg:text-[clamp(76px,10.8vw,188px)]"
+        style={{ WebkitTextStroke: "1.25px #102852" }}
+      >
+        {primary}
+      </span>
+      <span className="block whitespace-nowrap text-[clamp(70px,20vw,108px)] font-black md:text-[clamp(96px,14vw,148px)] lg:text-[clamp(92px,13vw,226px)]">
+        {secondary}
+      </span>
+      <span
+        className="block whitespace-nowrap text-[clamp(64px,18vw,98px)] font-light text-transparent md:text-[clamp(88px,13vw,136px)] lg:text-[clamp(82px,11.5vw,200px)]"
+        style={{ WebkitTextStroke: "1.25px #102852" }}
+      >
+        MOMENT
+      </span>
     </div>
   );
 }
 
-/**
- * Fuse "interactive slides" for Timect: blurred full-bleed backdrop, oversized
- * marquee title behind a floating watch card, copy bottom-left, glass spec
- * chips and a thumbnail navigator bottom-right. Slides come from the CMS.
- */
 export default function HomeHero({ slides }: { slides: HeroSlide[] }) {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
-  const [tick, setTick] = useState(0);
   const [loaded, setLoaded] = useState(false);
-  const thumbs = useRef<HTMLDivElement>(null);
   const touch = useRef<number | null>(null);
 
-  useEffect(() => {
-    const t = requestAnimationFrame(() => setLoaded(true));
-    return () => cancelAnimationFrame(t);
-  }, []);
-
   const go = useCallback(
-    (i: number) => {
-      setIndex((i + slides.length) % slides.length);
-      setTick((t) => t + 1);
-    },
+    (next: number) => setIndex((next + slides.length) % slides.length),
     [slides.length],
   );
 
   useEffect(() => {
-    if (paused || slides.length < 2) return;
-    const t = setTimeout(() => go(index + 1), AUTOPLAY);
-    return () => clearTimeout(t);
-  }, [index, paused, go, tick, slides.length]);
+    const frame = requestAnimationFrame(() => setLoaded(true));
+    return () => cancelAnimationFrame(frame);
+  }, []);
 
   useEffect(() => {
-    const el = thumbs.current?.children[index] as HTMLElement | undefined;
-    if (el && thumbs.current) thumbs.current.scrollTo({ left: el.offsetLeft - 8, behavior: "smooth" });
-  }, [index]);
+    if (paused || slides.length < 2) return;
+    const timer = setTimeout(() => go(index + 1), AUTOPLAY);
+    return () => clearTimeout(timer);
+  }, [go, index, paused, slides.length]);
 
   if (!slides.length) return null;
 
+  const slideNumber = String(index + 1).padStart(2, "0");
+  const slideCount = String(slides.length).padStart(2, "0");
+
   return (
     <section
-      className="container-fuse pb-[10px] md:max-w-none md:px-0 md:pb-5"
+      className="container-fuse pb-2 md:max-w-none md:px-0 md:pb-5"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       aria-roledescription="carousel"
       aria-label="Featured watches"
     >
       <div
-        className="relative isolate h-[max(680px,min(calc(100svh-var(--announcement-h)-40px),900px))] overflow-hidden rounded-fuse text-white transition-colors duration-1000 md:h-[max(720px,calc(100svh-var(--announcement-h)))] md:rounded-none"
-        style={{ backgroundColor: BACKDROPS[index % BACKDROPS.length].base }}
-        onTouchStart={(e) => (touch.current = e.touches[0].clientX)}
-        onTouchEnd={(e) => {
-          if (touch.current == null) return;
-          const dx = e.changedTouches[0].clientX - touch.current;
-          if (Math.abs(dx) > 50) go(index + (dx < 0 ? 1 : -1));
+        className="relative isolate min-h-[720px] overflow-hidden rounded-fuse bg-[#f7f6f2] text-[#102852] md:min-h-[760px] md:rounded-none lg:min-h-[calc(100svh-var(--announcement-h))]"
+        onTouchStart={(event) => (touch.current = event.touches[0].clientX)}
+        onTouchEnd={(event) => {
+          if (touch.current === null) return;
+          const distance = event.changedTouches[0].clientX - touch.current;
+          if (Math.abs(distance) > 50) go(index + (distance < 0 ? 1 : -1));
           touch.current = null;
         }}
       >
-        {slides.map((s, i) => {
-          const active = i === index;
-          const near = active || Math.abs(i - index) === 1 || (index === 0 && i === slides.length - 1);
-          const bd = BACKDROPS[i % BACKDROPS.length];
+        <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_76%_68%,rgba(195,202,211,.46),transparent_28%),linear-gradient(115deg,#fbfaf7_0%,#f7f6f2_52%,#eceef0_100%)]" />
+        <div className="absolute -bottom-[14%] right-[-35%] z-0 aspect-square w-[100%] rounded-full border border-[#aab3c0]/60 bg-[repeating-radial-gradient(circle_at_center,rgba(255,255,255,.92)_0_2px,rgba(180,188,198,.22)_3px_4px,rgba(255,255,255,.9)_6px_10px)] shadow-[inset_0_0_60px_rgba(16,40,82,.14),0_-20px_80px_rgba(16,40,82,.08)] md:-bottom-[24%] md:right-[-20%] md:w-[82%] lg:-bottom-[34%] lg:right-[-9%] lg:w-[72%]" />
+
+        {slides.map((slide, slideIndex) => {
+          const active = slideIndex === index;
+          const nearby = active || Math.abs(slideIndex - index) === 1;
+
           return (
             <div
-              key={s.id || i}
-              className={cx("absolute inset-0 transition-opacity duration-1000 ease-fuse", active ? "z-[1] opacity-100" : "z-0 opacity-0")}
-              aria-hidden={!active}
+              key={slide.id || slideIndex}
               role="group"
               aria-roledescription="slide"
-              aria-label={`${i + 1} of ${slides.length}`}
-            >
-              {/* blurred backdrop */}
-              {near && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={catalogThumbUrl(s.image, 600)}
-                  alt=""
-                  className={cx(
-                    "img-fill opacity-40 blur-[60px] transition-transform duration-[2s] ease-fuse-out md:blur-[100px]",
-                    active && loaded ? "scale-[1.4]" : "scale-[1.6]",
-                  )}
-                />
+              aria-label={`${slideIndex + 1} of ${slides.length}`}
+              aria-hidden={!active}
+              className={cx(
+                "absolute inset-0 transition-opacity duration-700 ease-fuse",
+                active ? "z-[2] opacity-100" : "pointer-events-none z-[1] opacity-0",
               )}
-              <div
-                className="absolute inset-0"
-                style={{
-                  background: `radial-gradient(ellipse 70% 60% at 50% 45%, ${bd.glow}cc 0%, transparent 70%), linear-gradient(160deg, ${bd.base}d9 0%, ${bd.base}66 45%, ${bd.base}f2 100%)`,
-                }}
-              />
+            >
+              <BackgroundTitle slide={slide} />
 
-              {/* oversized marquee + floating watch card */}
-              <div className="absolute inset-0 z-[2] flex items-center justify-center pb-[310px] pt-[90px] md:pb-0 md:pt-0">
-                <Marquee
-                  text={`${s.title} ${s.subtitle}`.trim()}
-                  className="absolute inset-x-0 top-[37%] -translate-y-1/2 font-chivo text-[64px] font-black uppercase leading-none text-white/90 md:top-1/2 md:text-[130px] xl:text-[200px]"
-                />
+              <div className="absolute inset-x-5 top-[16%] z-[4] md:left-[6%] md:right-auto md:top-[17%] md:w-[50%] lg:left-[4.2%] lg:top-[18%] lg:w-[38%] xl:w-[34%]">
                 <div
                   className={cx(
-                    "group/media relative h-[270px] w-[240px] transition-[opacity,transform] duration-1000 ease-fuse md:h-[640px] md:w-[560px]",
-                    active && loaded ? "translate-y-0 opacity-100" : "translate-y-6 scale-90 opacity-0",
+                    "transition-[opacity,transform] duration-700 ease-fuse-out",
+                    active && loaded ? "translate-y-0 opacity-100" : "translate-y-5 opacity-0",
                   )}
-                  style={{ transitionDelay: active ? "0.35s" : "0s" }}
                 >
-                  {near && (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={catalogThumbUrl(s.image, 900)}
-                      alt={`${s.title} ${s.subtitle}`}
-                      loading={active ? "eager" : "lazy"}
-                      className="img-fill object-contain drop-shadow-[0_40px_50px_rgba(0,0,0,.45)] transition-transform duration-1000 ease-fuse group-hover/media:scale-105"
-                    />
-                  )}
+                  <div className="mb-4 flex items-center gap-3 text-[10px] font-semibold uppercase tracking-[0.3em] text-[#52627e] md:mb-6 md:gap-4 md:text-[11px] md:tracking-[0.42em] lg:mb-7">
+                    <span>Timect collection</span>
+                    <span className="h-px w-12 bg-[#76849a] md:w-20" />
+                  </div>
+                  <h1 className="max-w-[520px] font-chivo text-[44px] font-black leading-[0.92] tracking-[-0.055em] text-[#102852] sm:text-[52px] md:text-[clamp(58px,7.5vw,76px)] lg:text-[clamp(64px,6vw,104px)]">
+                    Find<br />Your Time.
+                  </h1>
+                  <p className="mt-3 max-w-[360px] text-[14px] leading-[1.55] text-[#66748d] sm:text-[15px] md:mt-5 md:max-w-[470px] md:text-[17px] lg:text-[19px]">
+                    {slide.description || "Timeless designs. Everyday distinction."}
+                  </p>
+                  <div className="mt-5 flex flex-col items-start gap-4 sm:flex-row sm:flex-wrap sm:items-center md:mt-7 lg:mt-8">
+                    <Link
+                      href={slide.href}
+                      tabIndex={active ? 0 : -1}
+                      className="group inline-flex w-full max-w-[280px] items-center justify-between gap-8 rounded-full bg-[#102852] px-6 py-3.5 text-[14px] font-semibold text-white shadow-[0_12px_28px_rgba(16,40,82,.16)] transition-transform duration-300 hover:-translate-y-0.5 sm:w-auto sm:justify-start md:px-7 md:py-4 md:text-[15px]"
+                    >
+                      {slide.buttonLabel || "Explore collection"}
+                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    </Link>
+                    <Link
+                      href="/corporate-gifting"
+                      tabIndex={active ? 0 : -1}
+                      className="group inline-flex items-center gap-4 border-b border-[#102852] pb-1 text-[14px] font-medium"
+                    >
+                      Corporate gifting
+                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    </Link>
+                  </div>
                 </div>
               </div>
 
-              {/* spec chips (desktop) */}
-              {s.specs.length > 0 && (
-                <ul
-                  className={cx(
-                    "absolute right-8 top-1/2 z-[3] hidden w-[230px] -translate-y-1/2 flex-col gap-2 transition-[opacity,transform] duration-[800ms] ease-fuse-out xl:flex",
-                    active && loaded ? "translate-x-0 opacity-100" : "translate-x-6 opacity-0",
-                  )}
-                  style={{ transitionDelay: active ? "0.6s" : "0s" }}
-                >
-                  {s.specs.map((spec) => (
-                    <li key={spec.label} className="glass rounded-fuse-md !bg-black/30 px-4 py-3">
-                      <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-white/70">{spec.label}</p>
-                      <p className="mt-1 text-[16px] font-semibold">{spec.value}</p>
-                    </li>
-                  ))}
-                </ul>
-              )}
-
-              {/* copy */}
-              <div className="absolute inset-x-0 bottom-0 z-[3] flex flex-col items-center p-4 pb-16 text-center md:items-start md:p-12 md:text-left">
-                <div
-                  className={cx(
-                    "max-w-[520px] transition-[opacity,transform] duration-[800ms] ease-fuse-out",
-                    active && loaded ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0",
-                  )}
-                  style={{ transitionDelay: active ? "0.5s" : "0s" }}
-                >
-                  {s.eyebrow && (
-                    <p className="mb-3 text-[13px] font-semibold uppercase tracking-[0.16em] text-white/75">{s.eyebrow}</p>
-                  )}
-                  <h2 className="text-[28px] font-bold leading-[1.1] text-white xl:text-[40px]">
-                    {s.title} <span className="font-normal text-white/80">{s.subtitle}</span>
-                  </h2>
-                  <p className="mt-3 line-clamp-3 text-[14px] leading-[1.5] text-white/90 md:mt-5 md:line-clamp-none md:text-[16px]">{s.description}</p>
-                  <div className="mt-6 flex flex-wrap items-center justify-center gap-5 md:mt-8 md:justify-start">
-                    <ButtonPrimary href={s.href} glass className="!bg-white/10" bg="#ffffff" tabIndex={active ? 0 : -1}>
-                      {s.buttonLabel || "Explore"}
-                    </ButtonPrimary>
-                    {s.price && (
-                      <div className="text-left">
-                        <p className="text-[20px] font-semibold">{s.price}</p>
-                        <p className="text-[12px] text-white/70">Incl. taxes · 5-year guarantee</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
+              <div
+                className={cx(
+                  "absolute bottom-[76px] right-[-5%] z-[3] h-[31%] w-[58%] transition-[opacity,transform] duration-1000 ease-fuse-out sm:right-[1%] sm:h-[34%] sm:w-[54%] md:bottom-[5%] md:right-[2%] md:h-[50%] md:w-[43%] lg:bottom-[2%] lg:right-[7%] lg:h-[72%] lg:w-[44%]",
+                  active && loaded ? "translate-x-0 translate-y-0 opacity-100" : "translate-x-8 translate-y-5 opacity-0",
+                )}
+                style={{ transitionDelay: active ? "120ms" : "0ms" }}
+              >
+                {nearby && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={catalogThumbUrl(slide.image, 1100)}
+                    alt={`${slide.title} ${slide.subtitle}`.trim()}
+                    loading={active ? "eager" : "lazy"}
+                    className="h-full w-full object-contain object-center drop-shadow-[0_35px_30px_rgba(16,40,82,.2)] transition-transform duration-700 hover:scale-[1.025]"
+                  />
+                )}
               </div>
             </div>
           );
         })}
 
-        {/* Thumbnail navigator (desktop) */}
-        {slides.length > 1 && (
-          <div className="absolute bottom-8 right-8 z-[4] hidden items-end gap-4 lg:flex">
-            <button
-              type="button"
-              onClick={() => go(index - 1)}
-              aria-label="Previous slide"
-              className="glass flex h-[56px] w-[72px] items-center justify-center rounded-fuse bg-white/10 p-1"
-            >
-              <span className="flex h-full w-full items-center justify-center rounded-fuse-md bg-white text-ink">
-                <ArrowLeft className="h-4 w-4" />
-              </span>
+        <div className="absolute bottom-6 left-5 z-[8] flex items-center gap-2 text-[10px] font-semibold tracking-[0.12em] text-[#66748d] sm:gap-3 sm:text-[11px] md:bottom-9 md:left-[6%] lg:left-[4.2%]">
+          <span>{slideNumber}</span>
+          <span className="h-px w-5 bg-[#aeb6c2]" />
+          <span>{slideCount}</span>
+          <div className="ml-1 flex items-center gap-1">
+            {slides.map((slide, slideIndex) => (
+              <button
+                key={slide.id || slideIndex}
+                type="button"
+                onClick={() => go(slideIndex)}
+                aria-label={`Go to slide ${slideIndex + 1}`}
+                aria-current={slideIndex === index ? "true" : undefined}
+                className={cx(
+                  "h-[2px] transition-[width,background-color] duration-500",
+                  slideIndex === index ? "w-10 bg-[#102852] sm:w-16" : "w-6 bg-[#b7bec9] hover:bg-[#78859a] sm:w-9",
+                )}
+              />
+            ))}
+          </div>
+          <div className="ml-2 hidden gap-1 sm:flex">
+            <button type="button" onClick={() => go(index - 1)} aria-label="Previous watch" className="flex h-9 w-9 items-center justify-center rounded-full border border-[#aeb6c2] transition-colors hover:bg-white">
+              <ArrowLeft className="h-3.5 w-3.5" />
             </button>
-            <div className="glass w-[400px] rounded-fuse bg-white/10 p-2">
-              <div ref={thumbs} className="no-scrollbar flex gap-2 overflow-x-auto">
-                {slides.map((s, i) => (
-                  <button
-                    key={s.id || i}
-                    type="button"
-                    onClick={() => go(i)}
-                    aria-label={`Go to slide ${i + 1}`}
-                    aria-current={i === index}
-                    className={cx(
-                      "relative h-[90px] w-[120px] shrink-0 overflow-hidden rounded-fuse-md border bg-white transition-[border-color,opacity] duration-400",
-                      i === index ? "border-white" : "border-white/[.16] opacity-70 hover:opacity-100",
-                    )}
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={catalogThumbUrl(s.image, 240)} alt="" className="img-fill object-contain p-2" loading="lazy" />
-                  </button>
-                ))}
-              </div>
-              <div className="mx-1 mt-2 h-[3px] overflow-hidden rounded-full bg-white/30">
-                <div
-                  key={`${index}-${tick}-${paused}`}
-                  className="h-full origin-left rounded-full bg-white"
-                  style={{
-                    width: `${100 / slides.length}%`,
-                    marginLeft: `${(index * 100) / slides.length}%`,
-                    animation: paused ? "none" : `progress ${AUTOPLAY}ms linear both`,
-                  }}
-                />
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={() => go(index + 1)}
-              aria-label="Next slide"
-              className="glass flex h-[56px] w-[72px] items-center justify-center rounded-fuse bg-white/10 p-1"
-            >
-              <span className="flex h-full w-full items-center justify-center rounded-fuse-md bg-white text-ink">
-                <ArrowRight className="h-4 w-4" />
-              </span>
+            <button type="button" onClick={() => go(index + 1)} aria-label="Next watch" className="flex h-9 w-9 items-center justify-center rounded-full border border-[#aeb6c2] transition-colors hover:bg-white">
+              <ArrowRight className="h-3.5 w-3.5" />
             </button>
           </div>
-        )}
-
-        {/* Pagination (mobile / tablet) */}
-        <div className="absolute inset-x-0 bottom-6 z-[4] flex justify-center gap-2 lg:hidden">
-          {slides.map((s, i) => (
-            <button
-              key={s.id || i}
-              type="button"
-              onClick={() => go(i)}
-              aria-label={`Go to slide ${i + 1}`}
-              className={cx("h-1.5 rounded-full transition-all duration-400", i === index ? "w-8 bg-white" : "w-1.5 bg-white/50")}
-            />
-          ))}
         </div>
+
+        <div className="absolute bottom-0 left-0 z-[7] h-[3px] bg-[#102852]/15 transition-[width] duration-700" style={{ width: `${((index + 1) / slides.length) * 100}%` }} />
       </div>
     </section>
   );

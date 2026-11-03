@@ -49,7 +49,7 @@ function animate(el: HTMLElement): () => void {
     if (el.classList.contains("reveal-wipe")) {
       gsap.set(el, { opacity: 1, clipPath: "none" });
       markRevealed();
-      // background-clip:text wordmarks can't be split — sweep a clip mask instead.
+      // background-clip:text wordmarks can't be split -sweep a clip mask instead.
       if (el.classList.contains("text-image")) {
         gsap.fromTo(
           el,
@@ -65,7 +65,7 @@ function animate(el: HTMLElement): () => void {
         );
         return;
       }
-      // Masked line-by-line rise — the signature GSAP heading reveal.
+      // Masked line-by-line rise -the signature GSAP heading reveal.
       SplitText.create(el, {
         type: "lines",
         mask: "lines",
@@ -108,14 +108,15 @@ function animate(el: HTMLElement): () => void {
 
 /**
  * Scroll-driven motion for the storefront. Picks up every `.reveal-*` and
- * `[data-parallax]` element — including ones rendered later (infinite scroll,
- * filter changes, route changes) — and hands it to GSAP ScrollTrigger.
+ * `[data-parallax]` element -including ones rendered later (infinite scroll,
+ * filter changes, route changes) -and hands it to GSAP ScrollTrigger.
  */
 export default function ScrollMotion() {
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
     const active = new Map<HTMLElement, () => void>();
+    const isTouch = window.matchMedia("(hover: none), (pointer: coarse)").matches;
     let frame = 0;
     let refreshTimer: ReturnType<typeof setTimeout> | undefined;
 
@@ -144,15 +145,17 @@ export default function ScrollMotion() {
     const mo = new MutationObserver(queueScan);
     mo.observe(document.body, { childList: true, subtree: true });
     // Lazy images / loaded products change page height → re-measure triggers.
-    const ro = new ResizeObserver(queueRefresh);
-    ro.observe(document.body);
+    // Browser chrome changes the mobile viewport while scrolling. Observing the
+    // body there can refresh every trigger mid-swipe and flicker the page.
+    const ro = isTouch ? null : new ResizeObserver(queueRefresh);
+    ro?.observe(document.body);
 
     document.fonts?.ready?.then(queueRefresh);
     window.addEventListener("load", queueRefresh);
 
     return () => {
       mo.disconnect();
-      ro.disconnect();
+      ro?.disconnect();
       window.removeEventListener("load", queueRefresh);
       cancelAnimationFrame(frame);
       clearTimeout(refreshTimer);

@@ -82,7 +82,7 @@ export function flattenSpecifications(
         value: String(section.content),
       });
     } else if (Array.isArray(section.items)) {
-      // Unknown type — best-effort walk
+      // Unknown type -best-effort walk
       for (const item of section.items) {
         if (typeof item === "string") {
           const parsed = parseDetailLine(item);

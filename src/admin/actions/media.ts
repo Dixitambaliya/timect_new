@@ -20,7 +20,7 @@ export type MediaItem = {
   createdAt?: string;
 };
 
-/** Max single file size (50MB — matches serverActions.bodySizeLimit). */
+/** Max single file size (50MB -matches serverActions.bodySizeLimit). */
 const MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
 
 function mapMedia(row: Record<string, unknown>): MediaItem {
@@ -82,7 +82,7 @@ export async function adminUploadMedia(formData: FormData): Promise<
       "image/svg+xml",
       "image/avif",
     ];
-    // Some browsers send empty type — allow and infer later
+    // Some browsers send empty type -allow and infer later
     if (file.type && !allowed.includes(file.type.toLowerCase())) {
       return {
         ok: false,

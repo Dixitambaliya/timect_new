@@ -1,4 +1,4 @@
-/* Timect Admin — built on the Fuse design system tokens (see app/globals.css). */
+/* Timect Admin -built on the Fuse design system tokens (see app/globals.css). */
 /* Layered so Tailwind utilities (w-auto, !py-2 …) can override these defaults. */
 @layer components {
 .admin-root,

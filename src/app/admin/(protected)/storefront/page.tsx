@@ -100,7 +100,7 @@ export default function StorefrontPage() {
     startTransition(async () => {
       const res = await adminSaveStorefront(data);
       if (res.ok) {
-        success("Storefront saved — changes are live");
+        success("Storefront saved -changes are live");
         setDirty(false);
       } else error(res.error);
     });
@@ -299,7 +299,7 @@ export default function StorefrontPage() {
               </button>
             </div>
             <div className="space-y-2">
-              {data.announcement.length === 0 && <p className="text-sm text-[var(--admin-muted)]">No messages — the bar will be empty.</p>}
+              {data.announcement.length === 0 && <p className="text-sm text-[var(--admin-muted)]">No messages -the bar will be empty.</p>}
               {data.announcement.map((m, i) => (
                 <div key={i} className="flex gap-2">
                   <input

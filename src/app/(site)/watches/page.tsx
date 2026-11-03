@@ -5,7 +5,7 @@ import WatchesCatalog from "@/components/catalog/WatchesCatalog";
 
 export const metadata: Metadata = {
   title: "Watches",
-  description: "Explore the full Timect collection — filter by category, gender, brand and price.",
+  description: "Explore the full Timect collection -filter by category, gender, brand and price.",
 };
 
 export default async function WatchesPage() {

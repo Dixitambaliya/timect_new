@@ -314,7 +314,7 @@
 }
 
 /* ------------------------------------------------------------------
-   Entrance animations — initial states only; GSAP ScrollTrigger
+   Entrance animations -initial states only; GSAP ScrollTrigger
    (components/site/ScrollMotion.tsx) animates them in.
 ------------------------------------------------------------------- */
 .reveal-rise { opacity: 0; transform: translateY(20px); }
@@ -358,7 +358,7 @@
   -webkit-background-clip: text; background-clip: text; color: transparent;
 }
 
-/* Footer wordmark — solid type, photo through irregular crops, gold second hand.
+/* Footer wordmark -solid type, photo through irregular crops, gold second hand.
    Every part is sized in em so the composition scales as one unit. */
 .wordmark {
   position: relative; display: inline-block;

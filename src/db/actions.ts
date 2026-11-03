@@ -187,7 +187,7 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
   }
 }
 
-/** Lean card fields only — no variants/specs/images[] (keeps catalog payloads tiny & fast). */
+/** Lean card fields only -no variants/specs/images[] (keeps catalog payloads tiny & fast). */
 export type CatalogCard = {
   id: number;
   slug: string;
@@ -267,7 +267,7 @@ export async function getCatalogCards(filters: {
       genders.length === 1 &&
       ["Men", "Women", "Unisex"].includes(genders[0]);
 
-    // Gender-only path (For Him / For Her) — lean SQL, no full-table JS scan
+    // Gender-only path (For Him / For Her) -lean SQL, no full-table JS scan
     if (noExtraFilters && singleGender && (!filters.category || filters.category === "all")) {
       const g = genders[0];
       const rows = await sql`
@@ -436,7 +436,7 @@ export async function getFilteredProducts(filters: {
   filter?: string;
   /**
    * Optional free-form specification keyword(s), comma-separated.
-   * Example: "Quartz,Chronograph" — any match in specifications JSONB.
+   * Example: "Quartz,Chronograph" -any match in specifications JSONB.
    */
   spec?: string;
   sortBy?: string; // 'newest' | 'price-asc' | 'price-desc'

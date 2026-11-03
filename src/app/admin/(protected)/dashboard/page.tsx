@@ -152,7 +152,7 @@ export default async function AdminDashboardPage() {
           </div>
           {inbox.items.length === 0 ? (
             <p className="px-6 py-12 text-center text-sm text-[var(--admin-muted)]">
-              No messages yet — contact form submissions will appear here.
+              No messages yet -contact form submissions will appear here.
             </p>
           ) : (
             <ul className="divide-y divide-[var(--admin-line)] px-3 pb-3">
