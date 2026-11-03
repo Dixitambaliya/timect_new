@@ -13,7 +13,7 @@ function Scrim({ visible, onClick }: { visible: boolean; onClick: () => void }) 
       aria-hidden
       onClick={onClick}
       className={cx(
-        "fixed inset-0 bg-[#23232314] transition-[opacity,backdrop-filter] duration-400",
+        "fixed inset-0 bg-[#23232314] transition-[opacity,backdrop-filter] duration-[550ms] ease-fuse-out",
         visible ? "opacity-100 backdrop-blur-[12px]" : "opacity-0 backdrop-blur-0",
       )}
     />
@@ -79,7 +79,7 @@ export function Drawer({
   children: ReactNode;
   aside?: ReactNode;
 }) {
-  const { mounted, visible } = usePresence(open, 500);
+  const { mounted, visible } = usePresence(open, 700);
   const panel = useRef<HTMLDivElement>(null);
   useScrollLock(open);
   useEscape(open, onClose);
@@ -99,7 +99,7 @@ export function Drawer({
         <div
           ref={panel}
           className={cx(
-            "frost relative flex h-full w-[calc(100vw-16px)] flex-col overflow-hidden rounded-fuse shadow-[0_20px_60px_rgba(0,0,0,.12)] transition-transform duration-[550ms] ease-fuse-out",
+            "frost relative flex h-full w-[calc(100vw-16px)] flex-col overflow-hidden rounded-fuse shadow-[0_20px_60px_rgba(0,0,0,.12)] transition-transform duration-700 ease-fuse-out",
             width,
             visible ? "translate-x-0" : from,
             className,
@@ -110,7 +110,7 @@ export function Drawer({
         {aside && (
           <div
             className={cx(
-              "hidden h-full transition-[transform,opacity] delay-100 duration-[550ms] ease-fuse-out lg:block",
+              "hidden h-full transition-[transform,opacity] delay-100 duration-700 ease-fuse-out lg:block",
               visible ? "translate-x-0 opacity-100" : cx(from, "opacity-0"),
             )}
           >

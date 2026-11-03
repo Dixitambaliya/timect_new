@@ -112,7 +112,7 @@ export default function MenuDrawer() {
         {/* Root level */}
         <div
           className={cx(
-            "absolute inset-0 flex flex-col overflow-y-auto px-4 pb-6 transition-[transform,opacity] duration-[550ms] ease-fuse-out md:px-9",
+            "absolute inset-0 flex flex-col overflow-y-auto overscroll-contain px-4 pb-6 transition-[transform,opacity] duration-700 ease-fuse-out md:px-9",
             nested ? "-translate-x-[30%] opacity-0" : "translate-x-0",
           )}
         >
@@ -157,7 +157,7 @@ export default function MenuDrawer() {
         {/* Nested level: Watches */}
         <div
           className={cx(
-            "absolute inset-0 overflow-y-auto px-4 pb-6 transition-[transform,opacity] duration-[550ms] ease-fuse-out md:px-9",
+            "absolute inset-0 overflow-y-auto overscroll-contain px-4 pb-6 transition-[transform,opacity] duration-700 ease-fuse-out md:px-9",
             nested ? "translate-x-0 opacity-100" : "pointer-events-none translate-x-full opacity-0",
           )}
         >

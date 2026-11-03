@@ -29,6 +29,6 @@ export function unlockSmoothScroll() {
 }
 
 export function smoothScrollTo(top: number) {
-  if (instance) instance.scrollTo(top, { duration: 1.2 });
+  if (instance) instance.scrollTo(top, { lerp: 0.055 });
   else window.scrollTo({ top, behavior: "smooth" });
 }

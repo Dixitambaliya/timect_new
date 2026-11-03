@@ -124,18 +124,18 @@ export default function ProductCard({
 
         {/* Desktop glass bar: Quick view + details -slides up on hover */}
         <div className="absolute inset-x-0 bottom-0 hidden justify-center px-4 pb-3 md:flex">
-          <div className="glass flex translate-y-[calc(100%+16px)] gap-1 rounded-fuse bg-[#f0f2f452] p-1 opacity-0 transition-[transform,opacity] duration-400 ease-fuse-out group-focus-within/card:translate-y-0 group-focus-within/card:opacity-100 group-hover/card:translate-y-0 group-hover/card:opacity-100">
+          <div className="glass flex translate-y-[calc(100%+16px)] gap-1 rounded-fuse bg-[#f0f2f452] p-1 opacity-0 transition-[transform,opacity] duration-[800ms] ease-fuse-out group-focus-within/card:translate-y-0 group-focus-within/card:opacity-100 group-hover/card:translate-y-0 group-hover/card:opacity-100">
             <button
               type="button"
               onClick={() => openQuickView(product.slug)}
-              className="rounded-fuse-md border border-line bg-white px-8 py-3 text-[16px] font-semibold transition-colors duration-400 hover:bg-btn"
+              className="rounded-fuse-md border border-line bg-white px-8 py-3 text-[16px] font-semibold transition-colors duration-700 ease-fuse-out hover:bg-btn"
             >
               Quick view
             </button>
             <Link
               href={url}
               aria-label={`View ${name}`}
-              className="flex w-[54px] items-center justify-center rounded-fuse-md border border-line bg-white transition-colors duration-400 hover:bg-btn"
+              className="flex w-[54px] items-center justify-center rounded-fuse-md border border-line bg-white transition-colors duration-700 ease-fuse-out hover:bg-btn"
             >
               <QuickViewIcon className="h-6 w-6" />
             </Link>
