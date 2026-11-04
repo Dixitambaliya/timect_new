@@ -17,6 +17,21 @@ const TABS: [Tab, string][] = [
   ["contact", "Contact & social"],
 ];
 
+const PAGE_LINK_OPTIONS = [
+  { label: "Home", value: "/" },
+  { label: "All watches", value: "/watches" },
+  { label: "New arrivals", value: "/watches?category=new" },
+  { label: "Recommended watches", value: "/watches?category=recommended" },
+  { label: "Watches for him", value: "/watches?gender=Men" },
+  { label: "Watches for her", value: "/watches?gender=Women" },
+  { label: "Corporate gifting", value: "/corporate-gifting" },
+  { label: "About", value: "/about" },
+  { label: "Contact", value: "/contact" },
+  { label: "FAQs", value: "/faqs" },
+  { label: "Privacy policy", value: "/privacy" },
+  { label: "Terms and conditions", value: "/terms" },
+] as const;
+
 function move<T>(list: T[], from: number, to: number): T[] {
   if (to < 0 || to >= list.length) return list;
   const next = [...list];
@@ -32,6 +47,23 @@ function Field({ label, children, hint }: { label: string; children: React.React
       {children}
       {hint && <span className="mt-1.5 block text-[12px] text-[var(--admin-muted)]">{hint}</span>}
     </label>
+  );
+}
+
+function PageLinkField({ value, onChange }: { value: string; onChange: (value: string) => void }) {
+  const isKnownPage = PAGE_LINK_OPTIONS.some((option) => option.value === value);
+
+  return (
+    <Field label="Button destination" hint="Select the storefront page opened when the button is clicked.">
+      <select className="admin-input" value={value} onChange={(event) => onChange(event.target.value)}>
+        {!isKnownPage && value && <option value={value}>Current custom destination ({value})</option>}
+        {PAGE_LINK_OPTIONS.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    </Field>
   );
 }
 
@@ -172,9 +204,7 @@ export default function StorefrontPage() {
                   <Field label="Button label">
                     <input className="admin-input" value={s.buttonLabel} onChange={(e) => setSlide(i, { buttonLabel: e.target.value })} />
                   </Field>
-                  <Field label="Button link" hint="e.g. /watches, /product/slug, /watches?filter=blue">
-                    <input className="admin-input font-mono text-[13px]" value={s.href} onChange={(e) => setSlide(i, { href: e.target.value })} />
-                  </Field>
+                  <PageLinkField value={s.href} onChange={(href) => setSlide(i, { href })} />
                 </div>
               </div>
               <div className="mt-5 rounded-fuse-md bg-[var(--admin-bg)] p-4">
@@ -263,9 +293,7 @@ export default function StorefrontPage() {
                     </Field>
                   </div>
                   <div className="md:col-span-2">
-                    <Field label="Link" hint="e.g. /watches?gender=Men">
-                      <input className="admin-input font-mono text-[13px]" value={b.href} onChange={(e) => setBanner(i, { href: e.target.value })} />
-                    </Field>
+                    <PageLinkField value={b.href} onChange={(href) => setBanner(i, { href })} />
                   </div>
                 </div>
               </div>

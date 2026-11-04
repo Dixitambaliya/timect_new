@@ -57,7 +57,7 @@ export default function AdminLoginPage() {
               <label className="admin-label" htmlFor="email">
                 Email
               </label>
-              <input id="email" name="email" type="email" autoComplete="username" required className="admin-input !py-4" placeholder="admin@timect.com" />
+              <input id="email" name="email" type="email" autoComplete="username" required className="admin-input !py-4" placeholder="Email" />
             </div>
             <div>
               <label className="admin-label" htmlFor="password">

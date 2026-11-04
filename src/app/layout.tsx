@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Archivo, Chivo } from "next/font/google";
+import { absoluteUrl, SITE_CONFIG } from "@/lib/seo/site-config";
 import "./globals.css";
 
 const archivo = Archivo({
@@ -17,16 +18,37 @@ const chivo = Chivo({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
+  metadataBase: new URL(SITE_CONFIG.url),
   title: {
-    default: "Timect -Official Online Store",
-    template: "%s | Timect",
+    default: SITE_CONFIG.title,
+    template: "%s | TIMECT",
   },
-  description: "Celebrating 145 Years of Craftsmanship -precision wristwatches by Timect.",
+  description: SITE_CONFIG.description,
+  applicationName: SITE_CONFIG.name,
+  alternates: { canonical: absoluteUrl("/") },
+  openGraph: {
+    type: "website",
+    siteName: SITE_CONFIG.name,
+    title: SITE_CONFIG.title,
+    description: SITE_CONFIG.description,
+    url: SITE_CONFIG.url,
+    locale: SITE_CONFIG.locale,
+    images: [{ url: absoluteUrl(SITE_CONFIG.logo), alt: "TIMECT watches" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: SITE_CONFIG.title,
+    description: SITE_CONFIG.description,
+    images: [absoluteUrl(SITE_CONFIG.logo)],
+  },
+  verification: {
+    ...(process.env.GOOGLE_SITE_VERIFICATION ? { google: process.env.GOOGLE_SITE_VERIFICATION } : {}),
+    ...(process.env.BING_SITE_VERIFICATION ? { other: { "msvalidate.01": process.env.BING_SITE_VERIFICATION } } : {}),
+  },
   icons: {
-    icon: [{ url: "/images/timect_logo.png", type: "image/png" }],
-    shortcut: "/images/timect_logo.png",
-    apple: "/images/timect_logo.png",
+    icon: [{ url: "/favicon.ico" }, { url: "/icon.png", type: "image/png" }],
+    shortcut: "/favicon.ico",
+    apple: "/apple-icon.png",
   },
 };
 

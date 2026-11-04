@@ -9,6 +9,17 @@ import {
   QuoteTicker,
 } from "@/components/home/HomeSections";
 import { toCard } from "@/lib/product-view";
+import { createPageMetadata } from "@/lib/seo/metadata";
+import { JsonLd, webPageSchema } from "@/lib/seo/structured-data";
+
+export const metadata: Metadata = {
+  ...createPageMetadata({
+  title: "TIMECT | Precision Watches & Refined Timepieces",
+  description: "Explore TIMECT watch collections, new arrivals, detailed specifications, and timepieces for everyday wear and gifting.",
+  path: "/",
+  }),
+  title: { absolute: "TIMECT | Precision Watches & Refined Timepieces" },
+};
 
 export default async function HomePage() {
   const [storefront, categories, arrivals, recommended] = await Promise.all([
@@ -25,6 +36,7 @@ export default async function HomePage() {
 
   return (
     <>
+      <JsonLd data={webPageSchema({ name: "TIMECT | Precision Watches & Refined Timepieces", description: "Explore TIMECT watch collections, new arrivals, detailed specifications, and timepieces for everyday wear and gifting.", path: "/" })} />
       <HomeHero slides={storefront.heroSlides} />
       <HomeStatement heading={storefront.statement.heading} text={storefront.statement.text} categories={categories} />
       <ProductTabs
@@ -40,3 +52,4 @@ export default async function HomePage() {
     </>
   );
 }
+import type { Metadata } from "next";

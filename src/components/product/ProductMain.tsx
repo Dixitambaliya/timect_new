@@ -16,7 +16,7 @@ import { ProductCardHorizontal, Rating, type CardProduct } from "@/components/si
 import { useSite, whatsappLink } from "@/components/site/SiteProvider";
 import ProductGallery from "./ProductGallery";
 
-const AVAILABILITY = "Available exclusively at corporate boutiques and e-commerce";
+const AVAILABILITY = "Contact us to confirm current availability";
 
 function InfoCard({ className, children }: { className?: string; children: ReactNode }) {
   return <div className={cx("rounded-fuse bg-white p-4 md:p-6", className)}>{children}</div>;
@@ -45,14 +45,13 @@ const SERVICE_PANELS: Record<string, ReactNode> = {
   "Delivery and returns": (
     <div className="rte">
       <p>
-        Orders are typically processed within a few business days. We ship watches in secure packaging designed to protect
-        the case, crystal, and bracelet or strap. You will receive tracking details once the package ships.
+        Delivery options and timing depend on the destination and current product availability. Contact customer care for
+        the details that apply to your enquiry before relying on a delivery estimate.
       </p>
       <h3>Returns</h3>
       <p>
-        Unused Timect watches in original packaging may be eligible for return within the stated return window after
-        delivery, subject to inspection. Contact customer care before returning any item so we can guide you through the
-        process.
+        Return eligibility and terms can vary. Contact customer care before arranging a return so the applicable terms can
+        be confirmed for your order.
       </p>
       <p>
         See our <Link href="/terms">Terms &amp; Conditions</Link> for full details.
@@ -66,8 +65,8 @@ const SERVICE_PANELS: Record<string, ReactNode> = {
         extreme heat or magnets. Store the watch away from moisture when not worn.
       </p>
       <p>
-        Timect watches include a limited manufacturer warranty covering defects in materials and workmanship under normal
-        use. For service, email <a href="mailto:service@timect.com">service@timect.com</a> with your model details.
+        For warranty coverage and service terms applicable to a specific watch, contact customer care with the model
+        details before purchase or service.
       </p>
     </div>
   ),

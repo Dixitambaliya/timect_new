@@ -122,8 +122,8 @@ export function CategoryCarousel({ categories }: { categories: ShopCategory[] })
   useDragScroll(car.ref);
   if (!categories.length) return null;
   return (
-    <Section className="container-fuse py-10 md:py-[60px]">
-      <div className="relative isolate overflow-hidden rounded-fuse py-8 md:py-20">
+    <Section className="container-fuse py-8 md:py-12">
+      <div className="relative isolate overflow-hidden rounded-fuse py-7 md:py-14">
         {categories.map((c, i) => (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -131,7 +131,7 @@ export function CategoryCarousel({ categories }: { categories: ShopCategory[] })
             src={catalogThumbUrl(c.image, 600)}
             alt=""
             aria-hidden
-            className={cx("img-fill -z-10 scale-125 blur-[60px] transition-opacity duration-1000 ease-fuse", i === bg ? "opacity-100" : "opacity-0")}
+            className={cx("img-fill -z-10 scale-110 blur-[32px] transition-opacity duration-1000 ease-fuse", i === bg ? "opacity-100" : "opacity-0")}
           />
         ))}
         <div className="absolute inset-0 -z-10 bg-white/35" />
@@ -143,14 +143,14 @@ export function CategoryCarousel({ categories }: { categories: ShopCategory[] })
           {categories.map((c, i) => (
             <li
               key={c.slug}
-              className="reveal-rise w-[170px] shrink-0 snap-start md:w-[240px]"
+              className="reveal-rise w-[204px] shrink-0 snap-start md:w-[350px]"
               style={{ "--delay": `${i * 0.06}s` } as CSSProperties}
               onMouseEnter={() => setBg(i)}
               onFocus={() => setBg(i)}
             >
               <Link
                 href={watchesFilterHref(c.slug)}
-                className="hover-lift group/c block rounded-fuse bg-white p-2"
+                className="hover-lift group/c block rounded-fuse bg-white p-1"
               >
                 <span className="relative block aspect-[193/246] overflow-hidden rounded-fuse-md" style={{ background: c.bg }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -161,14 +161,14 @@ export function CategoryCarousel({ categories }: { categories: ShopCategory[] })
                     className="img-fill transition-transform duration-[1100ms] ease-fuse-out group-hover/c:scale-110"
                   />
                 </span>
-                <span className="block px-3 pb-8 pt-5 text-[16px] font-semibold capitalize">
+                <span className="block px-3 pb-4 pt-3 text-[16px] font-semibold capitalize">
                   <span className="link-hover">{c.label.toLowerCase()}</span>
                 </span>
               </Link>
             </li>
           ))}
         </ul>
-        <div className="mt-10 flex justify-center md:mt-20">
+        <div className="mt-9 flex justify-center md:mt-12">
           <ButtonOutline href="/watches" className="min-w-[214px] bg-white">
             See all watches
           </ButtonOutline>
@@ -193,6 +193,12 @@ export function GridBanner({ banners }: { banners: PromoBanner[] }) {
             className="reveal-fade group/gb relative aspect-[708/780] overflow-hidden rounded-fuse md:aspect-auto md:h-[min(70svh,640px)] md:rounded-none"
             style={{ "--delay": `${i * 0.15}s` } as CSSProperties}
           >
+            <Link
+              href={b.href || "/watches"}
+              tabIndex={-1}
+              aria-hidden
+              className="absolute inset-0 z-[1]"
+            />
             <div data-parallax="8" className="absolute inset-x-0 -inset-y-[12%]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -203,10 +209,10 @@ export function GridBanner({ banners }: { banners: PromoBanner[] }) {
               />
             </div>
             <div className="absolute inset-0 bg-[#0000001a]" />
-            <div className="absolute inset-x-0 bottom-0 flex flex-col items-start bg-[linear-gradient(180deg,rgba(35,35,35,0),rgba(35,35,35,.65))] p-6 pt-32 text-white transition-[opacity,transform] duration-[600ms] ease-fuse-out md:translate-y-10 md:p-12 md:pt-48 md:opacity-0 md:group-focus-within/gb:translate-y-0 md:group-focus-within/gb:opacity-100 md:group-hover/gb:translate-y-0 md:group-hover/gb:opacity-100">
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] flex flex-col items-start bg-[linear-gradient(180deg,rgba(35,35,35,0),rgba(35,35,35,.65))] p-6 pt-32 text-white transition-[opacity,transform] duration-[600ms] ease-fuse-out md:translate-y-10 md:p-12 md:pt-48 md:opacity-0 md:group-focus-within/gb:translate-y-0 md:group-focus-within/gb:opacity-100 md:group-hover/gb:translate-y-0 md:group-hover/gb:opacity-100">
               <h2 className="text-[28px] font-bold text-white md:text-[44px] md:leading-[1.09]">{b.title}</h2>
               {b.text && <p className="mt-3 max-w-[460px] text-[16px] leading-[1.5]">{b.text}</p>}
-              <ButtonPrimary href={b.href} glass bg="#ffffff" className="mt-6 !bg-white/10">
+              <ButtonPrimary href={b.href || "/watches"} glass bg="#ffffff" className="pointer-events-auto mt-6 !bg-white/10">
                 {b.buttonLabel || "Explore"}
               </ButtonPrimary>
             </div>
@@ -221,7 +227,7 @@ export function GridBanner({ banners }: { banners: PromoBanner[] }) {
   );
 }
 
-/** Endless brand-quote ticker with inline watch images; reverse direction. */
+/** Endless brand-quote ticker with inline watch images; moves left. */
 export function QuoteTicker({ text, images }: { text: string; images: string[] }) {
   const unit = (k: number) => (
     <div className="flex shrink-0 items-center" key={k}>
@@ -241,7 +247,7 @@ export function QuoteTicker({ text, images }: { text: string; images: string[] }
   );
   return (
     <Section className="marquee reveal-fade overflow-hidden py-8 md:py-12" aria-label={text}>
-      <div className="marquee-track pause-on-hover" style={{ ["--speed" as string]: "70s", ["--direction" as string]: "reverse" }}>
+      <div className="marquee-track pause-on-hover" style={{ ["--speed" as string]: "70s", ["--direction" as string]: "normal" }}>
         {[0, 1].map((k) => (
           <div key={k} className="flex shrink-0" aria-hidden={k === 1}>
             {unit(k)}

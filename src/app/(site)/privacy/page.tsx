@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import ContentPage from "@/components/site/ContentPage";
+import { createPageMetadata } from "@/lib/seo/metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
   title: "Privacy Policy",
-  description:
-    "How Timect collects, uses, and protects personal information when you shop for or inquire about our wristwatches.",
-};
+  description: "Read how TIMECT handles personal information submitted through its website and customer enquiry forms.",
+  path: "/privacy",
+});
 
 export default function PrivacyPage() {
   return (

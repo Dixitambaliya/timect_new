@@ -10,6 +10,7 @@ import MenuDrawer from "@/components/site/MenuDrawer";
 import SearchDrawer from "@/components/site/SearchDrawer";
 import QuickView from "@/components/site/QuickView";
 import BackToTop from "@/components/site/BackToTop";
+import { JsonLd, siteGraph } from "@/lib/seo/structured-data";
 
 // Storefront content is edited live from the admin panel.
 export const dynamic = "force-dynamic";
@@ -20,6 +21,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
 
   return (
     <SiteProvider categories={categories} storefront={storefront} whatsappNumber={whatsappNumber}>
+      <JsonLd data={siteGraph(storefront)} />
       <a
         href="#main"
         className="sr-only z-[100] rounded-fuse bg-white p-3 focus:not-sr-only focus:fixed focus:left-4 focus:top-4"

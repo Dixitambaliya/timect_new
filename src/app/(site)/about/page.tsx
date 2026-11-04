@@ -2,12 +2,13 @@ import type { Metadata } from "next";
 import ContentPage from "@/components/site/ContentPage";
 import { ButtonPrimary, ButtonOutline } from "@/components/fuse/buttons";
 import { Box, Shield, Watch } from "@/components/fuse/icons";
+import { createPageMetadata } from "@/lib/seo/metadata";
 
-export const metadata: Metadata = {
-  title: "About Us",
-  description:
-    "Discover Timect -a wristwatch manufacturer dedicated to precision movements, refined design, and enduring craftsmanship.",
-};
+export const metadata: Metadata = createPageMetadata({
+  title: "About TIMECT",
+  description: "Learn about TIMECT's approach to watch design, movement selection, case finishing, inspection, and clear product specifications.",
+  path: "/about",
+});
 
 const IMAGE =
   "https://res.cloudinary.com/dphscxzb4/image/upload/f_auto,q_auto,w_1400/v1784048470/timect/gold_truton_chronograph.jpg";
@@ -16,17 +17,17 @@ const PILLARS = [
   {
     icon: Watch,
     title: "Built as instruments",
-    text: "We approach each watch as a complete instrument: a balanced case proportion, a legible dial, a dependable movement, and straps chosen for comfort over long wear. Our manufacturing process balances modern tooling with hand-checked assembly so every piece meets a consistent standard of finish and performance.",
+    text: "We evaluate each watch as a complete instrument: balanced case proportions, a legible dial, a suitable movement, and straps selected for comfort during regular wear. Product pages identify the available specifications for each model.",
   },
   {
     icon: Box,
     title: "From movement to finished watch",
-    text: "Inside each Timect timepiece, the movement is selected for accuracy and serviceability. Cases are machined and finished to resist daily wear. Dials and hands are aligned for clean reading at a glance. Before packing, every watch is inspected for timekeeping, water-resistance integrity, and cosmetic finish.",
+    text: "A watch brings together its movement, case, dial, hands, crystal, and strap or bracelet. We publish the available model specifications so these details can be compared before making an enquiry.",
   },
   {
     icon: Shield,
     title: "Our promise",
-    text: "Whether you choose a classic dress piece, a daily sports watch, or a refined ladies model, Timect stands behind the workmanship of every watch we produce. We build for years of regular wear -not for a season.",
+    text: "Whether you are comparing a classic dress piece, a daily sports watch, or a refined ladies model, our goal is to provide clear imagery, specifications, and a direct route to ask questions.",
   },
 ];
 
@@ -34,7 +35,7 @@ export default function AboutPage() {
   return (
     <ContentPage
       title="About Us"
-      subtitle="A watch manufacturer devoted to the quiet precision of timekeeping and the craft of building instruments for the wrist."
+      subtitle="A watch brand focused on clear product information, considered design, and direct customer enquiries."
       width="max-w-site"
       bare
     >
@@ -47,9 +48,8 @@ export default function AboutPage() {
           <p className="text-[14px] font-semibold uppercase tracking-[0.16em] text-muted">Timect</p>
           <h2 className="fuse-h3 mt-4">Clarity, reliability and lasting quality</h2>
           <p className="mt-6 text-[16px] leading-[1.7] text-[#2b2f38] md:text-[18px]">
-            Timect designs and manufactures wristwatches for people who value clarity, reliability, and lasting quality.
-            Every collection begins on the drawing board and moves through case design, dial finishing, movement
-            selection, and rigorous testing before it reaches your wrist.
+            Timect presents wristwatches for people who value clarity and considered design. Our collections bring together
+            different case styles, dials, movements, and straps, with model details available on each product page.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <ButtonPrimary href="/watches" bg="#f0f2f4">

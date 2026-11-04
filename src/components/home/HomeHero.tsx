@@ -82,8 +82,12 @@ export default function HomeHero({ slides }: { slides: HeroSlide[] }) {
           touch.current = null;
         }}
       >
-        <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_76%_68%,rgba(195,202,211,.46),transparent_28%),linear-gradient(115deg,#fbfaf7_0%,#f7f6f2_52%,#eceef0_100%)]" />
-        <div className="absolute -bottom-[14%] right-[-35%] z-0 aspect-square w-[100%] rounded-full border border-[#aab3c0]/60 bg-[repeating-radial-gradient(circle_at_center,rgba(255,255,255,.92)_0_2px,rgba(180,188,198,.22)_3px_4px,rgba(255,255,255,.9)_6px_10px)] shadow-[inset_0_0_60px_rgba(16,40,82,.14),0_-20px_80px_rgba(16,40,82,.08)] md:-bottom-[24%] md:right-[-20%] md:w-[82%] lg:-bottom-[34%] lg:right-[-9%] lg:w-[72%]" />
+        <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_76%_54%,rgba(255,255,255,.98)_0%,rgba(247,246,242,.22)_27%,transparent_48%),linear-gradient(118deg,#fbfaf7_0%,#f7f6f2_52%,#eceef0_100%)]" />
+        <div className="hero-watch-platform" aria-hidden>
+          <span className="hero-watch-platform__ticks" />
+          <span className="hero-watch-platform__ring hero-watch-platform__ring--outer" />
+          <span className="hero-watch-platform__ring hero-watch-platform__ring--inner" />
+        </div>
 
         {slides.map((slide, slideIndex) => {
           const active = slideIndex === index;
@@ -143,18 +147,20 @@ export default function HomeHero({ slides }: { slides: HeroSlide[] }) {
 
               <div
                 className={cx(
-                  "absolute bottom-[76px] right-[-5%] z-[3] h-[31%] w-[58%] transition-[opacity,transform] duration-1000 ease-fuse-out sm:right-[1%] sm:h-[34%] sm:w-[54%] md:bottom-[5%] md:right-[2%] md:h-[50%] md:w-[43%] lg:bottom-[2%] lg:right-[7%] lg:h-[72%] lg:w-[44%]",
+                  "absolute bottom-[72px] left-[17%] z-[3] h-[37%] w-[66%] transition-[opacity,transform] duration-1000 ease-fuse-out sm:left-[21%] sm:h-[40%] sm:w-[58%] md:bottom-[5%] md:left-auto md:right-[1%] md:h-[52%] md:w-[45%] lg:bottom-[4%] lg:right-[3%] lg:h-[78%] lg:w-[46%]",
                   active && loaded ? "translate-x-0 translate-y-0 opacity-100" : "translate-x-8 translate-y-5 opacity-0",
                 )}
                 style={{ transitionDelay: active ? "120ms" : "0ms" }}
               >
+                <div className="hero-watch-ambient-shadow" aria-hidden />
+                <div className="hero-watch-contact-shadow" aria-hidden />
                 {nearby && (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={catalogThumbUrl(slide.image, 1100)}
                     alt={`${slide.title} ${slide.subtitle}`.trim()}
                     loading={active ? "eager" : "lazy"}
-                    className="h-full w-full object-contain object-center drop-shadow-[0_35px_30px_rgba(16,40,82,.2)] transition-transform duration-700 hover:scale-[1.025]"
+                    className="relative z-[2] h-full w-full object-contain object-center [filter:drop-shadow(0_18px_14px_rgba(16,40,82,.14))_drop-shadow(0_38px_32px_rgba(34,44,58,.18))] transition-transform duration-700 hover:scale-[1.025]"
                   />
                 )}
               </div>

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound, redirect } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import {
   getNewArrivals,
   getProductById,
@@ -12,13 +12,16 @@ import { Breadcrumbs } from "@/components/fuse/buttons";
 import ProductMain from "@/components/product/ProductMain";
 import RecentlyViewed from "@/components/product/RecentlyViewed";
 import { resolveVariants, toCard } from "@/lib/product-view";
+import { createPageMetadata } from "@/lib/seo/metadata";
+import { productName, productSchemas, productSeoDescription } from "@/lib/seo/product-seo";
+import { JsonLd } from "@/lib/seo/structured-data";
 
 type Params = { params: Promise<{ slug: string }> };
 
 async function loadProduct(slug: string): Promise<Product | null> {
   if (/^\d+$/.test(slug)) {
     const byId = await getProductById(Number(slug));
-    if (byId?.slug && byId.slug !== slug) redirect(`/product/${byId.slug}`);
+    if (byId?.slug && byId.slug !== slug) permanentRedirect(`/product/${byId.slug}`);
     return byId;
   }
   return getProductBySlug(decodeURIComponent(slug));
@@ -38,15 +41,12 @@ async function relatedFor(product: Product): Promise<Product[]> {
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
   const product = /^\d+$/.test(slug) ? await getProductById(Number(slug)) : await getProductBySlug(decodeURIComponent(slug));
-  if (!product) return { title: "Watch not found" };
-  const title = product.title || product.name || "Timect watch";
-  const description = product.subtitle || product.description || `${title} -${product.price}`;
+  if (!product) return createPageMetadata({ title: "Watch not found", description: "The requested TIMECT watch could not be found.", path: `/product/${slug}`, noIndex: true });
+  const name = productName(product);
+  const title = product.collection ? `${name} - ${product.collection}` : name;
+  const description = productSeoDescription(product);
   const image = product.image || product.images?.[0];
-  return {
-    title,
-    description,
-    openGraph: { title, description, images: image ? [image] : undefined },
-  };
+  return createPageMetadata({ title, description, path: `/product/${product.slug}`, image });
 }
 
 export default async function ProductPage({ params }: Params) {
@@ -59,6 +59,7 @@ export default async function ProductPage({ params }: Params) {
 
   return (
     <div className="container-fuse pb-10 pt-6 md:pt-10">
+      {productSchemas(product).map((schema, index) => <JsonLd key={index} data={schema} />)}
       <div className="mb-6">
         <Breadcrumbs items={[["Home", "/"], ["Watches", "/watches"], [title]]} />
       </div>

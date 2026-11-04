@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import ContentPage from "@/components/site/ContentPage";
+import { createPageMetadata } from "@/lib/seo/metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = createPageMetadata({
   title: "Terms & Conditions",
-  description:
-    "Terms governing use of the Timect website and purchase of Timect wristwatches from our official online store.",
-};
+  description: "Read the terms governing use of the TIMECT website, product information, and customer enquiries.",
+  path: "/terms",
+});
 
 export default function TermsPage() {
   return (

@@ -3,8 +3,14 @@ import { getCatalogCards } from "@/db/actions";
 import { Breadcrumbs, ButtonOutline } from "@/components/fuse/buttons";
 import { SearchIcon } from "@/components/fuse/icons";
 import ProductCard from "@/components/site/ProductCard";
+import { createPageMetadata } from "@/lib/seo/metadata";
 
-export const metadata: Metadata = { title: "Search" };
+export const metadata: Metadata = createPageMetadata({
+  title: "Search watches",
+  description: "Search the TIMECT watch catalog.",
+  path: "/search",
+  noIndex: true,
+});
 
 export default async function SearchPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   const { q = "" } = await searchParams;

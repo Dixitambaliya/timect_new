@@ -16,7 +16,7 @@ export default function FaqAccordion({ items }: { items: FaqItem[] }) {
         const isOpen = open === i;
         return (
           <li key={item.q} className="animate-rise-in rounded-fuse bg-white" style={{ animationDelay: `${i * 50}ms` }}>
-            <button
+            <h2><button
               id={`${baseId}-b${i}`}
               type="button"
               aria-expanded={isOpen}
@@ -33,7 +33,7 @@ export default function FaqAccordion({ items }: { items: FaqItem[] }) {
               >
                 <Plus className="h-5 w-5" />
               </span>
-            </button>
+            </button></h2>
             <div
               id={`${baseId}-p${i}`}
               role="region"

@@ -4,11 +4,13 @@ import ContactForm from "@/components/site/ContactForm";
 import { Clock, Mail, Phone } from "@/components/fuse/icons";
 import { getStorefront } from "@/db/content";
 import { getProductBySlug } from "@/db/actions";
+import { createPageMetadata } from "@/lib/seo/metadata";
 
-export const metadata: Metadata = {
-  title: "Contact Us",
-  description: "Contact Timect for product questions, orders, warranty support, and after-sales service for your wristwatch.",
-};
+export const metadata: Metadata = createPageMetadata({
+  title: "Contact TIMECT",
+  description: "Contact TIMECT for watch specifications, product enquiries, corporate gifting, and available customer support.",
+  path: "/contact",
+});
 
 export default async function ContactPage({
   searchParams,

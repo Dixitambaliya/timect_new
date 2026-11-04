@@ -33,6 +33,8 @@ export default function MediaPage() {
   const [loading, setLoading] = useState(true);
   const [pending, startTransition] = useTransition();
   const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+  const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
   const [urlInput, setUrlInput] = useState("");
   const [uploadFolder, setUploadFolder] = useState("general");
 
@@ -100,6 +102,47 @@ export default function MediaPage() {
   };
 
   const totalPages = Math.max(1, Math.ceil(total / 24));
+  const selectedCount = selectedIds.size;
+
+  const toggleSelected = (id: number) => {
+    setSelectedIds((current) => {
+      const next = new Set(current);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const deleteMedia = (ids: number[]) => {
+    if (!ids.length) return;
+    startTransition(async () => {
+      let deleted = 0;
+      let storageDeleted = 0;
+      const failures: string[] = [];
+
+      for (const id of ids) {
+        const res = await adminDeleteMedia(id);
+        if (res.ok) {
+          deleted += 1;
+          if (res.storageDeleted) storageDeleted += 1;
+        } else failures.push(res.error);
+      }
+
+      if (deleted) {
+        success(
+          storageDeleted
+            ? `Deleted ${deleted} image(s), including ${storageDeleted} hosted asset(s)`
+            : `Removed ${deleted} media item(s)`,
+        );
+      }
+      if (failures.length) error(failures[0]);
+
+      setDeleteId(null);
+      setBulkDeleteOpen(false);
+      setSelectedIds(new Set());
+      await load();
+    });
+  };
 
   return (
     <div className="space-y-6">
@@ -193,6 +236,17 @@ export default function MediaPage() {
             </option>
           ))}
         </select>
+        {selectedCount > 0 && (
+          <button
+            type="button"
+            className="admin-btn admin-btn-danger"
+            disabled={pending}
+            onClick={() => setBulkDeleteOpen(true)}
+          >
+            <Trash2 className="h-4 w-4" />
+            Delete selected ({selectedCount})
+          </button>
+        )}
       </div>
 
       {loading ? (
@@ -221,7 +275,16 @@ export default function MediaPage() {
                   alt={item.altText || item.filename || ""}
                   className="h-full w-full object-cover"
                 />
-                <div className="absolute inset-x-0 bottom-0 flex justify-end gap-1 bg-gradient-to-t from-black/60 to-transparent p-2 opacity-0 transition group-hover:opacity-100">
+                <label className="absolute left-2 top-2 z-[1] flex h-7 w-7 cursor-pointer items-center justify-center rounded bg-white/95 shadow-sm">
+                  <input
+                    type="checkbox"
+                    className="h-4 w-4 accent-[var(--admin-accent)]"
+                    checked={selectedIds.has(item.id)}
+                    onChange={() => toggleSelected(item.id)}
+                    aria-label={`Select ${item.filename || "image"}`}
+                  />
+                </label>
+                <div className="absolute inset-x-0 bottom-0 flex justify-end gap-1 bg-gradient-to-t from-black/60 to-transparent p-2 opacity-100 transition md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100">
                   <button
                     type="button"
                     className="rounded bg-white/90 p-1.5 text-black"
@@ -263,23 +326,25 @@ export default function MediaPage() {
       <ConfirmDialog
         open={deleteId != null}
         title="Delete this media item?"
-        description="Removes the library entry. Cloudinary assets are deleted when a public_id is present."
+        description="This permanently deletes the hosted Cloudinary asset when available, then removes its media-library entry. Pages or products using this image may show a broken image."
         confirmLabel="Delete"
         danger
         loading={pending}
         onCancel={() => setDeleteId(null)}
         onConfirm={() => {
           if (deleteId == null) return;
-          startTransition(async () => {
-            const res = await adminDeleteMedia(deleteId);
-            if (!res.ok) error(res.error);
-            else {
-              success("Media deleted");
-              setDeleteId(null);
-              await load();
-            }
-          });
+          deleteMedia([deleteId]);
         }}
+      />
+      <ConfirmDialog
+        open={bulkDeleteOpen}
+        title={`Delete ${selectedCount} selected image${selectedCount === 1 ? "" : "s"}?`}
+        description="This permanently deletes hosted Cloudinary assets when available and removes their media-library entries. Check that no products or pages still use them."
+        confirmLabel={`Delete ${selectedCount}`}
+        danger
+        loading={pending}
+        onCancel={() => setBulkDeleteOpen(false)}
+        onConfirm={() => deleteMedia(Array.from(selectedIds))}
       />
     </div>
   );

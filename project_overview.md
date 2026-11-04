@@ -468,16 +468,6 @@ Isolated Timect catalog CMS under `src/app/admin` + `src/admin/*`. Storefront ro
 - `cms_settings` -JSONB key/value (homepage cards, catalog filters)
 - `audit_logs` -optional action log
 
-### Auth env vars
-
-| Variable | Purpose |
-|----------|---------|
-| `ADMIN_JWT_SECRET` | JWT signing secret (required in production) |
-| `ADMIN_SEED_EMAIL` / `ADMIN_SEED_PASSWORD` / `ADMIN_SEED_NAME` | First super admin (seeded only if no users) |
-| `CLOUDINARY_*` | Optional; media upload uses signed Cloudinary API |
-
-Default seed (if empty table): `admin@timect.com` / see migrate output -change after first login.
-
 ### Product admin
 
 Full CRUD against existing `products` table (same JSONB `specifications` / `variants` / `sizes` / `images`). Multi-step editor: Basic → Flags → Images → Variants → Sizes → Specs → Preview. No per-spec DB columns.

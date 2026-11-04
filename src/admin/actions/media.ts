@@ -265,7 +265,10 @@ export async function adminListMedia(
 
 export async function adminDeleteMedia(
   id: number,
-): Promise<{ ok: true } | { ok: false; error: string }> {
+): Promise<
+  | { ok: true; storageDeleted: boolean }
+  | { ok: false; error: string }
+> {
   try {
     const session = await requireAdminSession();
     if (!canDelete(session.role)) throw new Error("FORBIDDEN");
@@ -279,7 +282,16 @@ export async function adminDeleteMedia(
     const apiKey = process.env.CLOUDINARY_API_KEY;
     const apiSecret = process.env.CLOUDINARY_API_SECRET;
 
-    if (item.public_id && cloudName && apiKey && apiSecret) {
+    let storageDeleted = false;
+
+    if (item.public_id) {
+      if (!cloudName || !apiKey || !apiSecret) {
+        return {
+          ok: false,
+          error: "Cloudinary credentials are missing. The hosted image was not deleted.",
+        };
+      }
+
       const timestamp = Math.floor(Date.now() / 1000);
       const toSign = `public_id=${item.public_id}&timestamp=${timestamp}${apiSecret}`;
       const signature = createHash("sha1").update(toSign).digest("hex");
@@ -289,15 +301,31 @@ export async function adminDeleteMedia(
         timestamp: String(timestamp),
         signature,
       });
-      await fetch(
+      const response = await fetch(
         `https://api.cloudinary.com/v1_1/${cloudName}/image/destroy`,
         { method: "POST", body },
       ).catch(() => null);
+
+      if (!response?.ok) {
+        return {
+          ok: false,
+          error: "Cloudinary could not delete the hosted image. Please try again.",
+        };
+      }
+
+      const result = (await response.json()) as { result?: string };
+      if (result.result !== "ok" && result.result !== "not found") {
+        return {
+          ok: false,
+          error: "Cloudinary did not confirm deletion. The library item was kept.",
+        };
+      }
+      storageDeleted = true;
     }
 
     await sql`DELETE FROM media_library WHERE id = ${id}`;
     revalidatePath("/admin/media");
-    return { ok: true };
+    return { ok: true, storageDeleted };
   } catch (err) {
     console.error("adminDeleteMedia:", err);
     return { ok: false, error: "Delete failed." };

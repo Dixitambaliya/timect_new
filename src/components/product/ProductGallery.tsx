@@ -30,6 +30,7 @@ function ZoomImage({ src, alt, onOpen, eager }: { src: string; alt: string; onOp
         src={catalogThumbUrl(src, 1400)}
         alt={alt}
         loading={eager ? "eager" : "lazy"}
+        fetchPriority={eager ? "high" : "auto"}
         className="img-fill object-contain transition-transform duration-300 ease-out"
         style={zoom ? { transform: "scale(2)", transformOrigin: `${zoom.x}% ${zoom.y}%` } : undefined}
       />
@@ -143,7 +144,7 @@ export default function ProductGallery({
               )}
             >
               {Math.abs(i - index) <= 1 || i === 0 ? (
-                <ZoomImage src={src} alt={title} eager={i === 0} onOpen={() => setLightbox(true)} />
+                <ZoomImage src={src} alt={`${title}, ${i === 0 ? "front view" : `view ${i + 1}`}`} eager={i === 0} onOpen={() => setLightbox(true)} />
               ) : null}
             </div>
           ))}

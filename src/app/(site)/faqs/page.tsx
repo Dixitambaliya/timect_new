@@ -1,66 +1,55 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import ContentPage from "@/components/site/ContentPage";
 import FaqAccordion from "@/components/site/FaqAccordion";
 import { ButtonPrimary } from "@/components/fuse/buttons";
+import { createPageMetadata } from "@/lib/seo/metadata";
+import { JsonLd, webPageSchema } from "@/lib/seo/structured-data";
 
-export const metadata: Metadata = {
-  title: "FAQs",
-  description: "Frequently asked questions about Timect wristwatches, orders, water resistance, care, and warranty.",
-};
+export const metadata: Metadata = createPageMetadata({
+  title: "Watch FAQs & Practical Guides",
+  description: "Clear answers about automatic and quartz watches, sizing, water resistance, chronographs, crystals, straps, care, and TIMECT enquiries.",
+  path: "/faqs",
+});
 
 const FAQS = [
-  {
-    q: "Are Timect watches manufactured in-house?",
-    a: "Timect designs its collections and oversees manufacturing to brand specifications. Cases, dials, hands, and straps are produced and finished to our standards, then assembled and inspected before shipment. Movement calibres are selected for reliability and serviceability in daily wear.",
-  },
-  {
-    q: "How accurate should my watch keep time?",
-    a: "Quartz Timect models are expected to keep very stable time under normal conditions. Mechanical models may vary slightly depending on wear position, temperature, and power reserve. If your watch gains or loses time beyond normal tolerance, contact our service team for assessment.",
-  },
-  {
-    q: "What does the water-resistance rating mean?",
-    a: "Water-resistance ratings indicate tested resistance under laboratory conditions -not a guarantee for all swimming or diving use. Avoid operating the crown underwater. After exposure to water, rinse with fresh water if needed and dry the watch carefully. Gaskets should be checked during routine service.",
-  },
-  {
-    q: "How should I care for my Timect wristwatch?",
-    a: "Wipe the case and crystal with a soft, dry cloth. Avoid strong chemicals, solvents, and prolonged exposure to extreme heat or magnets. Store the watch away from moisture when not worn. For leather straps, keep them dry and clean; for metal bracelets, occasional gentle cleaning maintains finish.",
-  },
-  {
-    q: "How long is the warranty?",
-    a: "Timect watches include a limited manufacturer warranty covering defects in materials and workmanship under normal use. The warranty does not cover accidental damage, unauthorized service, battery replacement after initial period (where applicable), or normal wear of straps and finishes. See product packaging or contact us for your model’s terms.",
-  },
-  {
-    q: "Can I service my watch with Timect?",
-    a: "Yes. We support after-sales service including movement checks, gasket replacement, battery changes on quartz models, and refinishing assessments where available. Email service@timect.com with your model details and a description of the issue.",
-  },
-  {
-    q: "How long does shipping take?",
-    a: "Orders are typically processed within a few business days. Delivery times depend on your location and the carrier. You will receive tracking details once the package ships. For delays or missing parcels, contact care@timect.com with your order number.",
-  },
-  {
-    q: "What is your return policy?",
-    a: "Unused Timect watches in original packaging may be eligible for return within the stated return window after delivery, subject to inspection. Custom or final-sale items may be excluded. Contact customer care before returning any item so we can guide you through the process.",
-  },
-  {
-    q: "How do I choose the right case size?",
-    a: "Case diameter is measured across the watch face, excluding the crown. Smaller wrists often suit 36–40 mm; larger wrists may prefer 40–42 mm or more. Lug-to-lug length and thickness also affect fit. If you need help matching a model to your wrist, reach out with a wrist measurement.",
-  },
+  { q: "How do I choose a watch?", a: "Start with how and where you will wear it, then compare case size, movement, water resistance, dial legibility, and strap material. Use the specifications on each TIMECT product page to compare models rather than choosing from appearance alone." },
+  { q: "What is an automatic watch?", a: "An automatic watch is a mechanical watch whose mainspring is wound by a rotor that moves as the wearer moves. It can also require manual winding, and its running time depends on the movement's actual power-reserve specification." },
+  { q: "What is a quartz watch?", a: "A quartz watch uses a battery-powered electronic oscillator regulated by a quartz crystal. Quartz movements generally require less routine attention than mechanical movements, although batteries and seals still need appropriate service." },
+  { q: "What is the difference between automatic and quartz watches?", a: "Automatic watches use a mechanical gear train powered by a wound spring, while quartz watches use a battery and quartz oscillator. Quartz is typically more accurate; automatic movements appeal to people who value mechanical construction and do not mind periodic servicing." },
+  { q: "What does water resistance mean?", a: "A water-resistance rating describes laboratory pressure testing, not a guarantee for every real-world activity. Follow the model instructions, keep the crown closed, avoid operating controls underwater, and have seals checked after opening or servicing the case." },
+  { q: "What is a chronograph?", a: "A chronograph is a watch with an elapsed-time function, usually controlled by pushers and displayed using a central seconds hand or subdials. It is separate from the watch's ordinary time display." },
+  { q: "What watch size is best for my wrist?", a: "There is no universal best size. Compare case diameter, lug-to-lug length, thickness, and strap fit with your wrist measurement; lug-to-lug length is especially useful for judging whether the watch will overhang the wrist." },
+  { q: "How do I care for a stainless steel watch?", a: "Wipe it with a soft cloth after wear and keep the crown closed. If the model's instructions permit water contact, use a lightly damp cloth for residue; avoid abrasives, harsh chemicals, and polishing compounds that can alter brushed or polished finishes." },
+  { q: "How do I maintain a leather watch strap?", a: "Keep leather away from water, perfume, cosmetics, and prolonged heat. Wipe it gently with a dry cloth, let moisture dry naturally, and rotate straps when possible to reduce repeated stress and perspiration exposure." },
+  { q: "What is a sapphire crystal?", a: "Sapphire crystal is a transparent watch-cover material made from synthetic crystalline aluminium oxide. It is highly scratch resistant, but it can still chip or break after a sufficiently hard impact." },
+  { q: "How should I store my watch?", a: "Store it clean and dry, away from strong magnets, direct sunlight, extreme temperatures, and objects that could scratch the case or crystal. Use a soft-lined watch box and do not leave a depleted battery in a quartz watch for an extended period." },
+  { q: "How often does an automatic watch need servicing?", a: "Service intervals depend on the movement, use, environment, and manufacturer guidance. Arrange an assessment if timekeeping changes noticeably, the power reserve drops, moisture appears, or the crown and winding action feel abnormal." },
+  { q: "What is the difference between case diameter and lug-to-lug?", a: "Case diameter measures across the case, normally excluding the crown. Lug-to-lug measures from the tip of the upper lugs to the tip of the lower lugs and often predicts wrist overhang more directly." },
+  { q: "How can I enquire about a TIMECT watch?", a: "Open the watch's product page and use its enquiry option, or contact TIMECT with the model name or reference. Including the exact product helps the team answer specification and availability questions accurately." },
+  { q: "How do I contact customer support?", a: "Use the TIMECT contact page for product and support enquiries. Include the watch model or reference and a concise description of your question so it can be directed appropriately." },
 ];
+
+const FAQ_SCHEMA = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: FAQS.map((item) => ({ "@type": "Question", name: item.q, acceptedAnswer: { "@type": "Answer", text: item.a } })),
+};
 
 export default function FaqsPage() {
   return (
-    <ContentPage
-      title="FAQs"
-      subtitle="Answers about Timect wristwatches, care, service, and shopping -written for owners and collectors of precision timepieces."
-      bare
-    >
+    <ContentPage title="Watch FAQs" subtitle="Direct, practical answers about watch movements, sizing, materials, water resistance, care, and TIMECT product enquiries." bare>
+      <JsonLd data={FAQ_SCHEMA} />
+      <JsonLd data={webPageSchema({ name: "TIMECT Watch FAQs", description: "Practical answers about watch movements, sizing, water resistance, materials, and care.", path: "/faqs", type: "FAQPage" })} />
       <FaqAccordion items={FAQS} />
-      <div className="mt-3 flex flex-col items-center gap-6 rounded-fuse bg-white p-8 text-center md:p-12">
+      <p className="mt-6 text-center text-[15px] text-muted">
+        Browse <Link href="/watches" className="link-underline">watch specifications</Link> or use the{" "}
+        <Link href="/contact" className="link-underline">TIMECT enquiry form</Link> for a specific model.
+      </p>
+      <div className="mt-6 flex flex-col items-center gap-6 rounded-fuse bg-white p-8 text-center md:p-12">
         <h2 className="fuse-h5">Still need help?</h2>
-        <p className="text-muted">Contact us and our team will respond as soon as possible.</p>
-        <ButtonPrimary href="/contact" bg="#f0f2f4">
-          Contact us
-        </ButtonPrimary>
+        <p className="text-muted">Contact us with the watch model or reference and your question.</p>
+        <ButtonPrimary href="/contact" bg="#f0f2f4">Contact us</ButtonPrimary>
       </div>
     </ContentPage>
   );
