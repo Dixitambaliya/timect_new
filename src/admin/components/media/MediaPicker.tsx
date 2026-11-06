@@ -58,6 +58,17 @@ export default function MediaPicker({
     }
   }, [open, load]);
 
+  useEffect(() => {
+    if (!open) return;
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      event.preventDefault();
+      onClose();
+    };
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
+  }, [open, onClose]);
+
   if (!open) return null;
 
   const toggle = (url: string) => {
@@ -128,7 +139,12 @@ export default function MediaPicker({
   };
 
   return (
-    <div className="fixed inset-0 z-[95] flex items-center justify-center p-4">
+    <div
+      className="fixed inset-0 z-[95] flex items-center justify-center p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Media library"
+    >
       <button
         type="button"
         className="absolute inset-0 bg-black/45"

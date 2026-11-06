@@ -79,11 +79,32 @@ function normalizeInput(input: ProductInput): ProductInput {
     image: primary,
     images: images.length ? images : primary ? [primary] : [],
     sizes: (input.sizes || []).filter(Boolean),
-    variants: (input.variants || []).filter(
-      (v) => v.name || v.image || v.slug,
-    ),
+    variants: (input.variants || [])
+      .filter((v) => v.name || v.image || v.slug)
+      .map((variant) => ({
+        ...variant,
+        name: variant.name.trim(),
+        image: variant.image.trim(),
+        slug: variant.slug?.trim() || undefined,
+        colorHex: /^#[0-9a-f]{6}$/i.test(variant.colorHex || "")
+          ? variant.colorHex!.toUpperCase()
+          : undefined,
+      })),
     specifications: input.specifications || [],
   };
+}
+
+function validateLinkedVariants(
+  variants: Variant[],
+  availableSlugs: Set<string>,
+): string | null {
+  const linked = variants.map((variant) => variant.slug).filter((slug): slug is string => Boolean(slug));
+  if (new Set(linked).size !== linked.length) return "A product can only be linked once as a colour variant.";
+  if (variants.some((variant) => !variant.name || !variant.slug)) {
+    return "Every colour variant needs a name and a linked product.";
+  }
+  const missing = linked.find((slug) => !availableSlugs.has(slug));
+  return missing ? `The linked variant product “${missing}” no longer exists.` : null;
 }
 
 export async function adminListProducts(
@@ -192,6 +213,8 @@ export async function adminCreateProduct(
     const base = data.name || data.title || "product";
     const slug = uniqueSlug(base, slugs);
     data.variants = (data.variants || []).filter((v) => v.slug !== slug);
+    const variantError = validateLinkedVariants(data.variants, slugs);
+    if (variantError) return { ok: false, error: variantError };
 
     const rows = await sql`
       INSERT INTO products (
@@ -296,6 +319,8 @@ export async function adminUpdateProduct(
     let slug = keepsRoot && !slugs.has(previousSlug) ? previousSlug : root;
     if (slugs.has(slug)) slug = uniqueSlug(base, slugs, id);
     data.variants = (data.variants || []).filter((v) => v.slug !== slug);
+    const variantError = validateLinkedVariants(data.variants, slugs);
+    if (variantError) return { ok: false, error: variantError };
 
     await sql`
       UPDATE products SET
@@ -499,6 +524,121 @@ export async function adminBulkUpdateFlags(
   } catch (err) {
     console.error("adminBulkUpdateFlags:", err);
     return { ok: false, error: "Bulk update failed." };
+  }
+}
+
+/** Merge selected products and their existing connected members into one variant family. */
+export async function adminLinkProductsAsVariants(
+  ids: number[],
+): Promise<{ ok: true; count: number } | { ok: false; error: string }> {
+  try {
+    const session = await assertWrite();
+    const uniqueIds = [...new Set(ids.filter((id) => Number.isInteger(id) && id > 0))];
+    if (uniqueIds.length < 2) {
+      return { ok: false, error: "Select at least two products to merge as variants." };
+    }
+
+    const rows = await sql`SELECT id, slug, name, title, image, variants FROM products ORDER BY id ASC`;
+    const products = rows.map((row) => rowToMember(row as Record<string, unknown>));
+    const selected = products.filter((product) => uniqueIds.includes(product.id));
+    if (selected.length !== uniqueIds.length) {
+      return { ok: false, error: "One or more selected products no longer exist." };
+    }
+
+    const familySlugs = new Set(selected.map((product) => product.slug));
+    let expanded = true;
+    while (expanded) {
+      expanded = false;
+      for (const product of products) {
+        const links = variantSlugs(product.variants);
+        if (!familySlugs.has(product.slug) && !links.some((slug) => familySlugs.has(slug))) continue;
+        for (const slug of [product.slug, ...links]) {
+          if (!familySlugs.has(slug)) {
+            familySlugs.add(slug);
+            expanded = true;
+          }
+        }
+      }
+    }
+
+    const family = products.filter((product) => familySlugs.has(product.slug));
+    for (const product of family) {
+      const existingBySlug = new Map(
+        product.variants.filter((variant) => variant.slug).map((variant) => [variant.slug!, variant]),
+      );
+      const unrelated = product.variants.filter(
+        (variant) => !variant.slug || !familySlugs.has(variant.slug),
+      );
+      const linked: Variant[] = family
+        .filter((member) => member.slug !== product.slug)
+        .map((member) => {
+          const existing = existingBySlug.get(member.slug);
+          return {
+            id: existing?.id || makeVariantId(),
+            name: existing?.name || member.name,
+            image: existing?.image || member.image,
+            slug: member.slug,
+            colorHex: existing?.colorHex,
+          };
+        });
+      await writeProductVariants(product, [...unrelated, ...linked]);
+      revalidatePath(`/product/${product.slug}`);
+    }
+
+    try {
+      await sql`
+        INSERT INTO audit_logs (admin_user_id, action, entity_type, meta)
+        VALUES (${session.id}, 'merge_variants', 'product', ${JSON.stringify({ ids: uniqueIds, family: [...familySlugs] })}::jsonb)
+      `;
+    } catch { /* optional */ }
+    revalidatePath("/");
+    revalidatePath("/watches");
+    revalidatePath("/admin/products");
+    return { ok: true, count: family.length };
+  } catch (error) {
+    console.error("adminLinkProductsAsVariants:", error);
+    return { ok: false, error: "Failed to merge the selected products as variants." };
+  }
+}
+
+/** Remove selected watches from every variant family without deleting them. */
+export async function adminUnlinkProductsAsVariants(
+  ids: number[],
+): Promise<{ ok: true; count: number } | { ok: false; error: string }> {
+  try {
+    const session = await assertWrite();
+    const uniqueIds = [...new Set(ids.filter((id) => Number.isInteger(id) && id > 0))];
+    if (!uniqueIds.length) return { ok: false, error: "Select at least one product to unlink." };
+
+    const rows = await sql`SELECT id, slug, name, title, image, variants FROM products ORDER BY id ASC`;
+    const products = rows.map((row) => rowToMember(row as Record<string, unknown>));
+    const selected = products.filter((product) => uniqueIds.includes(product.id));
+    const selectedIds = new Set(selected.map((product) => product.id));
+    const selectedSlugs = new Set(selected.map((product) => product.slug));
+    if (!selected.length) return { ok: false, error: "The selected products no longer exist." };
+
+    for (const product of products) {
+      const variants = selectedIds.has(product.id)
+        ? product.variants.filter((variant) => !variant.slug)
+        : product.variants.filter((variant) => !variant.slug || !selectedSlugs.has(variant.slug));
+      if (JSON.stringify(variants) === JSON.stringify(product.variants)) continue;
+      await writeProductVariants(product, variants);
+      revalidatePath(`/product/${product.slug}`);
+    }
+
+    try {
+      await sql`
+        INSERT INTO audit_logs (admin_user_id, action, entity_type, meta)
+        VALUES (${session.id}, 'unlink_variants', 'product', ${JSON.stringify({ ids: uniqueIds })}::jsonb)
+      `;
+    } catch { /* optional */ }
+    revalidatePath("/");
+    revalidatePath("/watches");
+    revalidatePath("/admin/products");
+    return { ok: true, count: selected.length };
+  } catch (error) {
+    console.error("adminUnlinkProductsAsVariants:", error);
+    return { ok: false, error: "Failed to unlink the selected products." };
   }
 }
 

@@ -1,14 +1,17 @@
 "use client";
 
-import { useCallback, useEffect, useState, useTransition } from "react";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Copy,
   ExternalLink,
+  Link2,
   MoreHorizontal,
   Pencil,
   Plus,
   Trash2,
+  Unlink,
 } from "lucide-react";
 import type { Product } from "@/db/actions";
 import {
@@ -16,7 +19,9 @@ import {
   adminBulkUpdateFlags,
   adminDeleteProduct,
   adminDuplicateProduct,
+  adminLinkProductsAsVariants,
   adminListProducts,
+  adminUnlinkProductsAsVariants,
   type ProductListFilters,
 } from "@/admin/actions/products";
 import { useToast } from "@/admin/hooks/useToast";
@@ -30,16 +35,25 @@ import ProductImportExport from "./ProductImportExport";
 export default function ProductTable({
   initialSearch = "",
   initialFlag = "all",
+  initialPage = 1,
+  initialGender,
+  initialSort = "newest",
 }: {
   initialSearch?: string;
   initialFlag?: ProductListFilters["flag"];
+  initialPage?: number;
+  initialGender?: string;
+  initialSort?: ProductListFilters["sortBy"];
 }) {
   const { success, error } = useToast();
+  const router = useRouter();
+  const pathname = usePathname();
   const [filters, setFilters] = useState<ProductListFilters>({
     search: initialSearch,
     flag: initialFlag || "all",
-    sortBy: "newest",
-    page: 1,
+    gender: initialGender,
+    sortBy: initialSort,
+    page: initialPage,
     pageSize: 20,
   });
   const [products, setProducts] = useState<Product[]>([]);
@@ -52,8 +66,11 @@ export default function ProductTable({
     | null
     | { type: "delete"; id: number }
     | { type: "bulk-delete" }
+    | { type: "unlink-variants" }
   >(null);
   const [menuId, setMenuId] = useState<number | null>(null);
+  const firstSearchSync = useRef(true);
+  const firstFlagSync = useRef(true);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -72,10 +89,18 @@ export default function ProductTable({
   }, [load]);
 
   useEffect(() => {
+    if (firstSearchSync.current) {
+      firstSearchSync.current = false;
+      return;
+    }
     setFilters((f) => ({ ...f, search: initialSearch, page: 1 }));
   }, [initialSearch]);
 
   useEffect(() => {
+    if (firstFlagSync.current) {
+      firstFlagSync.current = false;
+      return;
+    }
     if (initialFlag) {
       setFilters((f) => ({ ...f, flag: initialFlag, page: 1 }));
     }
@@ -148,11 +173,60 @@ export default function ProductTable({
     });
   };
 
+  const runMergeVariants = () => {
+    if (selected.size < 2) {
+      error("Select at least two products to merge as variants");
+      return;
+    }
+    startTransition(async () => {
+      const res = await adminLinkProductsAsVariants(Array.from(selected));
+      if (!res.ok) error(res.error);
+      else {
+        success(`Merged ${res.count} products into one variant family`);
+        setSelected(new Set());
+        await load();
+      }
+    });
+  };
+
+  const runUnlinkVariants = () => {
+    startTransition(async () => {
+      const res = await adminUnlinkProductsAsVariants(Array.from(selected));
+      if (!res.ok) error(res.error);
+      else {
+        success(`Unlinked ${res.count} product(s) from their variant families`);
+        setSelected(new Set());
+        await load();
+      }
+      setConfirm(null);
+    });
+  };
+
   const selectedProducts = products.filter((p) => selected.has(p.id));
   const hasSelected = selectedProducts.length > 0;
   const allNew = hasSelected && selectedProducts.every((p) => p.isNewArrival);
   const allRec = hasSelected && selectedProducts.every((p) => p.isRecommended);
   const allRel = hasSelected && selectedProducts.every((p) => p.isRelated);
+
+  const productListUrl = (() => {
+    const params = new URLSearchParams();
+    if ((filters.page || 1) > 1) params.set("page", String(filters.page));
+    if (filters.flag && filters.flag !== "all") params.set("flag", filters.flag);
+    if (filters.gender) params.set("gender", filters.gender);
+    if (filters.sortBy && filters.sortBy !== "newest") params.set("sort", filters.sortBy);
+    if (filters.search?.trim()) params.set("search", filters.search.trim());
+    const query = params.toString();
+    return query ? `/admin/products?${query}` : "/admin/products";
+  })();
+
+  // Keep the list state in the URL so edit/save, refresh, and browser Back
+  // all return to the same page instead of reconstructing page 1.
+  useEffect(() => {
+    const currentUrl = `${pathname}${window.location.search}`;
+    if (currentUrl !== productListUrl) {
+      router.replace(productListUrl, { scroll: false });
+    }
+  }, [pathname, productListUrl, router]);
 
   return (
     <div className="space-y-4">
@@ -223,6 +297,25 @@ export default function ProductTable({
       {selected.size > 0 && (
         <div className="admin-card flex flex-wrap items-center gap-2 px-4 py-3">
           <span className="text-sm font-medium">{selected.size} selected</span>
+          <button
+            type="button"
+            className="admin-btn admin-btn-secondary text-xs"
+            disabled={pending || selected.size < 2}
+            onClick={runMergeVariants}
+            title={selected.size < 2 ? "Select at least two products" : "Merge selected products into one variant family"}
+          >
+            <Link2 className="h-3.5 w-3.5" />
+            Merge variants
+          </button>
+          <button
+            type="button"
+            className="admin-btn admin-btn-secondary text-xs"
+            disabled={pending}
+            onClick={() => setConfirm({ type: "unlink-variants" })}
+          >
+            <Unlink className="h-3.5 w-3.5" />
+            Unlink variants
+          </button>
           <button
             type="button"
             className="admin-btn admin-btn-secondary text-xs"
@@ -359,6 +452,41 @@ export default function ProductTable({
                           </div>
                           <div className="min-w-0">
                             <p className="truncate font-medium">{title}</p>
+                            {p.variants?.some((variant) => variant.slug) && (
+                              <div className="my-1.5 flex max-w-[460px] flex-wrap items-center gap-1.5">
+                                <span className="text-[10px] font-semibold uppercase tracking-wide text-[var(--admin-muted)]">
+                                  Variants
+                                </span>
+                                {p.variants
+                                  .filter((variant) => variant.slug)
+                                  .slice(0, 4)
+                                  .map((variant) => (
+                                    <span
+                                      key={variant.slug}
+                                      className="inline-flex max-w-[150px] items-center gap-1.5 rounded-full border border-[var(--admin-line)] bg-[var(--admin-bg)] px-2 py-1 text-[10px]"
+                                      title={`${variant.name} · ${variant.slug}`}
+                                    >
+                                      {variant.image && (
+                                        // eslint-disable-next-line @next/next/no-img-element
+                                        <img src={variant.image} alt="" className="h-4 w-4 rounded-full object-cover" />
+                                      )}
+                                      {variant.colorHex && (
+                                        <span
+                                          className="h-3 w-3 rounded-full border border-black/20"
+                                          style={{ backgroundColor: variant.colorHex }}
+                                          aria-hidden="true"
+                                        />
+                                      )}
+                                      <span className="truncate">{variant.name}</span>
+                                    </span>
+                                  ))}
+                                {p.variants.filter((variant) => variant.slug).length > 4 && (
+                                  <span className="text-[10px] text-[var(--admin-muted)]">
+                                    +{p.variants.filter((variant) => variant.slug).length - 4} more
+                                  </span>
+                                )}
+                              </div>
+                            )}
                             <p className="truncate text-xs text-[var(--admin-muted)]">
                               {p.slug}
                               {p.collection ? ` · ${p.collection}` : ""}
@@ -381,7 +509,7 @@ export default function ProductTable({
                       <td className="px-4 py-3">
                         <div className="relative flex items-center justify-end gap-1">
                           <Link
-                            href={`/admin/products/${p.id}/edit`}
+                            href={`/admin/products/${p.id}/edit?returnTo=${encodeURIComponent(productListUrl)}`}
                             className="admin-btn admin-btn-ghost px-2"
                             title="Edit"
                           >
@@ -452,16 +580,23 @@ export default function ProductTable({
         title={
           confirm?.type === "bulk-delete"
             ? `Delete ${selected.size} products?`
+            : confirm?.type === "unlink-variants"
+              ? `Unlink ${selected.size} product(s)?`
             : "Delete this product?"
         }
-        description="This cannot be undone. The product will be removed from the catalog."
-        confirmLabel="Delete"
-        danger
+        description={
+          confirm?.type === "unlink-variants"
+            ? "The selected watches will become independent products. Their product data and catalog entries will not be deleted."
+            : "This cannot be undone. The product will be removed from the catalog."
+        }
+        confirmLabel={confirm?.type === "unlink-variants" ? "Unlink" : "Delete"}
+        danger={confirm?.type !== "unlink-variants"}
         loading={pending}
         onCancel={() => setConfirm(null)}
         onConfirm={() => {
           if (confirm?.type === "delete") runDelete(confirm.id);
           if (confirm?.type === "bulk-delete") runBulkDelete();
+          if (confirm?.type === "unlink-variants") runUnlinkVariants();
         }}
       />
     </div>

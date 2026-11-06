@@ -63,7 +63,7 @@ export default async function ProductPage({ params }: Params) {
       <div className="mb-6">
         <Breadcrumbs items={[["Home", "/"], ["Watches", "/watches"], [title]]} />
       </div>
-      <ProductMain product={product} related={related.slice(0, 10).map(toCard)} />
+      <ProductMain key={product.slug} product={product} related={related.slice(0, 10).map(toCard)} />
       <RecentlyViewed current={toCard(product)} />
     </div>
   );

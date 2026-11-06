@@ -27,7 +27,7 @@ const STEPS = [
   { id: 1, label: "Basic" },
   { id: 2, label: "Flags" },
   { id: 3, label: "Images" },
-  { id: 4, label: "Variants" },
+  { id: 4, label: "Colours" },
   { id: 5, label: "Sizes" },
   { id: 6, label: "Specs" },
   { id: 7, label: "Preview" },
@@ -36,9 +36,11 @@ const STEPS = [
 export default function ProductForm({
   initial,
   productId,
+  returnTo = "/admin/products",
 }: {
   initial: ProductInput;
   productId?: number;
+  returnTo?: string;
 }) {
   const router = useRouter();
   const { success, error } = useToast();
@@ -60,6 +62,14 @@ export default function ProductForm({
       if (!(data.name || data.title)?.trim()) return "Product name is required.";
       if (!data.price?.trim()) return "Price is required.";
     }
+    if (s === 4) {
+      const incomplete = (data.variants || []).find((variant) => !variant.name.trim() || !variant.slug);
+      if (incomplete) return "Every colour variant needs a name and a linked product.";
+      const invalidSwatch = (data.variants || []).find(
+        (variant) => variant.colorHex && !/^#[0-9a-f]{6}$/i.test(variant.colorHex),
+      );
+      if (invalidSwatch) return "Colour swatches must use a six-digit hex value such as #1F4E79.";
+    }
     return null;
   };
 
@@ -77,6 +87,12 @@ export default function ProductForm({
     if (err) {
       error(err);
       setStep(1);
+      return;
+    }
+    const variantErr = validateStep(4);
+    if (variantErr) {
+      error(variantErr);
+      setStep(4);
       return;
     }
 
@@ -97,7 +113,7 @@ export default function ProductForm({
         return;
       }
       success(productId ? "Product updated" : "Product created");
-      router.push("/admin/products");
+      router.push(returnTo);
       router.refresh();
     });
   };
@@ -117,7 +133,7 @@ export default function ProductForm({
                   onClick={() => setStep(s.id)}
                   className={`flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium transition ${
                     active
-                      ? "bg-[var(--admin-accent)] text-white"
+                      ? "bg-[var(--admin-accent)] text-[#15171c]"
                       : done
                         ? "bg-[var(--admin-accent-soft)] text-[var(--admin-ink)]"
                         : "text-[var(--admin-muted)] hover:bg-[var(--admin-bg)]"

@@ -194,7 +194,7 @@ export default function ProductMain({
             <p className="mb-4 font-semibold">
               Case size: <span className="font-normal text-muted">{size}</span>
             </p>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-3">
               {sizes.map((s) => (
                 <button key={s} type="button" onClick={() => setSize(s)} aria-pressed={size === s} className={cx("pill min-w-[84px]", size === s && "is-active")}>
                   {s}
@@ -207,10 +207,10 @@ export default function ProductMain({
         {variants.length > 1 && (
           <InfoCard>
             <p className="mb-4 font-semibold">
-              Available in {variants.length} variations
+              Colour / finish
               {selectedVariant && <span className="font-normal text-muted"> · {selectedVariant.name}</span>}
             </p>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-3">
               {variants.map((v) => {
                 const active = v === selectedVariant;
                 return (
@@ -220,22 +220,33 @@ export default function ProductMain({
                     title={v.name}
                     aria-label={`Select ${v.name}`}
                     aria-pressed={active}
+                    aria-current={active ? "true" : undefined}
                     disabled={!v.slug}
                     onMouseEnter={() => v.slug && router.prefetch(`/product/${v.slug}`)}
                     onClick={() => v.slug && !active && router.push(`/product/${v.slug}`, { scroll: false })}
                     className={cx(
-                      "relative h-[72px] w-[64px] overflow-hidden rounded-fuse-md bg-bg p-[3px] transition-[box-shadow] duration-400",
+                      "relative w-[92px] overflow-hidden rounded-fuse-md bg-bg p-[3px] text-left transition-[box-shadow,transform] duration-400 hover:-translate-y-0.5",
                       active ? "shadow-[0_0_0_1px_#000]" : "shadow-[0_0_0_1px_transparent] hover:shadow-[0_0_0_1px_#8c8c8c]",
                       !v.slug && "cursor-not-allowed opacity-50",
                     )}
                   >
-                    <span className="relative block h-full w-full overflow-hidden rounded-[10px] bg-white">
+                    <span className="relative block h-[72px] w-full overflow-hidden rounded-[10px] bg-white">
                       {v.image ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={catalogThumbUrl(v.image, 160)} alt={v.name} className="img-fill object-contain p-1" />
                       ) : (
                         <span className="flex h-full items-center justify-center p-1 text-center text-[10px] text-muted">{v.name}</span>
                       )}
+                      {v.colorHex && (
+                        <span
+                          className="absolute bottom-1.5 right-1.5 h-4 w-4 rounded-full border-2 border-white shadow-[0_0_0_1px_rgba(0,0,0,.22)]"
+                          style={{ backgroundColor: v.colorHex }}
+                          aria-hidden="true"
+                        />
+                      )}
+                    </span>
+                    <span className="block truncate px-1.5 py-2 text-center text-[12px] font-semibold" title={v.name}>
+                      {v.name}
                     </span>
                   </button>
                 );

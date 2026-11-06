@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import {
   Gift,
   Plus,
@@ -23,12 +23,14 @@ import MediaPicker from "@/admin/components/media/MediaPicker";
 import ConfirmDialog from "@/admin/components/ui/ConfirmDialog";
 import { useToast } from "@/admin/hooks/useToast";
 import Breadcrumbs from "@/admin/components/layout/Breadcrumbs";
+import Pagination from "@/admin/components/ui/Pagination";
 
 type Props = {
   initialItems: GiftSample[];
 };
 
 const GENDER_OPTIONS = ["All", "Men", "Women", "Unisex"] as const;
+const PAGE_SIZE = 20;
 
 export default function CorporateGiftingManager({ initialItems }: Props) {
   const { success, error } = useToast();
@@ -37,6 +39,8 @@ export default function CorporateGiftingManager({ initialItems }: Props) {
   const [items, setItems] = useState<GiftSample[]>(initialItems);
   const [search, setSearch] = useState("");
   const [genderFilter, setGenderFilter] = useState<string>("All");
+  const [sortBy, setSortBy] = useState<"newest" | "oldest" | "name" | "price-asc" | "price-desc">("newest");
+  const [page, setPage] = useState(1);
 
   // Modals state
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -79,6 +83,32 @@ export default function CorporateGiftingManager({ initialItems }: Props) {
 
     return matchesSearch && matchesGender;
   });
+
+  const parsePrice = (value: string) => {
+    const parsed = Number(value.replace(/[^\d.]/g, ""));
+    return Number.isFinite(parsed) ? parsed : 0;
+  };
+  const sortedItems = [...filteredItems].sort((a, b) => {
+    if (sortBy === "oldest") return a.id - b.id;
+    if (sortBy === "name") return a.name.localeCompare(b.name);
+    if (sortBy === "price-asc") return parsePrice(a.price) - parsePrice(b.price);
+    if (sortBy === "price-desc") return parsePrice(b.price) - parsePrice(a.price);
+    return b.id - a.id;
+  });
+  const totalPages = Math.max(1, Math.ceil(sortedItems.length / PAGE_SIZE));
+  const paginatedItems = sortedItems.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  useEffect(() => setPage(1), [search, genderFilter, sortBy]);
+  useEffect(() => setPage((current) => Math.min(current, totalPages)), [totalPages]);
+
+  useEffect(() => {
+    if (!isFormOpen) return;
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && !isPending && !mediaPickerTarget) setIsFormOpen(false);
+    };
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
+  }, [isFormOpen, isPending, mediaPickerTarget]);
 
   const openCreateModal = () => {
     setEditingItem(null);
@@ -203,9 +233,9 @@ export default function CorporateGiftingManager({ initialItems }: Props) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Top Header */}
-      <div className="flex flex-wrap items-end justify-between gap-4">
+      <div>
         <div>
           <Breadcrumbs
             items={[
@@ -220,19 +250,32 @@ export default function CorporateGiftingManager({ initialItems }: Props) {
             Create, edit, and manage luxury corporate gifting items shown on the storefront Corporate Gifting page.
           </p>
         </div>
-        <button
-          type="button"
-          onClick={openCreateModal}
-          className="admin-btn admin-btn-primary"
-        >
-          <Plus className="h-4 w-4" />
-          Add Gift Item
-        </button>
       </div>
 
       {/* Toolbar & Filters */}
-      <div className="admin-card flex flex-wrap items-center justify-between gap-4 p-4">
-        <div className="relative min-w-[240px] flex-1 max-w-md">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <select
+            className="admin-input w-auto"
+            value={genderFilter}
+            onChange={(e) => setGenderFilter(e.target.value)}
+          >
+            {GENDER_OPTIONS.map((gender) => (
+              <option key={gender} value={gender}>{gender === "All" ? "All genders" : gender}</option>
+            ))}
+          </select>
+          <select
+            className="admin-input w-auto"
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+          >
+            <option value="newest">Newest</option>
+            <option value="oldest">Oldest</option>
+            <option value="name">Name</option>
+            <option value="price-asc">Price ↑</option>
+            <option value="price-desc">Price ↓</option>
+          </select>
+          <div className="relative min-w-[240px] max-w-md">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--admin-muted)]" />
           <input
             type="text"
@@ -241,24 +284,85 @@ export default function CorporateGiftingManager({ initialItems }: Props) {
             onChange={(e) => setSearch(e.target.value)}
             className="admin-input pl-9"
           />
+          </div>
         </div>
-
-        <div className="flex items-center gap-1.5 overflow-x-auto">
-          {GENDER_OPTIONS.map((g) => (
-            <button
-              key={g}
-              type="button"
-              onClick={() => setGenderFilter(g)}
-              className={`admin-pill !py-1.5 ${genderFilter === g ? "is-active" : ""}`}
-            >
-              {g}
-            </button>
-          ))}
+        <div className="flex flex-wrap gap-2">
+          <a href="/corporate-gifting" target="_blank" rel="noreferrer" className="admin-btn admin-btn-secondary">
+            Preview storefront
+          </a>
+          <button type="button" onClick={openCreateModal} className="admin-btn admin-btn-primary">
+            <Plus className="h-4 w-4" /> Add gift item
+          </button>
         </div>
       </div>
 
       {/* Product List */}
       <div className="admin-card overflow-hidden">
+        {sortedItems.length === 0 ? (
+          <div className="py-16 text-center text-sm text-[var(--admin-muted)]">
+            No corporate gift items found matching your filters.
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[760px] text-left text-sm">
+              <thead className="border-b border-[var(--admin-line)] bg-[var(--admin-bg)] text-xs uppercase tracking-wider text-[var(--admin-muted)]">
+                <tr>
+                  <th className="px-4 py-3">Product</th>
+                  <th className="px-4 py-3">Price</th>
+                  <th className="px-4 py-3">Collection</th>
+                  <th className="px-4 py-3">Gender</th>
+                  <th className="px-4 py-3">Accent</th>
+                  <th className="px-4 py-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {paginatedItems.map((item) => (
+                  <tr key={item.id} className="border-b border-[var(--admin-line)] last:border-0 hover:bg-[var(--admin-bg)]/60">
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-3">
+                        <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-[var(--admin-bg)]">
+                          {item.image ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={item.image} alt="" className="h-full w-full object-cover" />
+                          ) : <ImageIcon className="m-3 h-6 w-6 text-[var(--admin-muted)]" />}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="truncate font-medium">{item.name}</p>
+                          <p className="truncate text-xs text-[var(--admin-muted)]">{item.slug}{item.caseSize ? ` · ${item.caseSize}` : ""}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-3">{item.price}</td>
+                    <td className="px-4 py-3 text-[var(--admin-muted)]">{item.collection || "—"}</td>
+                    <td className="px-4 py-3 text-[var(--admin-muted)]">{item.gender || "—"}</td>
+                    <td className="px-4 py-3">
+                      {item.accentColor ? (
+                        <span className="inline-flex items-center gap-2 font-mono text-xs text-[var(--admin-muted)]">
+                          <span className="h-4 w-4 rounded-full border border-black/20" style={{ backgroundColor: item.accentColor }} />
+                          {item.accentColor}
+                        </span>
+                      ) : "—"}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center justify-end gap-1">
+                        <button type="button" onClick={() => openEditModal(item)} className="admin-btn admin-btn-ghost px-2" title="Edit">
+                          <Edit2 className="h-4 w-4" />
+                        </button>
+                        <button type="button" onClick={() => setDeletingId(item.id)} className="admin-btn admin-btn-ghost px-2 text-[var(--admin-danger)]" title="Delete">
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+      <Pagination page={page} totalPages={totalPages} total={sortedItems.length} onChange={setPage} />
+
+      <div className="hidden">
         <div className="border-b border-[var(--admin-line)] px-5 py-4 flex items-center justify-between">
           <h2 className="text-sm font-semibold flex items-center gap-2">
             <Gift className="h-4 w-4 text-[var(--admin-accent)]" />

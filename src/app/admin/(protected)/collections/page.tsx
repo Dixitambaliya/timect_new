@@ -17,6 +17,7 @@ import type { CatalogFilter } from "@/data/categoryFilters";
 import { useToast } from "@/admin/hooks/useToast";
 import { slugify } from "@/admin/lib/slug";
 import MediaPicker from "@/admin/components/media/MediaPicker";
+import AdminSelect from "@/admin/components/ui/AdminSelect";
 
 type Tab = "collections" | "homepage" | "filters";
 
@@ -137,18 +138,18 @@ export default function CollectionsPage() {
           <div className="admin-card p-5">
             <h2 className="mb-3 text-sm font-semibold">Rename collection</h2>
             <div className="flex flex-wrap gap-2">
-              <select
-                className="admin-input max-w-xs"
+              <AdminSelect
+                className="w-full max-w-xs"
                 value={renameFrom}
-                onChange={(e) => setRenameFrom(e.target.value)}
-              >
-                <option value="">Select collection…</option>
-                {collections.map((c) => (
-                  <option key={c.name} value={c.name}>
-                    {c.name} ({c.productCount})
-                  </option>
-                ))}
-              </select>
+                onChange={setRenameFrom}
+                placeholder="Select collection…"
+                searchPlaceholder="Search collections…"
+                options={collections.map((collection) => ({
+                  value: collection.name,
+                  label: collection.name,
+                  description: `${collection.productCount} product${collection.productCount === 1 ? "" : "s"}`,
+                }))}
+              />
               <input
                 className="admin-input max-w-xs"
                 placeholder="New name"
@@ -269,24 +270,26 @@ export default function CollectionsPage() {
                 </div>
                 <div>
                   <label className="admin-label">Links to filter</label>
-                  <select
-                    className="admin-input"
+                  <AdminSelect
                     value={card.slug}
-                    onChange={(e) => {
+                    onChange={(value) => {
                       const next = [...cards];
-                      next[idx] = { ...card, slug: e.target.value };
+                      next[idx] = { ...card, slug: value };
                       setCards(next);
                     }}
-                  >
-                    {!filters[card.slug] && (
-                      <option value={card.slug}>{card.label || card.slug}</option>
-                    )}
-                    {Object.values(filters).map((f) => (
-                      <option key={f.slug} value={f.slug}>
-                        {f.label}
-                      </option>
-                    ))}
-                  </select>
+                    placeholder="Select catalog filter…"
+                    searchPlaceholder="Search filters…"
+                    options={[
+                      ...(!filters[card.slug]
+                        ? [{ value: card.slug, label: card.label || card.slug, description: "Current link" }]
+                        : []),
+                      ...Object.values(filters).map((filter) => ({
+                        value: filter.slug,
+                        label: filter.label,
+                        description: `/watches?filter=${filter.slug}`,
+                      })),
+                    ]}
+                  />
                 </div>
                 <button
                   type="button"

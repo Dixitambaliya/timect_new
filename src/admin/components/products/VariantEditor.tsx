@@ -53,6 +53,7 @@ export default function VariantEditor({
         id: `v${Date.now()}`,
         name: "",
         image: "",
+        colorHex: "#1F4E79",
       },
     ]);
   };
@@ -73,7 +74,7 @@ export default function VariantEditor({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <p className="text-sm text-[var(--admin-muted)]">
-          Link existing products as color / finish variants. On save, this
+          Link existing products as colour or finish variants. On save, this
           product is added to each linked product, and they are linked to each
           other.
         </p>
@@ -122,7 +123,7 @@ export default function VariantEditor({
                 )}
               </button>
               <div className="min-w-[140px] flex-1">
-                <label className="admin-label">Variant name</label>
+                <label className="admin-label">Colour / finish name</label>
                 <input
                   className="admin-input"
                   value={v.name}
@@ -130,8 +131,28 @@ export default function VariantEditor({
                   placeholder="e.g. Blue"
                 />
               </div>
+              <div className="min-w-[150px] flex-1">
+                <label className="admin-label">Swatch (optional)</label>
+                <div className="admin-input flex items-center gap-2 p-1.5">
+                  <input
+                    type="color"
+                    value={/^#[0-9a-f]{6}$/i.test(v.colorHex || "") ? v.colorHex : "#1F4E79"}
+                    onChange={(e) => update(idx, { colorHex: e.target.value.toUpperCase() })}
+                    className="h-8 w-10 cursor-pointer rounded border-0 bg-transparent p-0"
+                    aria-label={`Swatch colour for ${v.name || `variant ${idx + 1}`}`}
+                  />
+                  <input
+                    value={v.colorHex || ""}
+                    onChange={(e) => update(idx, { colorHex: e.target.value })}
+                    placeholder="#1F4E79"
+                    pattern="#[0-9A-Fa-f]{6}"
+                    className="min-w-0 flex-1 bg-transparent font-mono text-xs outline-none"
+                    aria-label={`Swatch hex value for ${v.name || `variant ${idx + 1}`}`}
+                  />
+                </div>
+              </div>
               <div className="min-w-[200px] flex-1">
-                <label className="admin-label">Linked Product (optional)</label>
+                <label className="admin-label">Linked product</label>
                 <ProductSelect
                   value={v.slug || ""}
                   onChange={(slug, name, image) => {
@@ -213,9 +234,14 @@ function ProductSelect({
         setIsOpen(false);
       }
     }
+    function handleEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") setIsOpen(false);
+    }
     document.addEventListener("mousedown", handleClickOutside);
+    window.addEventListener("keydown", handleEscape);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      window.removeEventListener("keydown", handleEscape);
     };
   }, []);
 
@@ -305,18 +331,6 @@ function ProductSelect({
           </div>
 
           <div className="overflow-y-auto flex-1 max-h-56 divide-y divide-[var(--admin-line)]">
-            {search && !products.some((p) => p.slug === search) && (
-              <button
-                type="button"
-                onClick={() => {
-                  onChange(search);
-                  setIsOpen(false);
-                }}
-                className="w-full flex items-center gap-2 p-2 hover:bg-[var(--admin-accent-soft)] text-left text-xs font-semibold text-[var(--admin-accent)] transition-colors"
-              >
-                Use custom slug: &ldquo;{search}&rdquo;
-              </button>
-            )}
             {loading ? (
               <div className="py-3 text-center text-xs text-[var(--admin-muted)]">
                 Loading products...

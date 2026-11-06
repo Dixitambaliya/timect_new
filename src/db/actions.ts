@@ -13,6 +13,8 @@ export interface Variant {
   name: string;
   image: string;
   slug?: string;
+  /** Optional CSS hex colour used for the storefront swatch. */
+  colorHex?: string;
 }
 
 export interface SpecificationItem {

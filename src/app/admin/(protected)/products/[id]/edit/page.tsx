@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import Breadcrumbs from "@/admin/components/layout/Breadcrumbs";
 import ProductForm from "@/admin/components/products/ProductForm";
@@ -14,7 +14,12 @@ import { adminGetProduct } from "@/admin/actions/products";
 
 export default function EditProductPage() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const id = Number(params?.id);
+  const requestedReturnTo = searchParams.get("returnTo") || "";
+  const returnTo = requestedReturnTo.startsWith("/admin/products") && !requestedReturnTo.startsWith("//")
+    ? requestedReturnTo
+    : "/admin/products";
   const [input, setInput] = useState<ProductInput | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -51,7 +56,7 @@ export default function EditProductPage() {
         <Breadcrumbs
           items={[
             { label: "Admin", href: "/admin/dashboard" },
-            { label: "Products", href: "/admin/products" },
+            { label: "Products", href: returnTo },
             { label: "Edit" },
           ]}
         />
@@ -62,7 +67,7 @@ export default function EditProductPage() {
           {input.name || input.title || `#${id}`}
         </p>
       </div>
-      <ProductForm initial={input || emptyProductInput()} productId={id} />
+      <ProductForm initial={input || emptyProductInput()} productId={id} returnTo={returnTo} />
     </div>
   );
 }

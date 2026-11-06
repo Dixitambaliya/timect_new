@@ -9,14 +9,22 @@ import { TableSkeleton } from "@/admin/components/ui/Skeleton";
 
 function ProductsContent() {
   const searchParams = useSearchParams();
+  const [search, setSearch] = useState("");
   const flagParam = searchParams.get("flag") as ProductListFilters["flag"];
   const initialFlag =
     flagParam &&
     ["all", "main", "new", "recommended", "related"].includes(flagParam)
       ? flagParam
       : "all";
-
-  const [search, setSearch] = useState("");
+  const pageParam = Number(searchParams.get("page"));
+  const initialPage = Number.isInteger(pageParam) && pageParam > 0 ? pageParam : 1;
+  const sortParam = searchParams.get("sort") as ProductListFilters["sortBy"];
+  const initialSort =
+    sortParam && ["newest", "oldest", "name", "price-asc", "price-desc"].includes(sortParam)
+      ? sortParam
+      : "newest";
+  const initialGender = searchParams.get("gender") || undefined;
+  const initialSearch = searchParams.get("search") || search;
 
   // Read navbar search from parent data attribute when present
   useEffect(() => {
@@ -30,7 +38,15 @@ function ProductsContent() {
     return () => obs.disconnect();
   }, []);
 
-  return <ProductTable initialSearch={search} initialFlag={initialFlag} />;
+  return (
+    <ProductTable
+      initialSearch={initialSearch}
+      initialFlag={initialFlag}
+      initialPage={initialPage}
+      initialGender={initialGender}
+      initialSort={initialSort}
+    />
+  );
 }
 
 export default function AdminProductsPage() {
