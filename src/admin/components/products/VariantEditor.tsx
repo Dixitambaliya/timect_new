@@ -7,6 +7,7 @@ import MediaPicker from "@/admin/components/media/MediaPicker";
 import { adminGetAllProductsQuick } from "@/admin/actions/products";
 
 interface ProductOption {
+  id: number;
   slug: string;
   name: string;
   image: string;

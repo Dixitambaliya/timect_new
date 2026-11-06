@@ -736,18 +736,28 @@ export async function adminGetDashboardStats() {
   }
 }
 
-export async function adminGetAllProductsQuick(): Promise<{ slug: string; name: string; image: string }[]> {
+export async function adminGetAllProductsQuick(): Promise<{ id: number; slug: string; name: string; image: string }[]> {
   await requireAdminSession();
   try {
     const rows = await sql`
-      SELECT slug, name, title, image FROM products 
+      SELECT id, slug, name, title, image FROM products
       ORDER BY COALESCE(name, title) ASC, id DESC
     `;
-    return rows.map((r: any) => ({
+    return rows.map((row) => {
+      const r = row as {
+        id: number | string;
+        slug: string;
+        name: string | null;
+        title: string | null;
+        image: string | null;
+      };
+      return {
+      id: Number(r.id),
       slug: r.slug as string,
       name: (r.name || r.title || "") as string,
       image: (r.image || "") as string,
-    }));
+      };
+    });
   } catch (error) {
     console.error("Error adminGetAllProductsQuick:", error);
     return [];
