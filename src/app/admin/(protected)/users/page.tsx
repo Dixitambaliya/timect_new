@@ -8,6 +8,7 @@ import ConfirmDialog from "@/admin/components/ui/ConfirmDialog";
 import EmptyState from "@/admin/components/ui/EmptyState";
 import { useToast } from "@/admin/hooks/useToast";
 import { ADMIN_ROLES, type AdminRole } from "@/admin/lib/constants";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   adminCreateUser,
   adminDeleteUser,
@@ -222,7 +223,7 @@ export default function UsersPage() {
             </label>
             {form.id && (
               <label className="flex cursor-pointer items-center gap-3 rounded-fuse-md bg-[var(--admin-bg)] p-3">
-                <input type="checkbox" className="h-5 w-5" checked={form.isActive} onChange={(e) => setForm({ ...form, isActive: e.target.checked })} />
+                <Checkbox className="h-5 w-5" checked={form.isActive} onChange={(e) => setForm({ ...form, isActive: e.target.checked })} />
                 <span>
                   <span className="block text-[14px] font-semibold">Account active</span>
                   <span className="block text-[12px] text-[var(--admin-muted)]">Disabled accounts can’t sign in.</span>

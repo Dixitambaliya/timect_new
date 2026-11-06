@@ -22,6 +22,8 @@ import VariantEditor from "./VariantEditor";
 import SizeEditor from "./SizeEditor";
 import SpecificationBuilder from "./SpecificationBuilder";
 import ProductPreview from "./ProductPreview";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectOption } from "@/components/ui/select";
 
 const STEPS = [
   { id: 1, label: "Basic" },
@@ -236,18 +238,18 @@ export default function ProductForm({
               <label className="admin-label" htmlFor="gender">
                 Gender
               </label>
-              <select
+              <Select
                 id="gender"
                 className="admin-input"
                 value={data.gender || "Unisex"}
                 onChange={(e) => patch({ gender: e.target.value })}
               >
                 {GENDER_OPTIONS.map((g) => (
-                  <option key={g} value={g}>
+                  <SelectOption key={g} value={g}>
                     {g}
-                  </option>
+                  </SelectOption>
                 ))}
-              </select>
+              </Select>
             </div>
             <div>
               <label className="admin-label" htmlFor="price">
@@ -325,8 +327,7 @@ export default function ProductForm({
                 key={key}
                 className="admin-card flex cursor-pointer items-start gap-3 p-4 transition hover:border-[var(--admin-accent)]"
               >
-                <input
-                  type="checkbox"
+                <Checkbox
                   className="mt-1 h-4 w-4 accent-[var(--admin-accent)]"
                   checked={Boolean(data[key])}
                   onChange={(e) => patch({ [key]: e.target.checked })}

@@ -31,6 +31,8 @@ import Pagination from "@/admin/components/ui/Pagination";
 import { TableSkeleton } from "@/admin/components/ui/Skeleton";
 import { GENDER_OPTIONS } from "@/admin/lib/constants";
 import ProductImportExport from "./ProductImportExport";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectOption } from "@/components/ui/select";
 
 export default function ProductTable({
   initialSearch = "",
@@ -232,7 +234,7 @@ export default function ProductTable({
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap gap-2">
-          <select
+          <Select
             className="admin-input w-auto"
             value={filters.flag || "all"}
             onChange={(e) =>
@@ -243,13 +245,13 @@ export default function ProductTable({
               }))
             }
           >
-            <option value="all">All flags</option>
-            <option value="main">Main</option>
-            <option value="new">New arrivals</option>
-            <option value="recommended">Recommended</option>
-            <option value="related">Related</option>
-          </select>
-          <select
+            <SelectOption value="all">All flags</SelectOption>
+            <SelectOption value="main">Main</SelectOption>
+            <SelectOption value="new">New arrivals</SelectOption>
+            <SelectOption value="recommended">Recommended</SelectOption>
+            <SelectOption value="related">Related</SelectOption>
+          </Select>
+          <Select
             className="admin-input w-auto"
             value={filters.gender || ""}
             onChange={(e) =>
@@ -260,14 +262,14 @@ export default function ProductTable({
               }))
             }
           >
-            <option value="">All genders</option>
+            <SelectOption value="">All genders</SelectOption>
             {GENDER_OPTIONS.map((g) => (
-              <option key={g} value={g}>
+              <SelectOption key={g} value={g}>
                 {g}
-              </option>
+              </SelectOption>
             ))}
-          </select>
-          <select
+          </Select>
+          <Select
             className="admin-input w-auto"
             value={filters.sortBy || "newest"}
             onChange={(e) =>
@@ -278,12 +280,12 @@ export default function ProductTable({
               }))
             }
           >
-            <option value="newest">Newest</option>
-            <option value="oldest">Oldest</option>
-            <option value="name">Name</option>
-            <option value="price-asc">Price ↑</option>
-            <option value="price-desc">Price ↓</option>
-          </select>
+            <SelectOption value="newest">Newest</SelectOption>
+            <SelectOption value="oldest">Oldest</SelectOption>
+            <SelectOption value="name">Name</SelectOption>
+            <SelectOption value="price-asc">Price ↑</SelectOption>
+            <SelectOption value="price-desc">Price ↓</SelectOption>
+          </Select>
         </div>
         <div className="flex flex-wrap gap-2">
           <ProductImportExport onImported={() => void load()} />
@@ -404,8 +406,7 @@ export default function ProductTable({
               <thead className="border-b border-[var(--admin-line)] bg-[var(--admin-bg)] text-xs uppercase tracking-wider text-[var(--admin-muted)]">
                 <tr>
                   <th className="px-4 py-3">
-                    <input
-                      type="checkbox"
+                    <Checkbox
                       checked={
                         products.length > 0 &&
                         selected.size === products.length
@@ -431,8 +432,7 @@ export default function ProductTable({
                       className="border-b border-[var(--admin-line)] last:border-0 hover:bg-[var(--admin-bg)]/60"
                     >
                       <td className="px-4 py-3">
-                        <input
-                          type="checkbox"
+                        <Checkbox
                           checked={selected.has(p.id)}
                           onChange={() => toggle(p.id)}
                           aria-label={`Select ${title}`}

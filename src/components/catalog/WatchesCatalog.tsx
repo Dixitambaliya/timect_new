@@ -13,6 +13,7 @@ import { useCarousel, useDragScroll, useScrolledPast } from "@/components/fuse/h
 import { CarouselProgress, Reveal } from "@/components/fuse/ui";
 import { ChevronDown, CloseIcon, FilterIcon, SearchIcon, SortIcon, Spinner } from "@/components/fuse/icons";
 import ProductCard, { ProductCardSkeleton } from "@/components/site/ProductCard";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const PAGE_SIZE = 12;
 const GENDERS = ["Men", "Women", "Unisex"] as const;
@@ -332,55 +333,8 @@ export default function WatchesCatalog({
         </div>
       )}
 
-      <p className="mt-8 flex items-center justify-center gap-2 text-center text-[14px] text-muted" aria-live="polite">
-        {loading ? (
-          <>
-            <Spinner className="h-4 w-4" /> Loading watches…
-          </>
-        ) : (
-          `${products.length}${hasMore ? "+" : ""} watches`
-        )}
-      </p>
-
-      <ul className={cx("mt-4 grid grid-cols-2 gap-2 md:grid-cols-3 md:gap-3", grid)}>
-        {loading && products.length === 0
-          ? Array.from({ length: 8 }, (_, i) => (
-              <li key={i}>
-                <ProductCardSkeleton />
-              </li>
-            ))
-          : products.map((p, i) => (
-              <li key={p.id} className="animate-rise-in" style={{ animationDelay: `${(i % PAGE_SIZE) * 45}ms` }}>
-                <ProductCard product={p} priority={i < 4} />
-              </li>
-            ))}
-        {loadingMore &&
-          Array.from({ length: 4 }, (_, i) => (
-            <li key={`more-${i}`}>
-              <ProductCardSkeleton />
-            </li>
-          ))}
-      </ul>
-
-      {!loading && products.length === 0 && (
-        <div className="py-20 text-center">
-          <p className="fuse-h5">No watches match these filters</p>
-          <button type="button" onClick={resetAll} className="btn-secondary mt-6">
-            Clear filters
-          </button>
-        </div>
-      )}
-
-      <div ref={sentinel} className="flex h-20 items-center justify-center">
-        {hasMore && !loadingMore && (
-          <button type="button" onClick={() => void loadMore()} className="btn-outline">
-            <span className="btn-text !py-3">Load more</span>
-          </button>
-        )}
-      </div>
-
-      {/* Sticky glass toolbar */}
-      <div className="pointer-events-none sticky bottom-3 z-40 mt-6 flex justify-center gap-3 md:bottom-6">
+      {/* Catalog controls */}
+      <div className="pointer-events-none sticky top-3 z-40 mt-8 mb-6 flex justify-center gap-3 md:top-6">
         <div className="glass-dark pointer-events-auto flex items-center gap-2 rounded-fuse !bg-[#232323cc] p-1.5 text-white">
           <button
             type="button"
@@ -406,7 +360,7 @@ export default function WatchesCatalog({
               <ChevronDown className={cx("h-5 w-5 transition-transform", sortOpen && "rotate-180")} />
             </button>
             {sortOpen && (
-              <ul className="absolute bottom-[calc(100%+12px)] left-0 w-[240px] animate-dropdown-in rounded-fuse-md bg-white p-1 text-ink shadow-xl">
+              <ul className="absolute top-[calc(100%+12px)] left-0 w-[240px] animate-dropdown-in rounded-fuse-md bg-white p-1 text-ink shadow-xl">
                 {SORTS.map(([k, l]) => (
                   <li key={k}>
                     <button
@@ -455,6 +409,53 @@ export default function WatchesCatalog({
         >
           Up
         </button>
+      </div>
+
+      <p className="flex items-center justify-center gap-2 text-center text-[14px] text-muted" aria-live="polite">
+        {loading ? (
+          <>
+            <Spinner className="h-4 w-4" /> Loading watches…
+          </>
+        ) : (
+          `${products.length}${hasMore ? "+" : ""} watches`
+        )}
+      </p>
+
+      <ul className={cx("mt-4 grid grid-cols-2 gap-2 md:grid-cols-3 md:gap-3", grid)}>
+        {loading && products.length === 0
+          ? Array.from({ length: 8 }, (_, i) => (
+              <li key={i}>
+                <ProductCardSkeleton />
+              </li>
+            ))
+          : products.map((p, i) => (
+              <li key={p.id} className="animate-rise-in" style={{ animationDelay: `${(i % PAGE_SIZE) * 45}ms` }}>
+                <ProductCard product={p} priority={i < 4} />
+              </li>
+            ))}
+        {loadingMore &&
+          Array.from({ length: 4 }, (_, i) => (
+            <li key={`more-${i}`}>
+              <ProductCardSkeleton />
+            </li>
+          ))}
+      </ul>
+
+      {!loading && products.length === 0 && (
+        <div className="py-20 text-center">
+          <p className="fuse-h5">No watches match these filters</p>
+          <button type="button" onClick={resetAll} className="btn-secondary mt-6">
+            Clear filters
+          </button>
+        </div>
+      )}
+
+      <div ref={sentinel} className="flex h-20 items-center justify-center">
+        {hasMore && !loadingMore && (
+          <button type="button" onClick={() => void loadMore()} className="btn-outline">
+            <span className="btn-text !py-3">Load more</span>
+          </button>
+        )}
       </div>
 
       {/* Filter drawer */}
@@ -540,7 +541,7 @@ export default function WatchesCatalog({
               <div className="flex max-h-[260px] flex-col gap-2 overflow-y-auto">
                 {facets.brands.map((b) => (
                   <label key={b} className="flex cursor-pointer items-center gap-3">
-                    <input type="checkbox" checked={brands.includes(b)} onChange={() => toggleList("brand", brands, b)} className="h-5 w-5 accent-heading" />
+                    <Checkbox checked={brands.includes(b)} onChange={() => toggleList("brand", brands, b)} className="h-5 w-5" />
                     <span className="flex-1">{b}</span>
                   </label>
                 ))}

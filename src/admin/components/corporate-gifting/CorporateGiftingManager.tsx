@@ -24,6 +24,7 @@ import ConfirmDialog from "@/admin/components/ui/ConfirmDialog";
 import { useToast } from "@/admin/hooks/useToast";
 import Breadcrumbs from "@/admin/components/layout/Breadcrumbs";
 import Pagination from "@/admin/components/ui/Pagination";
+import { Select, SelectOption } from "@/components/ui/select";
 
 type Props = {
   initialItems: GiftSample[];
@@ -255,26 +256,26 @@ export default function CorporateGiftingManager({ initialItems }: Props) {
       {/* Toolbar & Filters */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2">
-          <select
+          <Select
             className="admin-input w-auto"
             value={genderFilter}
             onChange={(e) => setGenderFilter(e.target.value)}
           >
             {GENDER_OPTIONS.map((gender) => (
-              <option key={gender} value={gender}>{gender === "All" ? "All genders" : gender}</option>
+              <SelectOption key={gender} value={gender}>{gender === "All" ? "All genders" : gender}</SelectOption>
             ))}
-          </select>
-          <select
+          </Select>
+          <Select
             className="admin-input w-auto"
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
           >
-            <option value="newest">Newest</option>
-            <option value="oldest">Oldest</option>
-            <option value="name">Name</option>
-            <option value="price-asc">Price ↑</option>
-            <option value="price-desc">Price ↓</option>
-          </select>
+            <SelectOption value="newest">Newest</SelectOption>
+            <SelectOption value="oldest">Oldest</SelectOption>
+            <SelectOption value="name">Name</SelectOption>
+            <SelectOption value="price-asc">Price ↑</SelectOption>
+            <SelectOption value="price-desc">Price ↓</SelectOption>
+          </Select>
           <div className="relative min-w-[240px] max-w-md">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--admin-muted)]" />
           <input
@@ -587,15 +588,15 @@ export default function CorporateGiftingManager({ initialItems }: Props) {
 
                 <div>
                   <label className="admin-label">Gender</label>
-                  <select
+                  <Select
                     value={formData.gender || "Unisex"}
                     onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
                     className="admin-input"
                   >
-                    <option value="Men">Men</option>
-                    <option value="Women">Women</option>
-                    <option value="Unisex">Unisex</option>
-                  </select>
+                    <SelectOption value="Men">Men</SelectOption>
+                    <SelectOption value="Women">Women</SelectOption>
+                    <SelectOption value="Unisex">Unisex</SelectOption>
+                  </Select>
                 </div>
 
                 <div>

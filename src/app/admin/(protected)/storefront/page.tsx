@@ -7,6 +7,7 @@ import ImageField from "@/admin/components/ui/ImageField";
 import { adminGetStorefront, adminSaveStorefront } from "@/admin/actions/storefront";
 import { useToast } from "@/admin/hooks/useToast";
 import type { HeroSlide, PromoBanner, StorefrontSettings } from "@/data/storefront";
+import { Select, SelectOption } from "@/components/ui/select";
 
 type Tab = "hero" | "banners" | "content" | "contact";
 
@@ -55,14 +56,14 @@ function PageLinkField({ value, onChange }: { value: string; onChange: (value: s
 
   return (
     <Field label="Button destination" hint="Select the storefront page opened when the button is clicked.">
-      <select className="admin-input" value={value} onChange={(event) => onChange(event.target.value)}>
-        {!isKnownPage && value && <option value={value}>Current custom destination ({value})</option>}
+      <Select className="admin-input" value={value} onChange={(event) => onChange(event.target.value)}>
+        {!isKnownPage && value && <SelectOption value={value}>Current custom destination ({value})</SelectOption>}
         {PAGE_LINK_OPTIONS.map((option) => (
-          <option key={option.value} value={option.value}>
+          <SelectOption key={option.value} value={option.value}>
             {option.label}
-          </option>
+          </SelectOption>
         ))}
-      </select>
+      </Select>
     </Field>
   );
 }

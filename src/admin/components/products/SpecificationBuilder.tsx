@@ -11,6 +11,7 @@ import {
   Trash2
 } from "lucide-react";
 import type { Specification } from "@/db/actions";
+import { Select, SelectOption } from "@/components/ui/select";
 
 const MATERIAL_PRESETS = [
   "Stainless steel",
@@ -752,19 +753,19 @@ const PresetDropdown = ({
         {label}
       </label>
       <div className="flex gap-2">
-        <select
+        <Select
           id={id}
           className="admin-input flex-1"
           value={value}
           onChange={(e) => onChange(e.target.value)}
         >
-          <option value="">-- Select --</option>
+          <SelectOption value="">-- Select --</SelectOption>
           {options.map((opt, index) => (
-            <option key={`${id}-${index}-${opt}`} value={opt}>
+            <SelectOption key={`${id}-${index}-${opt}`} value={opt}>
               {opt}
-            </option>
+            </SelectOption>
           ))}
-        </select>
+        </Select>
         <button
           type="button"
           className="admin-btn admin-btn-secondary px-3 text-lg font-bold shrink-0"

@@ -10,6 +10,7 @@ import {
   type MediaItem,
 } from "@/admin/actions/media";
 import { useToast } from "@/admin/hooks/useToast";
+import { Select, SelectOption } from "@/components/ui/select";
 
 type MediaPickerProps = {
   open: boolean;
@@ -175,18 +176,18 @@ export default function MediaPicker({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
-          <select
+          <Select
             className="admin-input max-w-[160px]"
             value={folder}
             onChange={(e) => setFolder(e.target.value)}
           >
-            <option value="">All folders</option>
+            <SelectOption value="">All folders</SelectOption>
             {folders.map((f) => (
-              <option key={f} value={f}>
+              <SelectOption key={f} value={f}>
                 {f}
-              </option>
+              </SelectOption>
             ))}
-          </select>
+          </Select>
           <label className="admin-btn admin-btn-secondary cursor-pointer">
             {uploading ? (
               <Loader2 className="h-4 w-4 animate-spin" />

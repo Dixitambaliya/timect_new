@@ -21,6 +21,8 @@ import {
   type MediaItem,
 } from "@/admin/actions/media";
 import { useToast } from "@/admin/hooks/useToast";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectOption } from "@/components/ui/select";
 
 export default function MediaPage() {
   const { success, error } = useToast();
@@ -221,7 +223,7 @@ export default function MediaPage() {
             }}
           />
         </div>
-        <select
+        <Select
           className="admin-input w-auto"
           value={folder}
           onChange={(e) => {
@@ -229,13 +231,13 @@ export default function MediaPage() {
             setPage(1);
           }}
         >
-          <option value="">All folders</option>
+          <SelectOption value="">All folders</SelectOption>
           {folders.map((f) => (
-            <option key={f} value={f}>
+            <SelectOption key={f} value={f}>
               {f}
-            </option>
+            </SelectOption>
           ))}
-        </select>
+        </Select>
         {selectedCount > 0 && (
           <button
             type="button"
@@ -276,8 +278,7 @@ export default function MediaPage() {
                   className="h-full w-full object-cover"
                 />
                 <label className="absolute left-2 top-2 z-[1] flex h-7 w-7 cursor-pointer items-center justify-center rounded bg-white/95 shadow-sm">
-                  <input
-                    type="checkbox"
+                  <Checkbox
                     className="h-4 w-4 accent-[var(--admin-accent)]"
                     checked={selectedIds.has(item.id)}
                     onChange={() => toggleSelected(item.id)}
