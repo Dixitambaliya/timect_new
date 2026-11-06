@@ -15,6 +15,7 @@
     "@radix-ui/react-checkbox": "^1.4.1",
     "@radix-ui/react-select": "^2.4.1",
     "bcryptjs": "^3.0.3",
+    "cloudinary": "^2.11.0",
     "exceljs": "^4.4.0",
     "gsap": "^3.15.0",
     "jose": "^6.2.4",

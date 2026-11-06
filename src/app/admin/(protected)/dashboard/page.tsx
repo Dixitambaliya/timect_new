@@ -5,6 +5,7 @@ import { adminListMessages } from "@/admin/actions/inbox";
 import { adminRecentActivity } from "@/admin/actions/users";
 import { PageHeader } from "@/admin/components/layout/Breadcrumbs";
 import { catalogThumbUrl } from "@/lib/catalog-image";
+import LiveVisitorWidget from "@/admin/components/dashboard/LiveVisitorWidget";
 
 function timeAgo(iso: string): string {
   const d = new Date(iso).getTime();
@@ -59,6 +60,9 @@ export default async function AdminDashboardPage() {
           </>
         }
       />
+
+      {/* Real-Time Live Visitor Monitoring Banner */}
+      <LiveVisitorWidget />
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6">
         {cards.map((c, i) => {

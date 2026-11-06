@@ -13,6 +13,8 @@ import {
   Palette,
   Settings,
   Users,
+  BookOpen,
+  Activity,
   X,
 } from "lucide-react";
 import { TIMECT_LOGO } from "@/data/storefront";
@@ -29,8 +31,15 @@ const GROUPS = [
     ],
   },
   {
+    title: "Journal / Blog",
+    items: [
+      { href: "/admin/blog", label: "Articles", icon: BookOpen },
+    ],
+  },
+  {
     title: "Storefront",
     items: [
+      { href: "/admin/live-visitors", label: "Live Visitors", icon: Activity },
       { href: "/admin/storefront", label: "Homepage & content", icon: Palette },
       { href: "/admin/inbox", label: "Inbox", icon: Inbox, badge: "inbox" as const },
     ],

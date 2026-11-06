@@ -10,6 +10,7 @@ import MenuDrawer from "@/components/site/MenuDrawer";
 import SearchDrawer from "@/components/site/SearchDrawer";
 import QuickView from "@/components/site/QuickView";
 import BackToTop from "@/components/site/BackToTop";
+import VisitorTracker from "@/components/site/VisitorTracker";
 import { JsonLd, siteGraph } from "@/lib/seo/structured-data";
 
 // Storefront content is edited live from the admin panel.
@@ -42,6 +43,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       <SearchDrawer />
       <QuickView />
       <BackToTop />
+      <VisitorTracker />
     </SiteProvider>
   );
 }
