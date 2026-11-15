@@ -9,29 +9,26 @@ import { gsap, ScrollTrigger } from "@/lib/gsap";
 
 /**
  * Lenis smooth scrolling for the storefront. Disabled for users who prefer
- * reduced motion; touch input uses Lenis' synchronized inertia while nested
- * scroll areas (drawers and carousels) keep native scrolling.
+ * reduced motion and on touch devices. Mobile browsers already provide
+ * compositor-driven momentum scrolling, while intercepting touch input here
+ * adds main-thread work to every frame and can fight the collapsing address
+ * bar. Nested scroll areas (drawers and carousels) keep native scrolling.
  */
 export default function SmoothScroll() {
   const pathname = usePathname();
   const search = useSearchParams();
 
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const isTouch = window.matchMedia("(hover: none), (pointer: coarse)").matches;
+    if (window.matchMedia("(prefers-reduced-motion: reduce), (hover: none), (pointer: coarse)").matches) return;
     // Lenis is driven by GSAP's ticker so ScrollTrigger reads the same
     // smoothed scroll position on every frame (no jitter between the two).
     const lenis = new Lenis({
       autoRaf: false,
       // Lenis ignores duration/easing while lerp is defined. A lower explicit
       // lerp gives wheel input a longer, calmer settle than its 0.1 default.
-      lerp: isTouch ? 0.08 : 0.065,
+      lerp: 0.065,
       smoothWheel: true,
       wheelMultiplier: 0.72,
-      touchMultiplier: 1,
-      syncTouch: isTouch,
-      syncTouchLerp: 0.06,
-      touchInertiaExponent: 1.35,
       allowNestedScroll: true,
       anchors: true,
       stopInertiaOnNavigate: true,
