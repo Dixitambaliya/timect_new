@@ -131,6 +131,7 @@ export default function ScrollMotion() {
     let mounted = true;
     let frame = 0;
     let refreshTimer: ReturnType<typeof setTimeout> | undefined;
+    let scanTimer: ReturnType<typeof setTimeout> | undefined;
     const routeIsCurrent = () => window.location.pathname === pathname;
 
     const scan = () => {
@@ -150,9 +151,18 @@ export default function ScrollMotion() {
       });
       ScrollTrigger.refresh();
     };
+
     const queueScan = () => {
-      if (mounted && routeIsCurrent() && !frame) frame = requestAnimationFrame(scan);
+      if (!mounted || !routeIsCurrent()) return;
+      clearTimeout(scanTimer);
+      // Defer scanning until React finishes hydration and layout phases for newly inserted DOM nodes.
+      scanTimer = setTimeout(() => {
+        if (mounted && routeIsCurrent() && !frame) {
+          frame = requestAnimationFrame(scan);
+        }
+      }, 100);
     };
+
     const queueRefresh = () => {
       if (!mounted || !routeIsCurrent()) return;
       clearTimeout(refreshTimer);
@@ -161,7 +171,13 @@ export default function ScrollMotion() {
       }, 200);
     };
 
-    scan();
+    // Give React time to complete hydration on the tree before GSAP animates or splits text.
+    scanTimer = setTimeout(() => {
+      if (mounted && routeIsCurrent()) {
+        scan();
+      }
+    }, 100);
+
     const mo = new MutationObserver(queueScan);
     mo.observe(document.body, { childList: true, subtree: true });
     // Lazy images / loaded products change page height → re-measure triggers.
@@ -178,6 +194,7 @@ export default function ScrollMotion() {
       window.removeEventListener("load", queueRefresh);
       cancelAnimationFrame(frame);
       clearTimeout(refreshTimer);
+      clearTimeout(scanTimer);
       active.forEach((cleanup) => cleanup());
       active.clear();
     };

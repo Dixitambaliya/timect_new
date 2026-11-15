@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Breadcrumbs from "@/admin/components/layout/Breadcrumbs";
 import ProductTable from "@/admin/components/products/ProductTable";
@@ -9,7 +9,6 @@ import { TableSkeleton } from "@/admin/components/ui/Skeleton";
 
 function ProductsContent() {
   const searchParams = useSearchParams();
-  const [search, setSearch] = useState("");
   const flagParam = searchParams.get("flag") as ProductListFilters["flag"];
   const initialFlag =
     flagParam &&
@@ -26,19 +25,7 @@ function ProductsContent() {
   const initialGender = searchParams.get("gender") || undefined;
   const statusParam = searchParams.get("status") as ProductListFilters["status"];
   const initialStatus = statusParam && ["all", "published", "draft"].includes(statusParam) ? statusParam : "all";
-  const initialSearch = searchParams.get("search") || search;
-
-  // Read navbar search from parent data attribute when present
-  useEffect(() => {
-    const el = document.querySelector("[data-admin-search]");
-    if (!el) return;
-    const obs = new MutationObserver(() => {
-      setSearch(el.getAttribute("data-admin-search") || "");
-    });
-    setSearch(el.getAttribute("data-admin-search") || "");
-    obs.observe(el, { attributes: true, attributeFilter: ["data-admin-search"] });
-    return () => obs.disconnect();
-  }, []);
+  const initialSearch = searchParams.get("search") || "";
 
   return (
     <ProductTable

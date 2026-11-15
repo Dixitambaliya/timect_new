@@ -16,6 +16,7 @@ export default function TopNavbar({
   onMenu,
   search,
   onSearch,
+  onSubmitSearch,
   searchPlaceholder = "Search…",
 }: {
   user: AdminSession;
@@ -24,11 +25,19 @@ export default function TopNavbar({
   onMenu: () => void;
   search?: string;
   onSearch?: (v: string) => void;
+  onSubmitSearch?: (v: string) => void;
   searchPlaceholder?: string;
 }) {
   const [confirmLogout, setConfirmLogout] = useState(false);
   const [pending, startTransition] = useTransition();
   const searchValue = search || "";
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (onSubmitSearch) {
+      onSubmitSearch(searchValue);
+    }
+  };
 
   return (
     <header className="sticky top-3 z-30 flex h-[68px] items-center gap-3 rounded-fuse bg-[var(--admin-surface)] px-3 shadow-[var(--admin-shadow)] md:px-4">
@@ -37,7 +46,11 @@ export default function TopNavbar({
       </button>
 
       {onSearch && (
-        <div className="relative hidden min-w-0 flex-1 md:block md:max-w-lg">
+        <form
+          role="search"
+          onSubmit={handleSubmit}
+          className="relative hidden min-w-0 flex-1 md:block md:max-w-lg"
+        >
           <Search className="pointer-events-none absolute left-4 top-1/2 z-[1] h-4 w-4 -translate-y-1/2 text-[var(--admin-muted)]" aria-hidden />
           <input
             type="text"
@@ -51,6 +64,12 @@ export default function TopNavbar({
             data-form-type="other"
             value={searchValue}
             onChange={(e) => onSearch(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                onSubmitSearch?.(searchValue);
+              }
+            }}
             placeholder={searchPlaceholder}
             aria-label={searchPlaceholder}
             className="admin-input w-full !border-transparent !bg-[var(--admin-bg)]"
@@ -66,7 +85,7 @@ export default function TopNavbar({
               <X className="h-4 w-4" />
             </button>
           ) : null}
-        </div>
+        </form>
       )}
 
       <div className="ml-auto flex items-center gap-2">

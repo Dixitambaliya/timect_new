@@ -15,6 +15,7 @@ export function Reveal({
   className,
   style,
   children,
+  suppressHydrationWarning = true,
   ...rest
 }: {
   as?: ElementType;
@@ -23,10 +24,12 @@ export function Reveal({
   className?: string;
   style?: CSSProperties;
   children?: ReactNode;
+  suppressHydrationWarning?: boolean;
   [key: string]: unknown;
 }) {
   return (
     <Tag
+      suppressHydrationWarning={suppressHydrationWarning}
       className={cx(`reveal-${type}`, className)}
       style={{ "--delay": `${delay}s`, ...style } as CSSProperties}
       {...rest}

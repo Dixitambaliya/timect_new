@@ -13,6 +13,7 @@ export default function AdminShell({
   children,
   search,
   onSearch,
+  onSubmitSearch,
   searchPlaceholder,
   unread = 0,
 }: {
@@ -20,6 +21,7 @@ export default function AdminShell({
   children: ReactNode;
   search?: string;
   onSearch?: (v: string) => void;
+  onSubmitSearch?: (v: string) => void;
   searchPlaceholder?: string;
   unread?: number;
 }) {
@@ -65,6 +67,7 @@ export default function AdminShell({
             onMenu={() => setSidebarOpen(true)}
             search={search}
             onSearch={onSearch}
+            onSubmitSearch={onSubmitSearch}
             searchPlaceholder={searchPlaceholder}
           />
           <main className="flex-1 px-1 pb-6 pt-2 md:px-2 lg:px-3">{children}</main>

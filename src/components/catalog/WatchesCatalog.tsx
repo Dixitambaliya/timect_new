@@ -301,7 +301,7 @@ export default function WatchesCatalog({
     <div className="container-fuse pb-10 pt-12 md:pt-20">
       <div className="px-2">
         <Breadcrumbs items={[["Home", "/"], ["Watches", title !== "All watches" ? "/watches" : undefined], ...(title !== "All watches" ? [[title] as [string]] : [])]} />
-        <Reveal as="h1" type="wipe" key={title} className="fuse-h1 mt-2 text-center capitalize">
+        <Reveal as="h1" type="wipe" key={title} suppressHydrationWarning className="fuse-h1 mt-2 text-center capitalize">
           {title.toLowerCase()}
         </Reveal>
         <div className="mt-8 flex flex-wrap justify-center gap-2">

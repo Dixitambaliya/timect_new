@@ -534,6 +534,53 @@ export async function adminBulkUpdateFlags(
   }
 }
 
+export async function adminBulkUpdateStatus(
+  ids: number[],
+  status: "published" | "draft",
+): Promise<{ ok: true; count: number } | { ok: false; error: string }> {
+  try {
+    const session = await assertWrite();
+    if (!ids.length) return { ok: true, count: 0 };
+
+    const validStatus = status === "draft" ? "draft" : "published";
+    let count = 0;
+    for (const id of ids) {
+      const res = await sql`
+        UPDATE products
+        SET status = ${validStatus}
+        WHERE id = ${id}
+        RETURNING slug
+      `;
+      if (res.length > 0) {
+        count += 1;
+        const slug = (res[0] as { slug: string | null }).slug;
+        if (slug) {
+          revalidatePath(`/product/${slug}`);
+        }
+        revalidatePath(`/admin/products/${id}/edit`);
+      }
+    }
+
+    try {
+      await sql`
+        INSERT INTO audit_logs (admin_user_id, action, entity_type, meta)
+        VALUES (${session.id}, 'bulk_status_update', 'product', ${JSON.stringify({ ids, status: validStatus })}::jsonb)
+      `;
+    } catch {
+      /* optional */
+    }
+
+    revalidatePath("/");
+    revalidatePath("/watches");
+    revalidatePath("/admin/products");
+    revalidatePath("/admin/dashboard");
+    return { ok: true, count };
+  } catch (err) {
+    console.error("adminBulkUpdateStatus:", err);
+    return { ok: false, error: "Bulk status update failed." };
+  }
+}
+
 /** Merge selected products and their existing connected members into one variant family. */
 export async function adminLinkProductsAsVariants(
   ids: number[],

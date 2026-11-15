@@ -6,17 +6,21 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   Copy,
   ExternalLink,
+  FileText,
   Link2,
   MoreHorizontal,
   Pencil,
   Plus,
+  Search,
   Trash2,
   Unlink,
+  X,
 } from "lucide-react";
 import type { Product } from "@/db/actions";
 import {
   adminBulkDeleteProducts,
   adminBulkUpdateFlags,
+  adminBulkUpdateStatus,
   adminDeleteProduct,
   adminDuplicateProduct,
   adminLinkProductsAsVariants,
@@ -24,6 +28,7 @@ import {
   adminUnlinkProductsAsVariants,
   type ProductListFilters,
 } from "@/admin/actions/products";
+import { useAdminSearch } from "@/admin/context/AdminSearchContext";
 import { useToast } from "@/admin/hooks/useToast";
 import ConfirmDialog from "@/admin/components/ui/ConfirmDialog";
 import EmptyState from "@/admin/components/ui/EmptyState";
@@ -52,8 +57,9 @@ export default function ProductTable({
   const { success, error } = useToast();
   const router = useRouter();
   const pathname = usePathname();
+  const { search, setSearch, clearSearch } = useAdminSearch();
   const [filters, setFilters] = useState<ProductListFilters>({
-    search: initialSearch,
+    search: initialSearch || search,
     flag: initialFlag || "all",
     gender: initialGender,
     status: initialStatus,
@@ -74,7 +80,6 @@ export default function ProductTable({
     | { type: "unlink-variants" }
   >(null);
   const [menuId, setMenuId] = useState<number | null>(null);
-  const firstSearchSync = useRef(true);
   const firstFlagSync = useRef(true);
 
   const load = useCallback(async () => {
@@ -84,6 +89,15 @@ export default function ProductTable({
       setProducts(res.products);
       setTotal(res.total);
       setTotalPages(res.totalPages);
+      setSelected((prev) => {
+        if (prev.size === 0) return prev;
+        const currentIds = new Set(res.products.map((p) => p.id));
+        const next = new Set<number>();
+        for (const id of prev) {
+          if (currentIds.has(id)) next.add(id);
+        }
+        return next.size === prev.size ? prev : next;
+      });
     } finally {
       setLoading(false);
     }
@@ -93,13 +107,16 @@ export default function ProductTable({
     void load();
   }, [load]);
 
+  // Synchronize global/navbar search with product list filters (debounced to avoid query spamming)
   useEffect(() => {
-    if (firstSearchSync.current) {
-      firstSearchSync.current = false;
-      return;
-    }
-    setFilters((f) => ({ ...f, search: initialSearch, page: 1 }));
-  }, [initialSearch]);
+    const timer = setTimeout(() => {
+      setFilters((f) => {
+        if (f.search === search) return f;
+        return { ...f, search, page: 1 };
+      });
+    }, search ? 250 : 0);
+    return () => clearTimeout(timer);
+  }, [search]);
 
   useEffect(() => {
     if (firstFlagSync.current) {
@@ -166,6 +183,32 @@ export default function ProductTable({
     });
   };
 
+  const runBulkStatus = (status: "published" | "draft") => {
+    startTransition(async () => {
+      const res = await adminBulkUpdateStatus(Array.from(selected), status);
+      if (!res.ok) error(res.error);
+      else {
+        success(
+          status === "draft"
+            ? `Drafted ${res.count} product(s)`
+            : `Undrafted ${res.count} product(s)`,
+        );
+        await load();
+      }
+    });
+  };
+
+  const runSingleStatus = (id: number, status: "published" | "draft") => {
+    startTransition(async () => {
+      const res = await adminBulkUpdateStatus([id], status);
+      if (!res.ok) error(res.error);
+      else {
+        success(status === "draft" ? "Product drafted" : "Product undrafted");
+        await load();
+      }
+    });
+  };
+
   const runDuplicate = (id: number) => {
     startTransition(async () => {
       const res = await adminDuplicateProduct(id);
@@ -209,6 +252,7 @@ export default function ProductTable({
 
   const selectedProducts = products.filter((p) => selected.has(p.id));
   const hasSelected = selectedProducts.length > 0;
+  const allDraft = hasSelected && selectedProducts.every((p) => p.status === "draft");
   const allNew = hasSelected && selectedProducts.every((p) => p.isNewArrival);
   const allRec = hasSelected && selectedProducts.every((p) => p.isRecommended);
   const allRel = hasSelected && selectedProducts.every((p) => p.isRelated);
@@ -237,7 +281,27 @@ export default function ProductTable({
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="relative min-w-[200px] flex-1 sm:w-64">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--admin-muted)]" />
+            <input
+              type="text"
+              placeholder="Search products…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="admin-input pl-9 pr-8"
+            />
+            {search ? (
+              <button
+                type="button"
+                onClick={clearSearch}
+                className="absolute right-2 top-1/2 z-[1] flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-fuse-sm text-[var(--admin-muted)] hover:bg-[var(--admin-surface)] hover:text-[var(--admin-ink)]"
+                aria-label="Clear search"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            ) : null}
+          </div>
           <Select
             className="admin-input w-auto"
             value={filters.status || "all"}
@@ -341,6 +405,14 @@ export default function ProductTable({
             type="button"
             className="admin-btn admin-btn-secondary text-xs"
             disabled={pending}
+            onClick={() => runBulkStatus(allDraft ? "published" : "draft")}
+          >
+            {allDraft ? "Undraft" : "Draft"}
+          </button>
+          <button
+            type="button"
+            className="admin-btn admin-btn-secondary text-xs"
+            disabled={pending}
             onClick={() => runBulkFlag({ isNewArrival: !allNew })}
           >
             {allNew ? "Unmark new" : "Mark new"}
@@ -396,7 +468,7 @@ export default function ProductTable({
                   type="button"
                   className="admin-btn admin-btn-primary"
                   onClick={() => {
-                    window.dispatchEvent(new Event("admin:clear-search"));
+                    clearSearch();
                     setFilters((f) => ({
                       ...f,
                       search: "",
@@ -565,6 +637,20 @@ export default function ProductTable({
                               >
                                 <Copy className="h-3.5 w-3.5" />
                                 Duplicate
+                              </button>
+                              <button
+                                type="button"
+                                className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-[var(--admin-bg)]"
+                                onClick={() => {
+                                  setMenuId(null);
+                                  runSingleStatus(
+                                    p.id,
+                                    p.status === "draft" ? "published" : "draft",
+                                  );
+                                }}
+                              >
+                                <FileText className="h-3.5 w-3.5" />
+                                {p.status === "draft" ? "Undraft" : "Draft"}
                               </button>
                               <button
                                 type="button"

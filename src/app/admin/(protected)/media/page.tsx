@@ -21,16 +21,17 @@ import {
   type MediaItem,
 } from "@/admin/actions/media";
 import { useToast } from "@/admin/hooks/useToast";
+import { useAdminSearch } from "@/admin/context/AdminSearchContext";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectOption } from "@/components/ui/select";
 
 export default function MediaPage() {
   const { success, error } = useToast();
+  const { search, setSearch } = useAdminSearch();
   const [items, setItems] = useState<MediaItem[]>([]);
   const [folders, setFolders] = useState<string[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
-  const [search, setSearch] = useState("");
   const [folder, setFolder] = useState("");
   const [loading, setLoading] = useState(true);
   const [pending, startTransition] = useTransition();
@@ -60,6 +61,10 @@ export default function MediaPage() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [search]);
 
   const handleUpload = (files: FileList | null) => {
     if (!files?.length) return;
