@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import { Check, Link2, Loader2, Upload, X } from "lucide-react";
 import {
@@ -70,7 +71,7 @@ export default function MediaPicker({
     return () => window.removeEventListener("keydown", handleEscape);
   }, [open, onClose]);
 
-  if (!open) return null;
+  if (!open || typeof document === "undefined") return null;
 
   const toggle = (url: string) => {
     if (!multiple) {
@@ -139,9 +140,9 @@ export default function MediaPicker({
     }
   };
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-[95] flex items-center justify-center p-4"
+      className="admin-portal fixed inset-0 z-[350] flex items-center justify-center p-4"
       role="dialog"
       aria-modal="true"
       aria-label="Media library"
@@ -302,6 +303,7 @@ export default function MediaPicker({
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
