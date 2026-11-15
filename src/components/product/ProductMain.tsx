@@ -112,9 +112,11 @@ export default function ProductMain({
   const [panel, setPanel] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [pageUrl, setPageUrl] = useState(`/product/${product.slug}`);
+  const [pendingSlug, setPendingSlug] = useState<string | null>(null);
 
   useEffect(() => {
     setPageUrl(`${window.location.origin}/product/${product.slug}`);
+    setPendingSlug(null);
   }, [product.slug]);
 
   const title = product.title || product.name || "Timect watch";
@@ -134,6 +136,9 @@ export default function ProductMain({
     variants.unshift({ id: "current", name: title, image: product.image || images[0] || "", slug: product.slug });
   }
   const selectedVariant = variants.find((v) => v.slug === product.slug || (v.image && v.image === product.image));
+  const activeVariant = pendingSlug
+    ? variants.find((v) => v.slug === pendingSlug) || selectedVariant
+    : selectedVariant;
 
   const labels = [product.tag || (product.isMainProduct ? "Exclusive" : "")].filter(Boolean) as string[];
   const panels = [...specs.map((s) => s.title), ...Object.keys(SERVICE_PANELS)];
@@ -208,11 +213,11 @@ export default function ProductMain({
           <InfoCard>
             <p className="mb-4 font-semibold">
               Colour / finish
-              {selectedVariant && <span className="font-normal text-muted"> · {selectedVariant.name}</span>}
+              {activeVariant && <span className="font-normal text-muted"> · {activeVariant.name}</span>}
             </p>
             <div className="flex flex-wrap gap-3">
               {variants.map((v) => {
-                const active = v === selectedVariant;
+                const active = v === activeVariant;
                 return (
                   <button
                     key={v.id || v.slug}
@@ -223,7 +228,11 @@ export default function ProductMain({
                     aria-current={active ? "true" : undefined}
                     disabled={!v.slug}
                     onMouseEnter={() => v.slug && router.prefetch(`/product/${v.slug}`)}
-                    onClick={() => v.slug && !active && router.push(`/product/${v.slug}`, { scroll: false })}
+                    onClick={() => {
+                      if (!v.slug || active) return;
+                      setPendingSlug(v.slug);
+                      router.push(`/product/${v.slug}`, { scroll: false });
+                    }}
                     className={cx(
                       "relative w-[92px] overflow-hidden rounded-fuse-md bg-bg p-[3px] text-left transition-[box-shadow,transform] duration-400 hover:-translate-y-0.5",
                       active ? "shadow-[0_0_0_1px_#000]" : "shadow-[0_0_0_1px_transparent] hover:shadow-[0_0_0_1px_#8c8c8c]",

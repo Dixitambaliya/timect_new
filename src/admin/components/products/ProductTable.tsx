@@ -71,7 +71,7 @@ export default function ProductTable({
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
-  const [selected, setSelected] = useState<Set<number>>(new Set());
+  const [selected, setSelected] = useState<Map<number, Product>>(new Map());
   const [pending, startTransition] = useTransition();
   const [confirm, setConfirm] = useState<
     | null
@@ -89,14 +89,18 @@ export default function ProductTable({
       setProducts(res.products);
       setTotal(res.total);
       setTotalPages(res.totalPages);
+      // Keep selected products intact across pages and searches, but update data if present in latest fetch
       setSelected((prev) => {
         if (prev.size === 0) return prev;
-        const currentIds = new Set(res.products.map((p) => p.id));
-        const next = new Set<number>();
-        for (const id of prev) {
-          if (currentIds.has(id)) next.add(id);
+        let changed = false;
+        const next = new Map(prev);
+        for (const p of res.products) {
+          if (next.has(p.id)) {
+            next.set(p.id, p);
+            changed = true;
+          }
         }
-        return next.size === prev.size ? prev : next;
+        return changed ? next : prev;
       });
     } finally {
       setLoading(false);
@@ -128,16 +132,30 @@ export default function ProductTable({
     }
   }, [initialFlag]);
 
+  const allCurrentPageSelected =
+    products.length > 0 && products.every((p) => selected.has(p.id));
+
   const toggleAll = () => {
-    if (selected.size === products.length) setSelected(new Set());
-    else setSelected(new Set(products.map((p) => p.id)));
+    setSelected((prev) => {
+      const next = new Map(prev);
+      if (allCurrentPageSelected) {
+        for (const p of products) {
+          next.delete(p.id);
+        }
+      } else {
+        for (const p of products) {
+          next.set(p.id, p);
+        }
+      }
+      return next;
+    });
   };
 
-  const toggle = (id: number) => {
+  const toggle = (product: Product) => {
     setSelected((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+      const next = new Map(prev);
+      if (next.has(product.id)) next.delete(product.id);
+      else next.set(product.id, product);
       return next;
     });
   };
@@ -149,7 +167,7 @@ export default function ProductTable({
       else {
         success("Product deleted");
         setSelected((s) => {
-          const n = new Set(s);
+          const n = new Map(s);
           n.delete(id);
           return n;
         });
@@ -161,11 +179,11 @@ export default function ProductTable({
 
   const runBulkDelete = () => {
     startTransition(async () => {
-      const res = await adminBulkDeleteProducts(Array.from(selected));
+      const res = await adminBulkDeleteProducts(Array.from(selected.keys()));
       if (!res.ok) error(res.error);
       else {
         success(`Deleted ${res.count} product(s)`);
-        setSelected(new Set());
+        setSelected(new Map());
         await load();
       }
       setConfirm(null);
@@ -174,7 +192,7 @@ export default function ProductTable({
 
   const runBulkFlag = (flags: Parameters<typeof adminBulkUpdateFlags>[1]) => {
     startTransition(async () => {
-      const res = await adminBulkUpdateFlags(Array.from(selected), flags);
+      const res = await adminBulkUpdateFlags(Array.from(selected.keys()), flags);
       if (!res.ok) error(res.error);
       else {
         success(`Updated ${res.count} product(s)`);
@@ -185,7 +203,7 @@ export default function ProductTable({
 
   const runBulkStatus = (status: "published" | "draft") => {
     startTransition(async () => {
-      const res = await adminBulkUpdateStatus(Array.from(selected), status);
+      const res = await adminBulkUpdateStatus(Array.from(selected.keys()), status);
       if (!res.ok) error(res.error);
       else {
         success(
@@ -227,11 +245,11 @@ export default function ProductTable({
       return;
     }
     startTransition(async () => {
-      const res = await adminLinkProductsAsVariants(Array.from(selected));
+      const res = await adminLinkProductsAsVariants(Array.from(selected.keys()));
       if (!res.ok) error(res.error);
       else {
         success(`Merged ${res.count} products into one variant family`);
-        setSelected(new Set());
+        setSelected(new Map());
         await load();
       }
     });
@@ -239,18 +257,18 @@ export default function ProductTable({
 
   const runUnlinkVariants = () => {
     startTransition(async () => {
-      const res = await adminUnlinkProductsAsVariants(Array.from(selected));
+      const res = await adminUnlinkProductsAsVariants(Array.from(selected.keys()));
       if (!res.ok) error(res.error);
       else {
         success(`Unlinked ${res.count} product(s) from their variant families`);
-        setSelected(new Set());
+        setSelected(new Map());
         await load();
       }
       setConfirm(null);
     });
   };
 
-  const selectedProducts = products.filter((p) => selected.has(p.id));
+  const selectedProducts = Array.from(selected.values());
   const hasSelected = selectedProducts.length > 0;
   const allDraft = hasSelected && selectedProducts.every((p) => p.status === "draft");
   const allNew = hasSelected && selectedProducts.every((p) => p.isNewArrival);
@@ -381,7 +399,20 @@ export default function ProductTable({
 
       {selected.size > 0 && (
         <div className="admin-card flex flex-wrap items-center gap-2 px-4 py-3">
-          <span className="text-sm font-medium">{selected.size} selected</span>
+          <span
+            className="text-sm font-medium"
+            title={selectedProducts.map((p) => p.name || p.title || p.slug).join(", ")}
+          >
+            {selected.size} selected
+          </span>
+          <button
+            type="button"
+            className="admin-btn admin-btn-ghost text-xs text-[var(--admin-muted)]"
+            onClick={() => setSelected(new Map())}
+            title="Clear all selected products"
+          >
+            Clear
+          </button>
           <button
             type="button"
             className="admin-btn admin-btn-secondary text-xs"
@@ -498,12 +529,9 @@ export default function ProductTable({
                 <tr>
                   <th className="px-4 py-3">
                     <Checkbox
-                      checked={
-                        products.length > 0 &&
-                        selected.size === products.length
-                      }
+                      checked={allCurrentPageSelected}
                       onChange={toggleAll}
-                      aria-label="Select all"
+                      aria-label="Select all on this page"
                     />
                   </th>
                   <th className="px-4 py-3">Product</th>
@@ -525,7 +553,7 @@ export default function ProductTable({
                       <td className="px-4 py-3">
                         <Checkbox
                           checked={selected.has(p.id)}
-                          onChange={() => toggle(p.id)}
+                          onChange={() => toggle(p)}
                           aria-label={`Select ${title}`}
                         />
                       </td>
