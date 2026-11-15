@@ -11,7 +11,7 @@ export const metadata: Metadata = createPageMetadata({
 });
 
 const IMAGE =
-  "https://res.cloudinary.com/dphscxzb4/image/upload/f_auto,q_auto,w_1400/v1784048470/timect/gold_truton_chronograph.jpg";
+  "https://res.cloudinary.com/dphscxzb4/image/upload/timect/admin/general/yur96x65jjbxtdx5ff97.png";
 
 const PILLARS = [
   {
