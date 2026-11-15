@@ -398,6 +398,25 @@
 .reveal-zoom { opacity: 0; transform: scale(1.08); }
 [data-parallax] { will-change: transform; }
 
+/* Keep responsive/touch scrolling on the browser compositor. ScrollMotion
+   intentionally does not create GSAP triggers for these devices. */
+@media (max-width: 767px), (hover: none), (pointer: coarse) {
+  .reveal-rise,
+  .reveal-fade,
+  .reveal-wipe,
+  .reveal-zoom {
+    opacity: 1;
+    transform: none;
+    clip-path: none;
+    visibility: visible;
+  }
+
+  [data-parallax] {
+    transform: none !important;
+    will-change: auto;
+  }
+}
+
 .is-revealed,
 .reveal-rise.is-revealed,
 .reveal-fade.is-revealed,

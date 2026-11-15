@@ -113,10 +113,18 @@ function animate(el: HTMLElement): () => void {
  */
 export default function ScrollMotion() {
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // ScrollTrigger, SplitText, and scrubbed parallax all measure or update on
+    // the main thread. Keep mobile/touch scrolling compositor-driven instead;
+    // globals.css exposes the elements without animation for these devices.
+    if (
+      window.matchMedia(
+        "(prefers-reduced-motion: reduce), (max-width: 767px), (hover: none), (pointer: coarse)",
+      ).matches
+    ) {
+      return;
+    }
 
     const active = new Map<HTMLElement, () => void>();
-    const isTouch = window.matchMedia("(hover: none), (pointer: coarse)").matches;
     let frame = 0;
     let refreshTimer: ReturnType<typeof setTimeout> | undefined;
 
@@ -145,17 +153,15 @@ export default function ScrollMotion() {
     const mo = new MutationObserver(queueScan);
     mo.observe(document.body, { childList: true, subtree: true });
     // Lazy images / loaded products change page height → re-measure triggers.
-    // Browser chrome changes the mobile viewport while scrolling. Observing the
-    // body there can refresh every trigger mid-swipe and flicker the page.
-    const ro = isTouch ? null : new ResizeObserver(queueRefresh);
-    ro?.observe(document.body);
+    const ro = new ResizeObserver(queueRefresh);
+    ro.observe(document.body);
 
     document.fonts?.ready?.then(queueRefresh);
     window.addEventListener("load", queueRefresh);
 
     return () => {
       mo.disconnect();
-      ro?.disconnect();
+      ro.disconnect();
       window.removeEventListener("load", queueRefresh);
       cancelAnimationFrame(frame);
       clearTimeout(refreshTimer);
