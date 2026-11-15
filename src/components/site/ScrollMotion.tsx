@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { gsap, ScrollTrigger, SplitText } from "@/lib/gsap";
 
 const SELECTOR = ".reveal-rise, .reveal-fade, .reveal-wipe, .reveal-zoom, [data-parallax]";
@@ -112,6 +113,8 @@ function animate(el: HTMLElement): () => void {
  * filter changes, route changes) -and hands it to GSAP ScrollTrigger.
  */
 export default function ScrollMotion() {
+  const pathname = usePathname();
+
   useEffect(() => {
     // ScrollTrigger, SplitText, and scrubbed parallax all measure or update on
     // the main thread. Keep mobile/touch scrolling compositor-driven instead;
@@ -125,11 +128,17 @@ export default function ScrollMotion() {
     }
 
     const active = new Map<HTMLElement, () => void>();
+    let mounted = true;
     let frame = 0;
     let refreshTimer: ReturnType<typeof setTimeout> | undefined;
+    const routeIsCurrent = () => window.location.pathname === pathname;
 
     const scan = () => {
       frame = 0;
+      // The URL changes before an incoming RSC tree finishes hydrating. The
+      // observer owned by the outgoing route must not add classes/styles to
+      // that server-rendered markup or React will detect a hydration mismatch.
+      if (!mounted || !routeIsCurrent()) return;
       for (const [el, cleanup] of active) {
         if (!el.isConnected) {
           cleanup();
@@ -142,11 +151,14 @@ export default function ScrollMotion() {
       ScrollTrigger.refresh();
     };
     const queueScan = () => {
-      if (!frame) frame = requestAnimationFrame(scan);
+      if (mounted && routeIsCurrent() && !frame) frame = requestAnimationFrame(scan);
     };
     const queueRefresh = () => {
+      if (!mounted || !routeIsCurrent()) return;
       clearTimeout(refreshTimer);
-      refreshTimer = setTimeout(() => ScrollTrigger.refresh(), 200);
+      refreshTimer = setTimeout(() => {
+        if (mounted && routeIsCurrent()) ScrollTrigger.refresh();
+      }, 200);
     };
 
     scan();
@@ -160,6 +172,7 @@ export default function ScrollMotion() {
     window.addEventListener("load", queueRefresh);
 
     return () => {
+      mounted = false;
       mo.disconnect();
       ro.disconnect();
       window.removeEventListener("load", queueRefresh);
@@ -168,7 +181,7 @@ export default function ScrollMotion() {
       active.forEach((cleanup) => cleanup());
       active.clear();
     };
-  }, []);
+  }, [pathname]);
 
   return null;
 }
