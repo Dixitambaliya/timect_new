@@ -16,6 +16,7 @@ export type ProductListFilters = {
   search?: string;
   flag?: "all" | "main" | "new" | "recommended" | "related";
   gender?: string;
+  status?: "all" | "published" | "draft";
   sortBy?: "newest" | "oldest" | "name" | "price-asc" | "price-desc";
   page?: number;
   pageSize?: number;
@@ -117,6 +118,7 @@ export async function adminListProducts(
   const search = (filters.search || "").trim().toLowerCase();
   const flag = filters.flag || "all";
   const gender = filters.gender || "";
+  const status = filters.status || "all";
   const sortBy = filters.sortBy || "newest";
 
   try {
@@ -131,6 +133,9 @@ export async function adminListProducts(
 
     if (gender) {
       products = products.filter((p) => p.gender === gender);
+    }
+    if (status !== "all") {
+      products = products.filter((p) => p.status === status);
     }
 
     if (search) {
@@ -218,12 +223,13 @@ export async function adminCreateProduct(
 
     const rows = await sql`
       INSERT INTO products (
-        slug, is_main_product, is_new_arrival, is_recommended, is_related,
+        slug, status, is_main_product, is_new_arrival, is_recommended, is_related,
         name, price, image, brand, title, subtitle, price_subtext,
         sizes, images, variants, specifications,
         tag, code, collection, description, gender, rating, hover_image
       ) VALUES (
         ${slug},
+        ${data.status === "draft" ? "draft" : "published"},
         ${Boolean(data.isMainProduct)},
         ${Boolean(data.isNewArrival)},
         ${Boolean(data.isRecommended)},
@@ -325,6 +331,7 @@ export async function adminUpdateProduct(
     await sql`
       UPDATE products SET
         slug = ${slug},
+        status = ${data.status === "draft" ? "draft" : "published"},
         is_main_product = ${Boolean(data.isMainProduct)},
         is_new_arrival = ${Boolean(data.isNewArrival)},
         is_recommended = ${Boolean(data.isRecommended)},

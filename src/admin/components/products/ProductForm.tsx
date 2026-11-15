@@ -167,6 +167,23 @@ export default function ProductForm({
         {step === 1 && (
           <div className="grid gap-5 md:grid-cols-2">
             <div className="md:col-span-2">
+              <label className="admin-label" htmlFor="status">
+                Visibility
+              </label>
+              <Select
+                id="status"
+                className="admin-input"
+                value={data.status || "published"}
+                onChange={(e) => patch({ status: e.target.value as "published" | "draft" })}
+              >
+                <SelectOption value="published">Published - visible on storefront</SelectOption>
+                <SelectOption value="draft">Draft - hidden from storefront</SelectOption>
+              </Select>
+              <p className="mt-1 text-xs text-[var(--admin-muted)]">
+                Draft products remain editable in admin but cannot be opened or found by customers.
+              </p>
+            </div>
+            <div className="md:col-span-2">
               <label className="admin-label" htmlFor="name">
                 Product name *
               </label>
@@ -432,7 +449,7 @@ export default function ProductForm({
               ) : (
                 <Check className="h-4 w-4" />
               )}
-              Publish
+              {data.status === "draft" ? "Save draft" : "Publish"}
             </button>
           )}
         </div>

@@ -6,6 +6,7 @@ export function mapRowToProduct(row: Record<string, unknown>): Product {
   return {
     id: row.id as number,
     slug: (row.slug as string) || "",
+    status: row.status === "draft" ? "draft" : "published",
     name: (row.name as string) || undefined,
     price: formatPrice(row.price as string),
     image: (row.image as string) || undefined,
@@ -37,6 +38,7 @@ export function mapRowToProduct(row: Record<string, unknown>): Product {
 
 /** Full editable product payload used by the admin form */
 export type ProductInput = {
+  status?: "published" | "draft";
   name?: string;
   slug?: string;
   brand?: string;
@@ -64,6 +66,7 @@ export type ProductInput = {
 
 export function emptyProductInput(): ProductInput {
   return {
+    status: "published",
     name: "",
     slug: "",
     brand: "",
@@ -92,6 +95,7 @@ export function emptyProductInput(): ProductInput {
 
 export function productToInput(p: Product): ProductInput {
   return {
+    status: p.status,
     name: p.name || p.title || "",
     slug: p.slug || "",
     brand: p.brand || "",

@@ -78,6 +78,10 @@
 }
 
 :root {
+  /* Build-stable local stacks. Avoid next/font/google's generated Turbopack
+     module, which can fail to resolve in restricted build environments. */
+  --font-archivo-face: Arial, "Helvetica Neue", Helvetica, sans-serif;
+  --font-chivo-face: "Arial Black", Arial, "Helvetica Neue", sans-serif;
   --timing-base: 0.4s;
   --animate-time: 0.8s;
   --ease-out: cubic-bezier(0, 0, 0.09, 1);
@@ -400,7 +404,7 @@
 
 /* Keep responsive/touch scrolling on the browser compositor. ScrollMotion
    intentionally does not create GSAP triggers for these devices. */
-@media (max-width: 767px), (hover: none), (pointer: coarse) {
+@media (max-width: 1024px), (hover: none), (pointer: coarse) {
   .reveal-rise,
   .reveal-fade,
   .reveal-wipe,
@@ -415,6 +419,28 @@
     transform: none !important;
     will-change: auto;
   }
+
+  /* Fixed translucent layers and continuous promoted animations are expensive
+     while mobile browser chrome changes the visual viewport. Use opaque
+     compositor-friendly surfaces throughout phone and tablet layouts. */
+  .glass {
+    background: rgba(255, 255, 255, 0.94);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .glass-dark {
+    background: rgba(35, 35, 35, 0.96);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .frost {
+    background: rgb(240, 242, 244);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
 }
 
 .is-revealed,
@@ -541,6 +567,18 @@ html.lenis, html.lenis-smooth { scroll-behavior: auto; }
 .pill:active, .icon-btn:active, .slider-arrow:active:not(:disabled) {
   transform: scale(0.97);
   transition-duration: 0.12s;
+}
+
+@media (max-width: 1024px), (hover: none), (pointer: coarse) {
+  .marquee-track {
+    animation: none;
+    transform: none;
+    will-change: auto;
+  }
+
+  .hover-lift {
+    will-change: auto;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

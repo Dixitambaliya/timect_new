@@ -33,6 +33,7 @@ export interface Specification {
 export interface Product {
   id: number;
   slug: string;
+  status: "published" | "draft";
   name?: string;
   price: string;
   image?: string;
@@ -69,6 +70,7 @@ function mapRowToProduct(row: any): Product {
   return {
     id: row.id,
     slug: row.slug,
+    status: row.status === "draft" ? "draft" : "published",
     name: row.name || undefined,
     price: formatPrice(row.price),
     image: row.image || undefined,
@@ -106,7 +108,7 @@ export async function getMainProduct(): Promise<Product | null> {
   try {
     const rows = await sql`
       SELECT * FROM products 
-      WHERE is_main_product = TRUE 
+      WHERE is_main_product = TRUE AND status = 'published'
       LIMIT 1
     `;
     if (rows.length === 0) return null;
@@ -121,7 +123,7 @@ export async function getNewArrivals(): Promise<Product[]> {
   try {
     const rows = await sql`
       SELECT * FROM products 
-      WHERE is_new_arrival = TRUE 
+      WHERE is_new_arrival = TRUE AND status = 'published'
       ORDER BY id ASC
     `;
     return rows.map(mapRowToProduct);
@@ -135,7 +137,7 @@ export async function getRecommended(): Promise<Product[]> {
   try {
     const rows = await sql`
       SELECT * FROM products 
-      WHERE is_recommended = TRUE 
+      WHERE is_recommended = TRUE AND status = 'published'
       ORDER BY id ASC
     `;
     return rows.map(mapRowToProduct);
@@ -149,7 +151,7 @@ export async function getRelatedProducts(): Promise<Product[]> {
   try {
     const rows = await sql`
       SELECT * FROM products 
-      WHERE is_related = TRUE 
+      WHERE is_related = TRUE AND status = 'published'
       ORDER BY id ASC
     `;
     return rows.map(mapRowToProduct);
@@ -163,7 +165,7 @@ export async function getProductById(id: number): Promise<Product | null> {
   try {
     const rows = await sql`
       SELECT * FROM products 
-      WHERE id = ${id}
+      WHERE id = ${id} AND status = 'published'
       LIMIT 1
     `;
     if (rows.length === 0) return null;
@@ -178,7 +180,7 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
   try {
     const rows = await sql`
       SELECT * FROM products 
-      WHERE slug = ${slug}
+      WHERE slug = ${slug} AND status = 'published'
       LIMIT 1
     `;
     if (rows.length === 0) return null;
@@ -276,7 +278,7 @@ export async function getCatalogCards(filters: {
         SELECT id, slug, name, title, price, image, hover_image,
                brand, collection, tag, code, gender, rating, is_main_product
         FROM products
-        WHERE gender = ${g}
+        WHERE gender = ${g} AND status = 'published'
         ORDER BY id DESC
         LIMIT ${limit} OFFSET ${offset}
       `;
@@ -302,21 +304,21 @@ export async function getCatalogCards(filters: {
           rows = await sql`
             SELECT id, slug, name, title, price, image, hover_image,
                    brand, collection, tag, code, gender, rating, is_main_product
-            FROM products WHERE is_new_arrival = TRUE
+            FROM products WHERE is_new_arrival = TRUE AND status = 'published'
             ORDER BY NULLIF(regexp_replace(price, '[^0-9.]', '', 'g'), '')::numeric ASC NULLS LAST, id DESC
             LIMIT ${limit} OFFSET ${offset}`;
         } else if (sortBy === "price-desc") {
           rows = await sql`
             SELECT id, slug, name, title, price, image, hover_image,
                    brand, collection, tag, code, gender, rating, is_main_product
-            FROM products WHERE is_new_arrival = TRUE
+            FROM products WHERE is_new_arrival = TRUE AND status = 'published'
             ORDER BY NULLIF(regexp_replace(price, '[^0-9.]', '', 'g'), '')::numeric DESC NULLS LAST, id DESC
             LIMIT ${limit} OFFSET ${offset}`;
         } else {
           rows = await sql`
             SELECT id, slug, name, title, price, image, hover_image,
                    brand, collection, tag, code, gender, rating, is_main_product
-            FROM products WHERE is_new_arrival = TRUE
+            FROM products WHERE is_new_arrival = TRUE AND status = 'published'
             ORDER BY id DESC LIMIT ${limit} OFFSET ${offset}`;
         }
       } else if (cat === "recommended") {
@@ -324,21 +326,21 @@ export async function getCatalogCards(filters: {
           rows = await sql`
             SELECT id, slug, name, title, price, image, hover_image,
                    brand, collection, tag, code, gender, rating, is_main_product
-            FROM products WHERE is_recommended = TRUE
+            FROM products WHERE is_recommended = TRUE AND status = 'published'
             ORDER BY NULLIF(regexp_replace(price, '[^0-9.]', '', 'g'), '')::numeric ASC NULLS LAST, id DESC
             LIMIT ${limit} OFFSET ${offset}`;
         } else if (sortBy === "price-desc") {
           rows = await sql`
             SELECT id, slug, name, title, price, image, hover_image,
                    brand, collection, tag, code, gender, rating, is_main_product
-            FROM products WHERE is_recommended = TRUE
+            FROM products WHERE is_recommended = TRUE AND status = 'published'
             ORDER BY NULLIF(regexp_replace(price, '[^0-9.]', '', 'g'), '')::numeric DESC NULLS LAST, id DESC
             LIMIT ${limit} OFFSET ${offset}`;
         } else {
           rows = await sql`
             SELECT id, slug, name, title, price, image, hover_image,
                    brand, collection, tag, code, gender, rating, is_main_product
-            FROM products WHERE is_recommended = TRUE
+            FROM products WHERE is_recommended = TRUE AND status = 'published'
             ORDER BY id DESC LIMIT ${limit} OFFSET ${offset}`;
         }
       } else if (cat === "related") {
@@ -346,42 +348,42 @@ export async function getCatalogCards(filters: {
           rows = await sql`
             SELECT id, slug, name, title, price, image, hover_image,
                    brand, collection, tag, code, gender, rating, is_main_product
-            FROM products WHERE is_related = TRUE
+            FROM products WHERE is_related = TRUE AND status = 'published'
             ORDER BY NULLIF(regexp_replace(price, '[^0-9.]', '', 'g'), '')::numeric ASC NULLS LAST, id DESC
             LIMIT ${limit} OFFSET ${offset}`;
         } else if (sortBy === "price-desc") {
           rows = await sql`
             SELECT id, slug, name, title, price, image, hover_image,
                    brand, collection, tag, code, gender, rating, is_main_product
-            FROM products WHERE is_related = TRUE
+            FROM products WHERE is_related = TRUE AND status = 'published'
             ORDER BY NULLIF(regexp_replace(price, '[^0-9.]', '', 'g'), '')::numeric DESC NULLS LAST, id DESC
             LIMIT ${limit} OFFSET ${offset}`;
         } else {
           rows = await sql`
             SELECT id, slug, name, title, price, image, hover_image,
                    brand, collection, tag, code, gender, rating, is_main_product
-            FROM products WHERE is_related = TRUE
+            FROM products WHERE is_related = TRUE AND status = 'published'
             ORDER BY id DESC LIMIT ${limit} OFFSET ${offset}`;
         }
       } else if (sortBy === "price-asc") {
         rows = await sql`
           SELECT id, slug, name, title, price, image, hover_image,
                  brand, collection, tag, code, gender, rating, is_main_product
-          FROM products
+          FROM products WHERE status = 'published'
           ORDER BY NULLIF(regexp_replace(price, '[^0-9.]', '', 'g'), '')::numeric ASC NULLS LAST, id DESC
           LIMIT ${limit} OFFSET ${offset}`;
       } else if (sortBy === "price-desc") {
         rows = await sql`
           SELECT id, slug, name, title, price, image, hover_image,
                  brand, collection, tag, code, gender, rating, is_main_product
-          FROM products
+          FROM products WHERE status = 'published'
           ORDER BY NULLIF(regexp_replace(price, '[^0-9.]', '', 'g'), '')::numeric DESC NULLS LAST, id DESC
           LIMIT ${limit} OFFSET ${offset}`;
       } else {
         rows = await sql`
           SELECT id, slug, name, title, price, image, hover_image,
                  brand, collection, tag, code, gender, rating, is_main_product
-          FROM products
+          FROM products WHERE status = 'published'
           ORDER BY id DESC LIMIT ${limit} OFFSET ${offset}`;
       }
 
@@ -478,34 +480,34 @@ export async function getFilteredProducts(filters: {
 
       if (cat === "new") {
         if (sortBy === "price-asc") {
-          rows = await sql`SELECT id, slug, name, title, price, image, hover_image, brand, collection, tag, code, gender, rating, is_main_product, is_new_arrival, is_recommended, is_related FROM products WHERE is_new_arrival = TRUE ORDER BY NULLIF(regexp_replace(price, '[^0-9.]', '', 'g'), '')::numeric ASC NULLS LAST, id DESC LIMIT ${limit} OFFSET ${offset}`;
+          rows = await sql`SELECT id, slug, name, title, price, image, hover_image, brand, collection, tag, code, gender, rating, is_main_product, is_new_arrival, is_recommended, is_related FROM products WHERE is_new_arrival = TRUE AND status = 'published' ORDER BY NULLIF(regexp_replace(price, '[^0-9.]', '', 'g'), '')::numeric ASC NULLS LAST, id DESC LIMIT ${limit} OFFSET ${offset}`;
         } else if (sortBy === "price-desc") {
-          rows = await sql`SELECT id, slug, name, title, price, image, hover_image, brand, collection, tag, code, gender, rating, is_main_product, is_new_arrival, is_recommended, is_related FROM products WHERE is_new_arrival = TRUE ORDER BY NULLIF(regexp_replace(price, '[^0-9.]', '', 'g'), '')::numeric DESC NULLS LAST, id DESC LIMIT ${limit} OFFSET ${offset}`;
+          rows = await sql`SELECT id, slug, name, title, price, image, hover_image, brand, collection, tag, code, gender, rating, is_main_product, is_new_arrival, is_recommended, is_related FROM products WHERE is_new_arrival = TRUE AND status = 'published' ORDER BY NULLIF(regexp_replace(price, '[^0-9.]', '', 'g'), '')::numeric DESC NULLS LAST, id DESC LIMIT ${limit} OFFSET ${offset}`;
         } else {
-          rows = await sql`SELECT id, slug, name, title, price, image, hover_image, brand, collection, tag, code, gender, rating, is_main_product, is_new_arrival, is_recommended, is_related FROM products WHERE is_new_arrival = TRUE ORDER BY id DESC LIMIT ${limit} OFFSET ${offset}`;
+          rows = await sql`SELECT id, slug, name, title, price, image, hover_image, brand, collection, tag, code, gender, rating, is_main_product, is_new_arrival, is_recommended, is_related FROM products WHERE is_new_arrival = TRUE AND status = 'published' ORDER BY id DESC LIMIT ${limit} OFFSET ${offset}`;
         }
       } else if (cat === "recommended") {
         if (sortBy === "price-asc") {
-          rows = await sql`SELECT id, slug, name, title, price, image, hover_image, brand, collection, tag, code, gender, rating, is_main_product, is_new_arrival, is_recommended, is_related FROM products WHERE is_recommended = TRUE ORDER BY NULLIF(regexp_replace(price, '[^0-9.]', '', 'g'), '')::numeric ASC NULLS LAST, id DESC LIMIT ${limit} OFFSET ${offset}`;
+          rows = await sql`SELECT id, slug, name, title, price, image, hover_image, brand, collection, tag, code, gender, rating, is_main_product, is_new_arrival, is_recommended, is_related FROM products WHERE is_recommended = TRUE AND status = 'published' ORDER BY NULLIF(regexp_replace(price, '[^0-9.]', '', 'g'), '')::numeric ASC NULLS LAST, id DESC LIMIT ${limit} OFFSET ${offset}`;
         } else if (sortBy === "price-desc") {
-          rows = await sql`SELECT id, slug, name, title, price, image, hover_image, brand, collection, tag, code, gender, rating, is_main_product, is_new_arrival, is_recommended, is_related FROM products WHERE is_recommended = TRUE ORDER BY NULLIF(regexp_replace(price, '[^0-9.]', '', 'g'), '')::numeric DESC NULLS LAST, id DESC LIMIT ${limit} OFFSET ${offset}`;
+          rows = await sql`SELECT id, slug, name, title, price, image, hover_image, brand, collection, tag, code, gender, rating, is_main_product, is_new_arrival, is_recommended, is_related FROM products WHERE is_recommended = TRUE AND status = 'published' ORDER BY NULLIF(regexp_replace(price, '[^0-9.]', '', 'g'), '')::numeric DESC NULLS LAST, id DESC LIMIT ${limit} OFFSET ${offset}`;
         } else {
-          rows = await sql`SELECT id, slug, name, title, price, image, hover_image, brand, collection, tag, code, gender, rating, is_main_product, is_new_arrival, is_recommended, is_related FROM products WHERE is_recommended = TRUE ORDER BY id DESC LIMIT ${limit} OFFSET ${offset}`;
+          rows = await sql`SELECT id, slug, name, title, price, image, hover_image, brand, collection, tag, code, gender, rating, is_main_product, is_new_arrival, is_recommended, is_related FROM products WHERE is_recommended = TRUE AND status = 'published' ORDER BY id DESC LIMIT ${limit} OFFSET ${offset}`;
         }
       } else if (cat === "related") {
         if (sortBy === "price-asc") {
-          rows = await sql`SELECT id, slug, name, title, price, image, hover_image, brand, collection, tag, code, gender, rating, is_main_product, is_new_arrival, is_recommended, is_related FROM products WHERE is_related = TRUE ORDER BY NULLIF(regexp_replace(price, '[^0-9.]', '', 'g'), '')::numeric ASC NULLS LAST, id DESC LIMIT ${limit} OFFSET ${offset}`;
+          rows = await sql`SELECT id, slug, name, title, price, image, hover_image, brand, collection, tag, code, gender, rating, is_main_product, is_new_arrival, is_recommended, is_related FROM products WHERE is_related = TRUE AND status = 'published' ORDER BY NULLIF(regexp_replace(price, '[^0-9.]', '', 'g'), '')::numeric ASC NULLS LAST, id DESC LIMIT ${limit} OFFSET ${offset}`;
         } else if (sortBy === "price-desc") {
-          rows = await sql`SELECT id, slug, name, title, price, image, hover_image, brand, collection, tag, code, gender, rating, is_main_product, is_new_arrival, is_recommended, is_related FROM products WHERE is_related = TRUE ORDER BY NULLIF(regexp_replace(price, '[^0-9.]', '', 'g'), '')::numeric DESC NULLS LAST, id DESC LIMIT ${limit} OFFSET ${offset}`;
+          rows = await sql`SELECT id, slug, name, title, price, image, hover_image, brand, collection, tag, code, gender, rating, is_main_product, is_new_arrival, is_recommended, is_related FROM products WHERE is_related = TRUE AND status = 'published' ORDER BY NULLIF(regexp_replace(price, '[^0-9.]', '', 'g'), '')::numeric DESC NULLS LAST, id DESC LIMIT ${limit} OFFSET ${offset}`;
         } else {
-          rows = await sql`SELECT id, slug, name, title, price, image, hover_image, brand, collection, tag, code, gender, rating, is_main_product, is_new_arrival, is_recommended, is_related FROM products WHERE is_related = TRUE ORDER BY id DESC LIMIT ${limit} OFFSET ${offset}`;
+          rows = await sql`SELECT id, slug, name, title, price, image, hover_image, brand, collection, tag, code, gender, rating, is_main_product, is_new_arrival, is_recommended, is_related FROM products WHERE is_related = TRUE AND status = 'published' ORDER BY id DESC LIMIT ${limit} OFFSET ${offset}`;
         }
       } else if (sortBy === "price-asc") {
-        rows = await sql`SELECT id, slug, name, title, price, image, hover_image, brand, collection, tag, code, gender, rating, is_main_product, is_new_arrival, is_recommended, is_related FROM products ORDER BY NULLIF(regexp_replace(price, '[^0-9.]', '', 'g'), '')::numeric ASC NULLS LAST, id DESC LIMIT ${limit} OFFSET ${offset}`;
+        rows = await sql`SELECT id, slug, name, title, price, image, hover_image, brand, collection, tag, code, gender, rating, is_main_product, is_new_arrival, is_recommended, is_related FROM products WHERE status = 'published' ORDER BY NULLIF(regexp_replace(price, '[^0-9.]', '', 'g'), '')::numeric ASC NULLS LAST, id DESC LIMIT ${limit} OFFSET ${offset}`;
       } else if (sortBy === "price-desc") {
-        rows = await sql`SELECT id, slug, name, title, price, image, hover_image, brand, collection, tag, code, gender, rating, is_main_product, is_new_arrival, is_recommended, is_related FROM products ORDER BY NULLIF(regexp_replace(price, '[^0-9.]', '', 'g'), '')::numeric DESC NULLS LAST, id DESC LIMIT ${limit} OFFSET ${offset}`;
+        rows = await sql`SELECT id, slug, name, title, price, image, hover_image, brand, collection, tag, code, gender, rating, is_main_product, is_new_arrival, is_recommended, is_related FROM products WHERE status = 'published' ORDER BY NULLIF(regexp_replace(price, '[^0-9.]', '', 'g'), '')::numeric DESC NULLS LAST, id DESC LIMIT ${limit} OFFSET ${offset}`;
       } else {
-        rows = await sql`SELECT id, slug, name, title, price, image, hover_image, brand, collection, tag, code, gender, rating, is_main_product, is_new_arrival, is_recommended, is_related FROM products ORDER BY id DESC LIMIT ${limit} OFFSET ${offset}`;
+        rows = await sql`SELECT id, slug, name, title, price, image, hover_image, brand, collection, tag, code, gender, rating, is_main_product, is_new_arrival, is_recommended, is_related FROM products WHERE status = 'published' ORDER BY id DESC LIMIT ${limit} OFFSET ${offset}`;
       }
 
       const hasMore = rows.length > pageSize;
@@ -529,7 +531,7 @@ export async function getFilteredProducts(filters: {
       const pattern = `(${escaped})`;
       rows = await sql`
         SELECT * FROM products
-        WHERE
+        WHERE status = 'published' AND (
           COALESCE(specifications::text, '') ~* ${pattern}
           OR COALESCE(name, '') ~* ${pattern}
           OR COALESCE(title, '') ~* ${pattern}
@@ -537,10 +539,11 @@ export async function getFilteredProducts(filters: {
           OR COALESCE(description, '') ~* ${pattern}
           OR COALESCE(collection, '') ~* ${pattern}
           OR COALESCE(brand, '') ~* ${pattern}
+        )
         ORDER BY id DESC
       `;
     } else {
-      rows = await sql`SELECT * FROM products ORDER BY id DESC`;
+      rows = await sql`SELECT * FROM products WHERE status = 'published' ORDER BY id DESC`;
     }
 
     let products = rows.map(mapRowToProduct);
@@ -666,7 +669,8 @@ export async function getProductSlugByImage(imageUrl: string): Promise<string | 
   try {
     const rows = await sql`
       SELECT slug FROM products 
-      WHERE image = ${imageUrl} OR images @> ${JSON.stringify([imageUrl])}::jsonb
+      WHERE status = 'published'
+        AND (image = ${imageUrl} OR images @> ${JSON.stringify([imageUrl])}::jsonb)
       LIMIT 1
     `;
     if (rows.length === 0) return null;

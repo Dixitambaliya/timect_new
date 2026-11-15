@@ -118,7 +118,7 @@ export default function ScrollMotion() {
     // globals.css exposes the elements without animation for these devices.
     if (
       window.matchMedia(
-        "(prefers-reduced-motion: reduce), (max-width: 767px), (hover: none), (pointer: coarse)",
+        "(prefers-reduced-motion: reduce), (max-width: 1024px), (hover: none), (pointer: coarse)",
       ).matches
     ) {
       return;

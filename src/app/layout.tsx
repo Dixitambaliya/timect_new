@@ -1,21 +1,6 @@
 import type { Metadata } from "next";
-import { Archivo, Chivo } from "next/font/google";
 import { absoluteUrl, SITE_CONFIG } from "@/lib/seo/site-config";
 import "./globals.css";
-
-const archivo = Archivo({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-  variable: "--font-archivo-face",
-  display: "swap",
-});
-
-const chivo = Chivo({
-  subsets: ["latin"],
-  weight: ["400", "700", "900"],
-  variable: "--font-chivo-face",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_CONFIG.url),
@@ -54,7 +39,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${archivo.variable} ${chivo.variable}`}>
+    <html lang="en">
       <body>{children}</body>
     </html>
   );

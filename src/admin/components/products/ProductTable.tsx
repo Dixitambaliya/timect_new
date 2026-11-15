@@ -39,12 +39,14 @@ export default function ProductTable({
   initialFlag = "all",
   initialPage = 1,
   initialGender,
+  initialStatus = "all",
   initialSort = "newest",
 }: {
   initialSearch?: string;
   initialFlag?: ProductListFilters["flag"];
   initialPage?: number;
   initialGender?: string;
+  initialStatus?: ProductListFilters["status"];
   initialSort?: ProductListFilters["sortBy"];
 }) {
   const { success, error } = useToast();
@@ -54,6 +56,7 @@ export default function ProductTable({
     search: initialSearch,
     flag: initialFlag || "all",
     gender: initialGender,
+    status: initialStatus,
     sortBy: initialSort,
     page: initialPage,
     pageSize: 20,
@@ -215,6 +218,7 @@ export default function ProductTable({
     if ((filters.page || 1) > 1) params.set("page", String(filters.page));
     if (filters.flag && filters.flag !== "all") params.set("flag", filters.flag);
     if (filters.gender) params.set("gender", filters.gender);
+    if (filters.status && filters.status !== "all") params.set("status", filters.status);
     if (filters.sortBy && filters.sortBy !== "newest") params.set("sort", filters.sortBy);
     if (filters.search?.trim()) params.set("search", filters.search.trim());
     const query = params.toString();
@@ -234,6 +238,21 @@ export default function ProductTable({
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap gap-2">
+          <Select
+            className="admin-input w-auto"
+            value={filters.status || "all"}
+            onChange={(e) =>
+              setFilters((f) => ({
+                ...f,
+                status: e.target.value as ProductListFilters["status"],
+                page: 1,
+              }))
+            }
+          >
+            <SelectOption value="all">All visibility</SelectOption>
+            <SelectOption value="published">Published</SelectOption>
+            <SelectOption value="draft">Drafts</SelectOption>
+          </Select>
           <Select
             className="admin-input w-auto"
             value={filters.flag || "all"}
@@ -501,6 +520,7 @@ export default function ProductTable({
                           {p.isNewArrival && <Flag>New</Flag>}
                           {p.isRecommended && <Flag>Rec</Flag>}
                           {p.isRelated && <Flag>Rel</Flag>}
+                          {p.status === "draft" && <Flag>Draft</Flag>}
                         </div>
                       </td>
                       <td className="px-4 py-3 text-[var(--admin-muted)]">
@@ -515,15 +535,17 @@ export default function ProductTable({
                           >
                             <Pencil className="h-4 w-4" />
                           </Link>
-                          <a
-                            href={`/product/${p.slug}`}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="admin-btn admin-btn-ghost px-2"
-                            title="Preview"
-                          >
-                            <ExternalLink className="h-4 w-4" />
-                          </a>
+                          {p.status === "published" && (
+                            <a
+                              href={`/product/${p.slug}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="admin-btn admin-btn-ghost px-2"
+                              title="Preview"
+                            >
+                              <ExternalLink className="h-4 w-4" />
+                            </a>
+                          )}
                           <button
                             type="button"
                             className="admin-btn admin-btn-ghost px-2"

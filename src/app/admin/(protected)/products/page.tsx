@@ -24,6 +24,8 @@ function ProductsContent() {
       ? sortParam
       : "newest";
   const initialGender = searchParams.get("gender") || undefined;
+  const statusParam = searchParams.get("status") as ProductListFilters["status"];
+  const initialStatus = statusParam && ["all", "published", "draft"].includes(statusParam) ? statusParam : "all";
   const initialSearch = searchParams.get("search") || search;
 
   // Read navbar search from parent data attribute when present
@@ -44,6 +46,7 @@ function ProductsContent() {
       initialFlag={initialFlag}
       initialPage={initialPage}
       initialGender={initialGender}
+      initialStatus={initialStatus}
       initialSort={initialSort}
     />
   );

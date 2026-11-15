@@ -138,7 +138,7 @@ export default function SettingsPage() {
           <code className="text-[var(--admin-ink)]">
             npx tsx src/db/admin-migrate.ts
           </code>{" "}
-          to create admin tables (non-destructive; does not touch products).
+          to apply non-destructive admin schema updates. Existing product data is preserved.
         </p>
         <p>
           Cloudinary:{" "}

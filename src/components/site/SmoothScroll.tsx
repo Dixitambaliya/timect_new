@@ -19,7 +19,13 @@ export default function SmoothScroll() {
   const search = useSearchParams();
 
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce), (hover: none), (pointer: coarse)").matches) return;
+    if (
+      window.matchMedia(
+        "(prefers-reduced-motion: reduce), (max-width: 1024px), (hover: none), (pointer: coarse)",
+      ).matches
+    ) {
+      return;
+    }
     // Lenis is driven by GSAP's ticker so ScrollTrigger reads the same
     // smoothed scroll position on every frame (no jitter between the two).
     const lenis = new Lenis({

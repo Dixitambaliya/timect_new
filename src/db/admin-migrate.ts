@@ -1,11 +1,12 @@
 /**
  * Non-destructive admin schema migration.
- * Creates admin_users, media_library, cms_settings, audit_logs if missing.
+ * Creates admin_users, media_library, cms_settings, audit_logs if missing and
+ * applies additive product columns used by the admin UI.
  * Seeds a default super admin when none exist (credentials from env).
  *
  *   npx tsx src/db/admin-migrate.ts
  *
- * Does NOT touch the products table.
+ * Existing product data is preserved.
  */
 import fs from "fs";
 import path from "path";
@@ -44,6 +45,21 @@ const sql = neon(dbUrl);
 
 async function main() {
   console.log("Running admin schema migration (non-destructive)...");
+
+  await sql`
+    ALTER TABLE products
+    ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'published'
+  `;
+  await sql`
+    DO $$ BEGIN
+      ALTER TABLE products
+      ADD CONSTRAINT products_status_check CHECK (status IN ('published', 'draft'));
+    EXCEPTION
+      WHEN duplicate_object THEN NULL;
+    END $$;
+  `;
+  await sql`CREATE INDEX IF NOT EXISTS products_status_idx ON products (status)`;
+  console.log("✓ products.status");
 
   await sql`
     CREATE TABLE IF NOT EXISTS admin_users (

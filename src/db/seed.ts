@@ -41,6 +41,7 @@ async function main() {
     CREATE TABLE products (
       id SERIAL PRIMARY KEY,
       slug TEXT UNIQUE,
+      status TEXT NOT NULL DEFAULT 'published' CHECK (status IN ('published', 'draft')),
       is_main_product BOOLEAN NOT NULL DEFAULT FALSE,
       is_new_arrival BOOLEAN NOT NULL DEFAULT FALSE,
       is_recommended BOOLEAN NOT NULL DEFAULT FALSE,

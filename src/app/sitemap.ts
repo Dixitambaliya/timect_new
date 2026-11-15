@@ -17,7 +17,7 @@ const staticRoutes: MetadataRoute.Sitemap = [
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
-    const rows = await sql`SELECT slug, image FROM products WHERE slug IS NOT NULL ORDER BY id ASC`;
+    const rows = await sql`SELECT slug, image FROM products WHERE status = 'published' AND slug IS NOT NULL ORDER BY id ASC`;
     const seen = new Set<string>();
     const products: MetadataRoute.Sitemap = [];
     for (const row of rows) {

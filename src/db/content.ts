@@ -83,9 +83,9 @@ export const getCatalogFacets = cache(async (): Promise<CatalogFacets> => {
   try {
     const rows = await sql`
       SELECT DISTINCT TRIM(v) AS name FROM (
-        SELECT brand AS v FROM products
+        SELECT brand AS v FROM products WHERE status = 'published'
         UNION ALL
-        SELECT collection AS v FROM products
+        SELECT collection AS v FROM products WHERE status = 'published'
       ) t
       WHERE v IS NOT NULL AND TRIM(v) <> ''
       ORDER BY 1
@@ -93,6 +93,7 @@ export const getCatalogFacets = cache(async (): Promise<CatalogFacets> => {
     const priceRows = await sql`
       SELECT MAX(NULLIF(regexp_replace(price, '[^0-9.]', '', 'g'), '')::numeric) AS max
       FROM products
+      WHERE status = 'published'
     `;
     const rawMax = Number((priceRows[0] as { max: string | null })?.max || 0);
     // Round up to a clean slider ceiling
