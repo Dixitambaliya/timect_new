@@ -5,6 +5,7 @@ import {
   Copy,
   Folder,
   Loader2,
+  RefreshCw,
   Search,
   Trash2,
   Upload,
@@ -17,6 +18,7 @@ import {
   adminDeleteMedia,
   adminListMedia,
   adminRegisterMediaUrl,
+  adminSyncCloudinaryMedia,
   adminUploadMedia,
   type MediaItem,
 } from "@/admin/actions/media";
@@ -40,6 +42,7 @@ export default function MediaPage() {
   const [bulkDeleteOpen, setBulkDeleteOpen] = useState(false);
   const [urlInput, setUrlInput] = useState("");
   const [uploadFolder, setUploadFolder] = useState("general");
+  const [isSyncing, setIsSyncing] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -95,6 +98,27 @@ export default function MediaPage() {
         success("URL added to library");
         setUrlInput("");
         await load();
+      }
+    });
+  };
+
+  const handleSyncCloudinary = () => {
+    setIsSyncing(true);
+    startTransition(async () => {
+      try {
+        const res = await adminSyncCloudinaryMedia();
+        if (res.ok) {
+          success(
+            `Synced with Cloudinary: ${res.count} active images (${res.added} added, ${res.deleted} orphaned removed)`,
+          );
+          await load();
+        } else {
+          error(res.error);
+        }
+      } catch {
+        error("Failed to sync with Cloudinary");
+      } finally {
+        setIsSyncing(false);
       }
     });
   };
@@ -208,9 +232,19 @@ export default function MediaPage() {
             type="button"
             className="admin-btn admin-btn-secondary"
             onClick={handleUrl}
-            disabled={pending}
+            disabled={pending || isSyncing}
           >
             Add URL
+          </button>
+          <button
+            type="button"
+            className="admin-btn admin-btn-secondary inline-flex items-center gap-1.5 whitespace-nowrap"
+            onClick={handleSyncCloudinary}
+            disabled={pending || isSyncing}
+            title="Sync all images directly with Cloudinary folders"
+          >
+            <RefreshCw className={`h-4 w-4 ${isSyncing ? "animate-spin" : ""}`} />
+            <span>{isSyncing ? "Syncing…" : "Sync Cloudinary"}</span>
           </button>
         </div>
       </div>

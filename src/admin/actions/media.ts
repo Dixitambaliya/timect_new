@@ -353,3 +353,135 @@ export async function adminUpdateMedia(
     return { ok: false, error: "Update failed." };
   }
 }
+
+/**
+ * Synchronize the database media_library with Cloudinary:
+ * 1. Discovers all active assets in Cloudinary under 'timect/admin'.
+ * 2. Removes any orphaned records in media_library that no longer exist in Cloudinary.
+ * 3. Inserts or updates all active Cloudinary assets in media_library.
+ */
+export async function adminSyncCloudinaryMedia(): Promise<
+  | { ok: true; count: number; deleted: number; added: number; updated: number }
+  | { ok: false; error: string }
+> {
+  try {
+    await assertWrite();
+    const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+    const apiKey = process.env.CLOUDINARY_API_KEY;
+    const apiSecret = process.env.CLOUDINARY_API_SECRET;
+
+    if (!cloudName || !apiKey || !apiSecret) {
+      return { ok: false, error: "Cloudinary credentials not configured." };
+    }
+
+    const authHeader = "Basic " + Buffer.from(`${apiKey}:${apiSecret}`).toString("base64");
+
+    const allResources: Array<{
+      public_id: string;
+      format: string;
+      bytes: number;
+      width: number;
+      height: number;
+      secure_url: string;
+    }> = [];
+
+    let nextCursor: string | null = null;
+    do {
+      const url: string = `https://api.cloudinary.com/v1_1/${cloudName}/resources/image/upload?prefix=timect/admin&max_results=100${
+        nextCursor ? `&next_cursor=${encodeURIComponent(nextCursor)}` : ""
+      }`;
+      const res = await fetch(url, {
+        headers: { Authorization: authHeader },
+      });
+      if (!res.ok) {
+        const text = await res.text();
+        console.error("Cloudinary list failed:", text);
+        return { ok: false, error: "Failed to list Cloudinary resources." };
+      }
+      const data = (await res.json()) as {
+        resources: typeof allResources;
+        next_cursor?: string;
+      };
+      allResources.push(...(data.resources || []));
+      nextCursor = data.next_cursor || null;
+    } while (nextCursor);
+
+    const activeMap = new Map<string, (typeof allResources)[0]>();
+    for (const r of allResources) {
+      activeMap.set(r.public_id, r);
+    }
+
+    // Get current DB rows
+    const dbRows = (await sql`SELECT id, public_id FROM media_library`) as Array<{
+      id: number;
+      public_id: string | null;
+    }>;
+
+    let deleted = 0;
+    for (const row of dbRows) {
+      if (row.public_id && row.public_id.startsWith("timect/admin/")) {
+        if (!activeMap.has(row.public_id)) {
+          await sql`DELETE FROM media_library WHERE id = ${row.id}`;
+          deleted++;
+        }
+      }
+    }
+
+    let added = 0;
+    let updated = 0;
+
+    for (const r of allResources) {
+      const parts = r.public_id.split("/");
+      const folder = parts.length > 2 ? parts[2] : "general";
+      const filename =
+        (parts[parts.length - 1] || "image") + (r.format ? `.${r.format}` : "");
+      const mime = r.format ? `image/${r.format}` : "image/jpeg";
+
+      const existing = (await sql`
+        SELECT id FROM media_library WHERE public_id = ${r.public_id} LIMIT 1
+      `) as Array<{ id: number }>;
+
+      if (existing.length === 0) {
+        await sql`
+          INSERT INTO media_library (
+            url, public_id, filename, folder, mime_type, size_bytes, width, height, alt_text
+          ) VALUES (
+            ${r.secure_url},
+            ${r.public_id},
+            ${filename},
+            ${folder},
+            ${mime},
+            ${r.bytes || null},
+            ${r.width || null},
+            ${r.height || null},
+            ${filename}
+          )
+        `;
+        added++;
+      } else {
+        await sql`
+          UPDATE media_library SET
+            url = ${r.secure_url},
+            folder = ${folder},
+            size_bytes = ${r.bytes || null},
+            width = ${r.width || null},
+            height = ${r.height || null}
+          WHERE id = ${existing[0].id}
+        `;
+        updated++;
+      }
+    }
+
+    revalidatePath("/admin/media");
+    return {
+      ok: true,
+      count: allResources.length,
+      deleted,
+      added,
+      updated,
+    };
+  } catch (err) {
+    console.error("adminSyncCloudinaryMedia error:", err);
+    return { ok: false, error: "Sync failed." };
+  }
+}
