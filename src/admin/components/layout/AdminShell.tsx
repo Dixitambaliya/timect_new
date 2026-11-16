@@ -57,9 +57,9 @@ export default function AdminShell({
 
   return (
     <ToastProvider>
-      <div className={`admin-root flex min-h-screen gap-3 p-2 md:p-3 ${dark ? "admin-dark" : ""}`}>
+      <div className={`admin-root flex min-h-screen w-full max-w-full overflow-x-hidden gap-3 p-2 md:p-3 ${dark ? "admin-dark" : ""}`}>
         <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} unread={unread} />
-        <div className="flex min-w-0 flex-1 flex-col gap-3">
+        <div className="flex min-w-0 flex-1 flex-col gap-3 max-w-full">
           <TopNavbar
             user={user}
             dark={dark}
@@ -70,7 +70,7 @@ export default function AdminShell({
             onSubmitSearch={onSubmitSearch}
             searchPlaceholder={searchPlaceholder}
           />
-          <main className="flex-1 px-1 pb-6 pt-1 md:px-2 md:pt-2 lg:px-3">{children}</main>
+          <main className="flex-1 min-w-0 max-w-full px-1 pb-6 pt-1 md:px-2 md:pt-2 lg:px-3">{children}</main>
         </div>
       </div>
     </ToastProvider>

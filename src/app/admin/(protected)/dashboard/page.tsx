@@ -64,14 +64,14 @@ export default async function AdminDashboardPage() {
       {/* Real-Time Live Visitor Monitoring Banner */}
       <LiveVisitorWidget />
 
-      <div className="grid grid-cols-2 gap-2.5 sm:gap-3 lg:grid-cols-3 2xl:grid-cols-6">
+      <div className="grid grid-cols-2 gap-2.5 sm:gap-3 lg:grid-cols-3 2xl:grid-cols-6 min-w-0 max-w-full">
         {cards.map((c, i) => {
           const Icon = c.icon;
           return (
             <Link
               key={c.label}
               href={c.href}
-              className="admin-card group flex animate-rise-in flex-col p-3.5 sm:p-5 transition-[border-color] duration-400 hover:!border-[var(--admin-accent-border)]"
+              className="admin-card min-w-0 group flex animate-rise-in flex-col p-3.5 sm:p-5 transition-[border-color] duration-400 hover:!border-[var(--admin-accent-border)]"
               style={{ animationDelay: `${i * 50}ms` }}
             >
               <div className="mb-3 sm:mb-6 flex items-center justify-between">
@@ -87,8 +87,8 @@ export default async function AdminDashboardPage() {
         })}
       </div>
 
-      <div className="mt-3 grid gap-3 xl:grid-cols-3">
-        <div className="admin-card xl:col-span-2">
+      <div className="mt-3 grid gap-3 xl:grid-cols-3 min-w-0 max-w-full">
+        <div className="admin-card xl:col-span-2 min-w-0 max-w-full overflow-hidden">
           <div className="flex items-center justify-between px-4 sm:px-6 pb-2 pt-4 sm:pt-5">
             <h2 className="text-[16px] sm:text-[18px] font-bold">Recently added</h2>
             <Link href="/admin/products" className="link-hover text-[12px] sm:text-[13px] font-semibold text-[var(--admin-muted)]">
@@ -98,15 +98,15 @@ export default async function AdminDashboardPage() {
           {stats.recentlyAdded.length === 0 ? (
             <p className="px-4 sm:px-6 py-8 sm:py-12 text-center text-sm text-[var(--admin-muted)]">No products yet</p>
           ) : (
-            <ul className="grid gap-2 p-2.5 sm:p-3 sm:grid-cols-2">
+            <ul className="grid grid-cols-1 gap-2 p-2.5 sm:p-3 sm:grid-cols-2 min-w-0 max-w-full">
               {stats.recentlyAdded.map((p) => {
                 const title = p.name || p.title || p.collection || "Untitled";
                 const img = p.image || p.images?.[0];
                 return (
-                  <li key={p.id}>
+                  <li key={p.id} className="min-w-0 max-w-full">
                     <Link
                       href={`/admin/products/${p.id}/edit`}
-                      className="flex items-center gap-2.5 sm:gap-3 rounded-fuse-md bg-[var(--admin-bg)] p-2 transition-colors hover:bg-[var(--admin-accent-soft)]"
+                      className="flex min-w-0 max-w-full items-center gap-2.5 sm:gap-3 rounded-fuse-md bg-[var(--admin-bg)] p-2 transition-colors hover:bg-[var(--admin-accent-soft)]"
                     >
                       <span className="relative h-12 w-12 sm:h-14 sm:w-14 shrink-0 overflow-hidden rounded-[10px] bg-white">
                         {img && (
@@ -118,7 +118,7 @@ export default async function AdminDashboardPage() {
                         <span className="block truncate text-[13px] sm:text-[14px] font-semibold">{title}</span>
                         <span className="block truncate text-[11px] sm:text-[12px] text-[var(--admin-muted)]">{p.price}</span>
                       </span>
-                      <span className="flex gap-1 pr-1 sm:pr-2">
+                      <span className="flex shrink-0 gap-1 pr-1 sm:pr-2">
                         {p.isNewArrival && <span className="admin-badge text-[10px] sm:text-xs">New</span>}
                         {p.isRecommended && <span className="admin-badge admin-badge-success text-[10px] sm:text-xs">Rec</span>}
                       </span>
@@ -130,24 +130,24 @@ export default async function AdminDashboardPage() {
           )}
         </div>
 
-        <div className="admin-card p-4 sm:p-5">
+        <div className="admin-card p-4 sm:p-5 min-w-0 max-w-full">
           <h2 className="mb-3 sm:mb-4 text-[16px] sm:text-[18px] font-bold">Quick actions</h2>
           <div className="space-y-2">
             {quick.map(({ href, label, icon: Icon }) => (
               <Link
                 key={href}
                 href={href}
-                className="group flex items-center gap-3 rounded-fuse-md border border-[var(--admin-line-strong)] bg-[var(--admin-surface-2)] px-3.5 sm:px-4 py-2.5 sm:py-3 text-[13px] sm:text-[14px] font-semibold transition-colors duration-400 hover:border-[#8c8c8c] hover:bg-[var(--admin-surface)]"
+                className="group flex min-w-0 items-center gap-3 rounded-fuse-md border border-[var(--admin-line-strong)] bg-[var(--admin-surface-2)] px-3.5 sm:px-4 py-2.5 sm:py-3 text-[13px] sm:text-[14px] font-semibold transition-colors duration-400 hover:border-[#8c8c8c] hover:bg-[var(--admin-surface)]"
               >
-                <Icon className="h-4 w-4 text-[var(--admin-heading)]" />
-                <span className="flex-1">{label}</span>
-                <ArrowRight className="h-4 w-4 transition-transform duration-400 group-hover:translate-x-1" />
+                <Icon className="h-4 w-4 shrink-0 text-[var(--admin-heading)]" />
+                <span className="flex-1 truncate">{label}</span>
+                <ArrowRight className="h-4 w-4 shrink-0 transition-transform duration-400 group-hover:translate-x-1" />
               </Link>
             ))}
           </div>
         </div>
 
-        <div className="admin-card xl:col-span-2">
+        <div className="admin-card xl:col-span-2 min-w-0 max-w-full overflow-hidden">
           <div className="flex items-center justify-between px-4 sm:px-6 pb-2 pt-4 sm:pt-5">
             <h2 className="text-[16px] sm:text-[18px] font-bold">Latest enquiries</h2>
             <Link href="/admin/inbox" className="link-hover text-[12px] sm:text-[13px] font-semibold text-[var(--admin-muted)]">
@@ -159,10 +159,10 @@ export default async function AdminDashboardPage() {
               No messages yet -contact form submissions will appear here.
             </p>
           ) : (
-            <ul className="divide-y divide-[var(--admin-line)] px-3 pb-3">
+            <ul className="divide-y divide-[var(--admin-line)] px-3 pb-3 min-w-0 max-w-full">
               {inbox.items.map((m) => (
-                <li key={m.id}>
-                  <Link href={`/admin/inbox?open=${m.id}`} className="flex items-start gap-3 rounded-fuse-md px-3 py-3 hover:bg-[var(--admin-bg)]">
+                <li key={m.id} className="min-w-0 max-w-full">
+                  <Link href={`/admin/inbox?open=${m.id}`} className="flex min-w-0 max-w-full items-start gap-3 rounded-fuse-md px-3 py-3 hover:bg-[var(--admin-bg)]">
                     <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-[var(--admin-accent-soft)] text-[13px] font-bold text-[var(--admin-heading)]">
                       {m.name.slice(0, 1).toUpperCase()}
                     </span>
@@ -181,7 +181,7 @@ export default async function AdminDashboardPage() {
           )}
         </div>
 
-        <div className="admin-card p-5">
+        <div className="admin-card p-5 min-w-0 max-w-full">
           <h2 className="mb-4 text-[18px] font-bold">Team activity</h2>
           {activity.length === 0 ? (
             <p className="py-6 text-sm text-[var(--admin-muted)]">No activity recorded yet.</p>

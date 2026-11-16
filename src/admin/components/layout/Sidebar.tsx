@@ -104,8 +104,10 @@ export default function Sidebar({
       )}
 
       <aside
-        className={`admin-sidebar-panel fixed inset-y-2 left-2 z-50 flex w-[272px] flex-col rounded-fuse shadow-[0_20px_60px_rgba(0,0,0,.12)] transition-transform duration-[550ms] ease-fuse-out lg:sticky lg:top-3 lg:h-[calc(100vh-24px)] lg:translate-x-0 lg:shadow-none ${
-          open ? "translate-x-0" : "-translate-x-[calc(100%+24px)]"
+        className={`admin-sidebar-panel fixed inset-y-2 left-2 z-50 flex w-[272px] flex-col rounded-fuse shadow-[0_20px_60px_rgba(0,0,0,.12)] transition-[transform,opacity,visibility] duration-[550ms] ease-fuse-out lg:sticky lg:top-3 lg:h-[calc(100vh-24px)] lg:translate-x-0 lg:shadow-none ${
+          open
+            ? "translate-x-0 opacity-100 visible pointer-events-auto"
+            : "-translate-x-[calc(100%+24px)] opacity-0 invisible pointer-events-none lg:opacity-100 lg:visible lg:pointer-events-auto"
         }`}
       >
         <div className="flex items-center justify-between px-5 pb-4 pt-5">
