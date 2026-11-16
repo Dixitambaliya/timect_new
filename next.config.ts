@@ -19,6 +19,9 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "50mb",
     },
   },
+  devIndicators: {
+    position: "bottom-right",
+  },
 };
 
 export default nextConfig;
