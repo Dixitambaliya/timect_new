@@ -108,32 +108,32 @@ export default function Sidebar({
           open ? "translate-x-0" : "-translate-x-[calc(100%+24px)] max-lg:pointer-events-none"
         }`}
       >
-        <div className="flex items-center justify-between px-5 pb-4 pt-5">
+        <div className="flex items-center justify-between px-4 pb-2 pt-3.5 sm:px-5 sm:pb-3 sm:pt-4">
           <Link href="/admin/dashboard" className="flex items-center gap-2.5" onClick={onClose}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={TIMECT_LOGO} alt="" className="h-9 w-9 rounded-full bg-white object-contain" />
-            <span className="font-chivo text-[20px] font-black uppercase tracking-[0.16em] text-[var(--admin-heading)]">
+            <img src={TIMECT_LOGO} alt="" className="h-8 w-8 rounded-full bg-white object-contain" />
+            <span className="font-chivo text-[18px] font-black uppercase tracking-[0.14em] text-[var(--admin-heading)]">
               Timect
             </span>
-            <span className="admin-badge">Admin</span>
+            <span className="admin-badge text-[10px]">Admin</span>
           </Link>
           <button
             type="button"
-            className="flex h-9 w-9 items-center justify-center rounded-fuse-md hover:bg-[var(--admin-bg)] lg:hidden"
+            className="flex h-8 w-8 items-center justify-center rounded-fuse-md hover:bg-[var(--admin-bg)] lg:hidden"
             onClick={onClose}
             aria-label="Close menu"
           >
-            <X className="h-5 w-5" />
+            <X className="h-4 w-4" />
           </button>
         </div>
 
-        <nav className="admin-scrollbar flex-1 space-y-6 overflow-y-auto px-3 pb-4">
+        <nav className="no-scrollbar flex-1 space-y-3 overflow-y-auto px-2.5 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {GROUPS.map((group) => (
             <div key={group.title}>
-              <p className="px-3 pb-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--admin-muted)]">
+              <p className="px-2.5 pb-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--admin-muted)]">
                 {group.title}
               </p>
-              <ul className="space-y-1">
+              <ul className="space-y-0.5">
                 {group.items.map((item) => {
                   const isChildActive = item.children?.some((c) => pathname === c.href);
                   const isParentActive =
@@ -143,11 +143,11 @@ export default function Sidebar({
                   const Icon = item.icon;
                   const count = "badge" in item && item.badge === "inbox" ? unread : 0;
                   return (
-                    <li key={item.href} className="space-y-1">
+                    <li key={item.href} className="space-y-0.5">
                       <Link
                         href={item.href}
                         onClick={onClose}
-                        className={`group flex items-center gap-3 rounded-fuse-md border px-3 py-2.5 text-[15px] font-semibold transition-colors duration-400 ${
+                        className={`group flex items-center gap-2.5 rounded-fuse-md border px-2.5 py-1.5 text-[13.5px] font-semibold transition-colors duration-400 ${
                           isParentActive && !isChildActive
                             ? "border-[var(--admin-accent-border)] bg-[var(--admin-accent-soft)] text-[var(--admin-heading)]"
                             : active
@@ -155,16 +155,16 @@ export default function Sidebar({
                               : "border-transparent text-[var(--admin-muted)] hover:bg-[var(--admin-surface)] hover:text-[var(--admin-ink)]"
                         }`}
                       >
-                        <Icon className="h-[18px] w-[18px] shrink-0" strokeWidth={1.6} />
+                        <Icon className="h-4 w-4 shrink-0" strokeWidth={1.6} />
                         <span className="flex-1">{item.label}</span>
                         {count > 0 && (
-                          <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--admin-accent)] px-1.5 text-[11px] text-[var(--admin-surface)]">
+                          <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--admin-accent)] px-1 text-[10px] text-[var(--admin-surface)]">
                             {count > 99 ? "99+" : count}
                           </span>
                         )}
                       </Link>
                       {item.children && (
-                        <ul className="ms-4 space-y-0.5 border-s border-[var(--admin-line)] ps-3 pt-0.5 pb-1">
+                        <ul className="ms-3 space-y-0.5 border-s border-[var(--admin-line)] ps-2.5 pt-0.5 pb-0.5">
                           {item.children.map((child) => {
                             const childActive = pathname === child.href;
                             return (
@@ -172,7 +172,7 @@ export default function Sidebar({
                                 <Link
                                   href={child.href}
                                   onClick={onClose}
-                                  className={`flex items-center gap-2 rounded-fuse-sm px-2.5 py-1.5 text-[13px] font-medium transition ${
+                                  className={`flex items-center gap-2 rounded-fuse-sm px-2 py-1 text-[12px] font-medium transition ${
                                     childActive
                                       ? "bg-[var(--admin-accent-soft)] font-semibold text-[var(--admin-heading)]"
                                       : "text-[var(--admin-muted)] hover:bg-[var(--admin-surface)] hover:text-[var(--admin-ink)]"
@@ -198,15 +198,15 @@ export default function Sidebar({
           ))}
         </nav>
 
-        <div className="p-3">
+        <div className="p-2.5 pt-1.5">
           <a
             href="/"
             target="_blank"
             rel="noreferrer"
-            className="flex items-center justify-between rounded-fuse-md bg-[var(--admin-accent)] px-4 py-3 text-[14px] font-semibold text-[var(--admin-surface)] transition-opacity hover:opacity-90"
+            className="flex items-center justify-between rounded-fuse-md bg-[var(--admin-accent)] px-3.5 py-2 text-[13px] font-semibold text-[var(--admin-surface)] transition-opacity hover:opacity-90"
           >
             View storefront
-            <ExternalLink className="h-4 w-4" />
+            <ExternalLink className="h-3.5 w-3.5" />
           </a>
         </div>
       </aside>

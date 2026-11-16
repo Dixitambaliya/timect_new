@@ -303,6 +303,14 @@ html[data-admin-theme="dark"] .admin-portal .admin-btn-secondary {
   }
 }
 
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 .admin-scrollbar::-webkit-scrollbar {
   width: 6px;
   height: 6px;
