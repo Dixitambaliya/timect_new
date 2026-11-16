@@ -57,7 +57,7 @@ export default function AdminShell({
 
   return (
     <ToastProvider>
-      <div className={`admin-root flex min-h-screen w-full max-w-full overflow-x-hidden gap-3 p-2 md:p-3 ${dark ? "admin-dark" : ""}`}>
+      <div className={`admin-root flex min-h-screen w-full max-w-full gap-3 p-2 md:p-3 ${dark ? "admin-dark" : ""}`}>
         <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} unread={unread} />
         <div className="flex min-w-0 flex-1 flex-col gap-3 max-w-full">
           <TopNavbar
