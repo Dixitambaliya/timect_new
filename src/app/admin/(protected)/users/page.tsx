@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState, useTransition } from "react";
-import { Loader2, Pencil, Plus, ShieldCheck, Trash2, Users } from "lucide-react";
+import { Eye, EyeOff, Loader2, Pencil, Plus, ShieldCheck, Trash2, Users } from "lucide-react";
 import { PageHeader } from "@/admin/components/layout/Breadcrumbs";
 import AdminModal from "@/admin/components/ui/AdminModal";
 import ConfirmDialog from "@/admin/components/ui/ConfirmDialog";
@@ -39,6 +39,7 @@ export default function UsersPage() {
   const [form, setForm] = useState<FormState | null>(null);
   const [toDelete, setToDelete] = useState<AdminUserRow | null>(null);
   const [pending, startTransition] = useTransition();
+  const [showPassword, setShowPassword] = useState(false);
 
   const load = useCallback(async () => setData(await adminListUsers()), []);
   useEffect(() => {
@@ -68,7 +69,14 @@ export default function UsersPage() {
         description="Admin accounts, roles and access to this panel"
         actions={
           canManage && (
-            <button type="button" className="admin-btn admin-btn-primary" onClick={() => setForm({ ...EMPTY })}>
+            <button
+              type="button"
+              className="admin-btn admin-btn-primary"
+              onClick={() => {
+                setShowPassword(false);
+                setForm({ ...EMPTY });
+              }}
+            >
               <Plus className="h-4 w-4" /> Add member
             </button>
           )
@@ -138,7 +146,17 @@ export default function UsersPage() {
                             type="button"
                             className="admin-btn admin-btn-ghost !px-2"
                             aria-label={`Edit ${u.fullName}`}
-                            onClick={() => setForm({ id: u.id, fullName: u.fullName, email: u.email, role: u.role, isActive: u.isActive, password: "" })}
+                            onClick={() => {
+                              setShowPassword(false);
+                              setForm({
+                                id: u.id,
+                                fullName: u.fullName,
+                                email: u.email,
+                                role: u.role,
+                                isActive: u.isActive,
+                                password: "",
+                              });
+                            }}
                           >
                             <Pencil className="h-4 w-4" />
                           </button>
@@ -161,10 +179,20 @@ export default function UsersPage() {
       <AdminModal
         open={!!form}
         title={form?.id ? "Edit team member" : "Add team member"}
-        onClose={() => setForm(null)}
+        onClose={() => {
+          setForm(null);
+          setShowPassword(false);
+        }}
         footer={
           <>
-            <button type="button" className="admin-btn admin-btn-secondary" onClick={() => setForm(null)}>
+            <button
+              type="button"
+              className="admin-btn admin-btn-secondary"
+              onClick={() => {
+                setForm(null);
+                setShowPassword(false);
+              }}
+            >
               Cancel
             </button>
             <button type="button" className="admin-btn admin-btn-primary" onClick={submit} disabled={pending}>
@@ -210,17 +238,32 @@ export default function UsersPage() {
                 ))}
               </div>
             </div>
-            <label className="block">
+            <div>
               <span className="admin-label">{form.id ? "New password (optional)" : "Password"}</span>
-              <input
-                className="admin-input"
-                type="password"
-                autoComplete="new-password"
-                placeholder="At least 8 characters"
-                value={form.password}
-                onChange={(e) => setForm({ ...form, password: e.target.value })}
-              />
-            </label>
+              <div className="relative">
+                <input
+                  className="admin-input pr-12"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="new-password"
+                  placeholder="At least 8 characters"
+                  value={form.password}
+                  onChange={(e) => setForm({ ...form, password: e.target.value })}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[var(--admin-muted)] transition-colors hover:text-[var(--admin-heading)] focus:outline-none"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  tabIndex={-1}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
+                </button>
+              </div>
+            </div>
             {form.id && (
               <label className="flex cursor-pointer items-center gap-3 rounded-fuse-md bg-[var(--admin-bg)] p-3">
                 <Checkbox className="h-5 w-5" checked={form.isActive} onChange={(e) => setForm({ ...form, isActive: e.target.checked })} />
