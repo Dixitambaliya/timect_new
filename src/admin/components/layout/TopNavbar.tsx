@@ -7,7 +7,7 @@ import type { AdminSession } from "@/admin/lib/session";
 import ConfirmDialog from "@/admin/components/ui/ConfirmDialog";
 
 const iconBtn =
-  "flex h-11 w-11 items-center justify-center rounded-fuse-md border border-[var(--admin-line-strong)] bg-[var(--admin-surface-2)] text-[var(--admin-ink)] transition-colors duration-400 hover:border-[#8c8c8c] hover:bg-[var(--admin-surface)]";
+  "flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-fuse-md border border-[var(--admin-line-strong)] bg-[var(--admin-surface-2)] text-[var(--admin-ink)] transition-colors duration-400 hover:border-[#8c8c8c] hover:bg-[var(--admin-surface)]";
 
 export default function TopNavbar({
   user,
@@ -40,9 +40,9 @@ export default function TopNavbar({
   };
 
   return (
-    <header className="sticky top-3 z-30 flex h-[68px] items-center gap-3 rounded-fuse bg-[var(--admin-surface)] px-3 shadow-[var(--admin-shadow)] md:px-4">
+    <header className="flex h-14 md:h-[68px] items-center gap-2.5 sm:gap-3 rounded-fuse border border-[var(--admin-line)] bg-[var(--admin-surface)] px-3 shadow-sm md:px-4">
       <button type="button" className={`${iconBtn} lg:hidden`} onClick={onMenu} aria-label="Open menu">
-        <Menu className="h-5 w-5" />
+        <Menu className="h-4 w-4 sm:h-5 sm:w-5" />
       </button>
 
       {onSearch && (
@@ -90,7 +90,7 @@ export default function TopNavbar({
 
       <div className="ml-auto flex items-center gap-2">
         <button type="button" className={iconBtn} onClick={onToggleDark} aria-label="Toggle dark mode" title="Toggle theme">
-          {dark ? <Sun className="h-[18px] w-[18px]" /> : <Moon className="h-[18px] w-[18px]" />}
+          {dark ? <Sun className="h-4 w-4 sm:h-[18px] sm:w-[18px]" /> : <Moon className="h-4 w-4 sm:h-[18px] sm:w-[18px]" />}
         </button>
 
         <div className="hidden items-center gap-3 rounded-fuse-md bg-[var(--admin-bg)] py-1.5 pl-1.5 pr-4 sm:flex">
@@ -104,7 +104,7 @@ export default function TopNavbar({
         </div>
 
         <button type="button" className={iconBtn} title="Log out" aria-label="Log out" onClick={() => setConfirmLogout(true)}>
-          <LogOut className="h-[18px] w-[18px]" />
+          <LogOut className="h-4 w-4 sm:h-[18px] sm:w-[18px]" />
         </button>
       </div>
 
