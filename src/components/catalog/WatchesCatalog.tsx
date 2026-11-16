@@ -106,7 +106,7 @@ function CategoryRail({
                 <span className="relative h-[100px] w-[100px] shrink-0 overflow-hidden rounded-fuse-md md:h-[120px] md:w-[120px]" style={{ background: c.bg }}>
                   {c.image && (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={catalogThumbUrl(c.image, 300)} alt="" className="img-fill transition-transform duration-700 group-hover/sc:scale-110" loading="lazy" />
+                    <img src={catalogThumbUrl(c.image, 300)} alt={`${c.label} watches by Timect`} className="img-fill transition-transform duration-700 group-hover/sc:scale-110" loading="lazy" />
                   )}
                 </span>
                 <span className="flex flex-1 flex-col rounded-fuse-md bg-white p-4">
@@ -129,10 +129,20 @@ export default function WatchesCatalog({
   facets,
   filterLabels,
   categories,
+  initialCategory = "all",
+  initialFilter = "",
+  initialGenders = [],
+  seoHeading,
+  seoDescription,
 }: {
   facets: CatalogFacets;
   filterLabels: Record<string, string>;
   categories: ShopCategory[];
+  initialCategory?: string;
+  initialFilter?: string;
+  initialGenders?: string[];
+  seoHeading?: string;
+  seoDescription?: string;
 }) {
   const sp = useSearchParams();
   const router = useRouter();
@@ -140,11 +150,11 @@ export default function WatchesCatalog({
   const scrolled = useScrolledPast(600);
 
   // ---- URL is the single source of truth for every filter ----
-  const category = sp.get("category") || "all";
-  const filter = sp.get("filter") || "";
+  const category = sp.get("category") || initialCategory;
+  const filter = sp.get("filter") || initialFilter;
   const genders = useMemo(
-    () => (sp.get("gender") || "").split(",").filter((g) => (GENDERS as readonly string[]).includes(g)),
-    [sp],
+    () => (sp.get("gender") || initialGenders.join(",")).split(",").filter((g) => (GENDERS as readonly string[]).includes(g)),
+    [sp, initialGenders],
   );
   const brands = useMemo(() => (sp.get("brand") || "").split(",").filter(Boolean), [sp]);
   const q = sp.get("q") || "";
@@ -288,7 +298,7 @@ export default function WatchesCatalog({
   brands.forEach((b) => chips.push({ id: `b-${b}`, label: b, onRemove: () => toggleList("brand", brands, b) }));
   const filterCount = chips.filter((c) => c.id !== "cat").length;
 
-  const title =
+  const title = seoHeading ||
     (filter && filterLabels[filter]) ||
     (genders.length === 1 ? (genders[0] === "Men" ? "For him" : genders[0] === "Women" ? "For her" : "Unisex") : "") ||
     CATEGORY_TITLES[category] ||
@@ -304,6 +314,7 @@ export default function WatchesCatalog({
         <Reveal as="h1" type="wipe" key={title} suppressHydrationWarning className="fuse-h1 mt-2 text-center capitalize">
           {title.toLowerCase()}
         </Reveal>
+        {seoDescription && <p className="mx-auto mt-5 max-w-[760px] text-center text-[16px] leading-[1.65] text-muted md:text-[18px]">{seoDescription}</p>}
         <div className="mt-8 flex flex-wrap justify-center gap-2">
           {CATEGORY_TABS.map(([id, label]) => (
             <button key={id} type="button" onClick={() => update({ category: id })} className={cx("pill", category === id && "is-active")}>
@@ -333,8 +344,8 @@ export default function WatchesCatalog({
         </div>
       )}
 
-      {/* Catalog controls - offset to float cleanly beneath the stacked sticky header without overlap */}
-      <div className="pointer-events-none sticky top-[76px] z-40 mt-8 mb-6 flex justify-center gap-3 md:top-[92px]">
+      {/* Catalog controls */}
+      <div className="pointer-events-none sticky top-[88px] z-40 mt-8 mb-6 flex justify-center gap-3 md:top-[96px]">
         <div className="glass-dark pointer-events-auto flex items-center gap-2 rounded-fuse !bg-[#232323cc] p-1.5 text-white">
           <button
             type="button"

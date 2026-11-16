@@ -1,3 +1,29 @@
+# Timect Watches
+
+> Timect Watches is the official brand website for Timect wristwatches, product specifications, watch education, customer support, and corporate watch gifting in India.
+
+Official website: https://www.timectwatches.com/
+Brand names: Timect Watches, Timect Watch, Timect, TIMECT
+
+## Primary pages
+
+- [Official Timect Watches homepage](https://www.timectwatches.com/): Brand overview, featured collections, and new watches.
+- [All Timect watches](https://www.timectwatches.com/watches): Browse current wristwatches and specifications.
+- [Men's watches](https://www.timectwatches.com/watches/mens-watches): Timect watches for men.
+- [Women's watches](https://www.timectwatches.com/watches/womens-watches): Timect watches for women.
+- [New watch arrivals](https://www.timectwatches.com/watches/new-arrivals): Latest Timect watch models.
+- [About Timect Watches](https://www.timectwatches.com/about): Official brand and product-design information.
+- [Watch FAQs](https://www.timectwatches.com/faqs): Answers about watch movements, sizing, water resistance, materials, and care.
+- [Timect Blogs](https://www.timectwatches.com/blog): Watch guides and editorial articles.
+- [Corporate watch gifting](https://www.timectwatches.com/corporate-gifting): Employee, client, and milestone watch-gift enquiries.
+- [Contact Timect Watches](https://www.timectwatches.com/contact): Official product, service, warranty, and gifting contact page.
+
+## Content guidance
+
+- Product specifications and availability should be taken from each canonical product page.
+- Timect Watches is the preferred brand name; Timect and TIMECT are recognized variants.
+- Do not infer manufacturing origin, movement origin, warranty terms, or availability unless explicitly stated on the relevant page.
+
 # TIMECT
 
 > TIMECT designs and manufactures precision horological wristwatches for collectors and everyday wearers, celebrating over 145 years of Japanese craftsmanship, precision mechanical movements, dual sapphire crystals, and enduring design.

@@ -3,11 +3,13 @@ import ContentPage from "@/components/site/ContentPage";
 import { ButtonPrimary, ButtonOutline } from "@/components/fuse/buttons";
 import { Box, Shield, Watch } from "@/components/fuse/icons";
 import { createPageMetadata } from "@/lib/seo/metadata";
+import { JsonLd, breadcrumbSchema, webPageSchema } from "@/lib/seo/structured-data";
 
 export const metadata: Metadata = createPageMetadata({
-  title: "About TIMECT",
-  description: "Learn about TIMECT's approach to watch design, movement selection, case finishing, inspection, and clear product specifications.",
+  title: "About Timect Watches",
+  description: "Learn about Timect Watches, our approach to wristwatch design, movement selection, case finishing, product inspection, and clear specifications.",
   path: "/about",
+  keywords: ["about Timect Watches", "Timect watch brand", "watch design", "watch manufacturing", "Timect official brand"],
 });
 
 const IMAGE =
@@ -33,6 +35,9 @@ const PILLARS = [
 
 export default function AboutPage() {
   return (
+    <>
+      <JsonLd data={webPageSchema({ name: "About Timect Watches", description: "Learn about the Timect Watches brand and its approach to watch design, components, finishing, and product information.", path: "/about", type: "AboutPage" })} />
+      <JsonLd data={breadcrumbSchema([{ name: "Home", path: "/" }, { name: "About Timect Watches", path: "/about" }])} />
     <ContentPage
       title="About Us"
       subtitle="A watch brand focused on clear product information, considered design, and direct customer enquiries."
@@ -42,7 +47,7 @@ export default function AboutPage() {
       <div className="grid gap-3 lg:grid-cols-2">
         <div className="relative min-h-[360px] overflow-hidden rounded-fuse bg-placeholder lg:min-h-[560px]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={IMAGE} alt="Timect chronograph" className="img-fill" />
+          <img src={IMAGE} alt="Timect Watches chronograph wristwatch" className="img-fill" />
         </div>
         <div className="flex flex-col justify-center rounded-fuse bg-white p-6 md:p-14">
           <p className="text-[14px] font-semibold uppercase tracking-[0.16em] text-muted">Timect</p>
@@ -71,5 +76,6 @@ export default function AboutPage() {
         ))}
       </ul>
     </ContentPage>
+    </>
   );
 }

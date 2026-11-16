@@ -128,7 +128,7 @@ function createTopicSvg(title: string, index: number): string {
 
   <!-- Editorial Metadata Label -->
   <g transform="translate(60, 750)">
-    <text x="0" y="0" font-family="'Cinzel', serif" font-size="11" font-weight="600" letter-spacing="3" fill="${theme.accent}">TIMECT JOURNAL</text>
+    <text x="0" y="0" font-family="'Cinzel', serif" font-size="11" font-weight="600" letter-spacing="3" fill="${theme.accent}">TIMECT BLOGS</text>
     <text x="0" y="20" font-family="sans-serif" font-size="13" font-weight="500" letter-spacing="0.5" fill="${theme.text}">${cleanTitle}</text>
   </g>
 </svg>`;

@@ -118,7 +118,7 @@ export default function CorporateGifting({ items }: { items: GiftSample[] }) {
     <div className="container-fuse pb-10 pt-12 md:pt-20">
       <div className="px-2 text-center">
         <Breadcrumbs items={[["Home", "/"], ["Corporate Gifting"]]} />
-        <h1 className="fuse-h1 mx-auto mt-2 max-w-[1000px] animate-rise-in">Find your gift</h1>
+        <h1 className="fuse-h1 mx-auto mt-2 max-w-[1000px] animate-rise-in">Corporate watch gifting</h1>
         <p className="mx-auto mt-5 max-w-[640px] text-[16px] leading-[1.6] text-muted md:text-[18px]">
           Timect timepieces for employee recognition, client gifts and milestone celebrations -chosen by colour, delivered
           with our concierge’s help.

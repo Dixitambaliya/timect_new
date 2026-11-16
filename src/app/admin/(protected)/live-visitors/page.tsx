@@ -166,7 +166,7 @@ export default function LiveVisitorsPage() {
           <p className="mt-1 text-2xl font-bold text-indigo-500">{stats.viewingProduct}</p>
         </div>
         <div className="admin-card p-4">
-          <p className="text-xs font-semibold uppercase tracking-wider text-[var(--admin-muted)]">On Journal</p>
+          <p className="text-xs font-semibold uppercase tracking-wider text-[var(--admin-muted)]">On Blogs</p>
           <p className="mt-1 text-2xl font-bold text-amber-500">{stats.viewingBlog}</p>
         </div>
         <div className="admin-card p-4">
@@ -208,7 +208,7 @@ export default function LiveVisitorsPage() {
             <option value="all">All Pages</option>
             <option value="home">Homepage</option>
             <option value="product">Product Pages</option>
-            <option value="blog">Journal / Articles</option>
+            <option value="blog">Blogs / Articles</option>
             <option value="catalog">Watches Catalog</option>
             <option value="corporate">Corporate Gifting</option>
           </select>

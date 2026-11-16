@@ -91,7 +91,7 @@ export const DEFAULT_STOREFRONT: StorefrontSettings = {
         "Engineered for marine depth and refined urban prestige -high-grade stainless steel under a scratch-resistant ceramic bezel.",
       price: "₹2,25,000",
       image: `${CDN}/v1784048474/timect/image_4.png`,
-      href: "/watches?category=new",
+      href: "/watches/new-arrivals",
       buttonLabel: "Shop new arrivals",
       specs: [
         { label: "Caliber", value: "L888 Automatic" },
@@ -109,7 +109,7 @@ export const DEFAULT_STOREFRONT: StorefrontSettings = {
         "Ultra-precise 36,000 vph high-beat movement with legendary Zaratsu mirror polishing and vintage 1960s geometry.",
       price: "₹2,10,000",
       image: `${CDN}/v1784048480/timect/image_9.png`,
-      href: "/watches?category=recommended",
+      href: "/watches/recommended-watches",
       buttonLabel: "See recommended",
       specs: [
         { label: "Caliber", value: "6L35 High-Beat" },
@@ -125,7 +125,7 @@ export const DEFAULT_STOREFRONT: StorefrontSettings = {
       title: "For Him",
       text: "Sports chronographs, divers and dress pieces built for years of daily wear.",
       image: `${CDN}/v1784048483/timect/man_watch_cat.jpg`,
-      href: "/watches?gender=Men",
+      href: "/watches/mens-watches",
       buttonLabel: "Explore",
     },
     {
@@ -133,7 +133,7 @@ export const DEFAULT_STOREFRONT: StorefrontSettings = {
       title: "For Her",
       text: "Refined ladies models in rose gold, two-tone and mother-of-pearl finishes.",
       image: `${CDN}/v1784048495/timect/woman_watch_cat.jpg`,
-      href: "/watches?gender=Women",
+      href: "/watches/womens-watches",
       buttonLabel: "Explore",
     },
   ],

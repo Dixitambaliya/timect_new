@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "db:seed": "tsx src/db/seed.ts",
+    "db:seed-blog-fashion": "tsx src/db/blog-fashion-seed.ts",
     "db:admin-migrate": "tsx src/db/admin-migrate.ts"
   },
   "dependencies": {

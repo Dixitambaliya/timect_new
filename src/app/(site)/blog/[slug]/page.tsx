@@ -6,9 +6,11 @@ import {
   getRelatedBlogPosts,
 } from "@/db/blog-actions";
 import { createPageMetadata } from "@/lib/seo/metadata";
-import { JsonLd } from "@/lib/seo/structured-data";
+import { absoluteUrl } from "@/lib/seo/site-config";
+import { SITE_CONFIG } from "@/lib/seo/site-config";
+import { JsonLd, type JsonLdValue } from "@/lib/seo/structured-data";
 import { Breadcrumbs } from "@/components/fuse/buttons";
-import { Clock, Calendar, HelpCircle, Sparkles, ArrowRight } from "lucide-react";
+import { Clock, Calendar, ChevronDown, HelpCircle, Sparkles } from "lucide-react";
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
@@ -19,22 +21,26 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   const post = await getBlogPostBySlug(slug);
 
   if (!post) {
-    return { title: "Article Not Found | TIMECT Journal" };
+    return { title: "Article Not Found | Timect Watches" };
   }
 
-  const seoTitle = `${post.title} | TIMECT Journal`;
-  const seoDescription = post.excerpt;
+  const seoTitle = post.seo?.meta_title || `${post.title} | Timect Watches`;
+  const seoDescription = post.seo?.meta_description || post.excerpt;
+  const canonical = absoluteUrl(`/blog/${slug}`);
 
   return {
     ...createPageMetadata({
       title: seoTitle,
       description: seoDescription,
       path: `/blog/${slug}`,
+      keywords: [post.seo?.focus_keyword, ...(post.seo?.secondary_keywords || []), "Timect Watches"].filter((value): value is string => Boolean(value)),
     }),
     title: { absolute: seoTitle },
     openGraph: {
       title: post.title,
       description: post.excerpt,
+      url: canonical,
+      siteName: SITE_CONFIG.name,
       images: [
         {
           url: post.featured_image_url || "/api/blog/images/1",
@@ -45,6 +51,8 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       ],
       type: "article",
       publishedTime: post.published_at || undefined,
+      modifiedTime: post.updated_at || undefined,
+      authors: post.author?.name ? [post.author.name] : [SITE_CONFIG.name],
     },
     twitter: {
       card: "summary_large_image",
@@ -65,7 +73,7 @@ export default async function BlogPostDetailPage({ params }: BlogPostPageProps) 
 
   const related = await getRelatedBlogPosts(post.id, post.category_id, 4);
 
-  const structuredData: any[] = [
+  const structuredData: JsonLdValue[] = [
     {
       "@context": "https://schema.org",
       "@type": "BlogPosting",
@@ -76,16 +84,20 @@ export default async function BlogPostDetailPage({ params }: BlogPostPageProps) 
       dateModified: post.updated_at,
       publisher: {
         "@type": "Organization",
-        name: "TIMECT",
+        name: SITE_CONFIG.name,
         logo: {
           "@type": "ImageObject",
-          url: "https://timect-mu.vercel.app/favicon.png",
+          url: absoluteUrl("/favicon.ico"),
         },
       },
       mainEntityOfPage: {
         "@type": "WebPage",
-        "@id": `https://timect-mu.vercel.app/blog/${post.slug}`,
+        "@id": absoluteUrl(`/blog/${post.slug}`),
       },
+      author: post.author?.name
+        ? { "@type": "Person", name: post.author.name, ...(post.author.designation ? { jobTitle: post.author.designation } : {}) }
+        : { "@id": `${SITE_CONFIG.url}/#organization` },
+      isPartOf: { "@id": absoluteUrl("/blog#blog") },
     },
     {
       "@context": "https://schema.org",
@@ -95,19 +107,19 @@ export default async function BlogPostDetailPage({ params }: BlogPostPageProps) 
           "@type": "ListItem",
           position: 1,
           name: "Home",
-          item: "https://timect-mu.vercel.app",
+          item: absoluteUrl("/"),
         },
         {
           "@type": "ListItem",
           position: 2,
-          name: "Journal",
-          item: "https://timect-mu.vercel.app/blog",
+          name: "Blogs",
+          item: absoluteUrl("/blog"),
         },
         {
           "@type": "ListItem",
           position: 3,
           name: post.title,
-          item: `https://timect-mu.vercel.app/blog/${post.slug}`,
+          item: absoluteUrl(`/blog/${post.slug}`),
         },
       ],
     },
@@ -130,7 +142,7 @@ export default async function BlogPostDetailPage({ params }: BlogPostPageProps) 
 
   const breadcrumbItems: [string, (string | undefined)?][] = [
     ["Home", "/"],
-    ["Journal", "/blog"],
+    ["Blogs", "/blog"],
   ];
   if (post.category) {
     breadcrumbItems.push([post.category.name, `/blog/category/${post.category.slug}`]);
@@ -151,26 +163,26 @@ export default async function BlogPostDetailPage({ params }: BlogPostPageProps) 
       {/* Main Single White Rounded Card for the Entire Article */}
       <div className="rounded-fuse bg-white p-6 md:p-12 shadow-sm">
         {/* Article Meta Header */}
-        <div className="mx-auto max-w-[820px] text-center">
+        <div className="mx-auto max-w-[820px] text-left">
           <div className="inline-flex items-center gap-2 rounded-fuse-sm bg-bg border border-line px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-muted">
-            <span>{post.category?.name || "Journal"}</span>
+            <span>{post.category?.name || "Blog"}</span>
             <span>•</span>
             <span className="flex items-center gap-1">
               <Clock className="h-3 w-3" /> {post.reading_time_minutes} min read
             </span>
           </div>
 
-          <h1 className="fuse-h2 mt-4 font-bold text-heading text-center">
+          <h1 className="fuse-h2 mt-4 font-bold text-heading text-left">
             {post.title}
           </h1>
 
           {post.subtitle && (
-            <p className="mx-auto mt-3 max-w-[640px] text-[16px] leading-[1.6] text-muted md:text-[18px]">
+            <p className="mt-3 max-w-[640px] text-[16px] leading-[1.6] text-muted md:text-[18px]">
               {post.subtitle}
             </p>
           )}
 
-          <div className="mt-3 flex items-center justify-center gap-1.5 text-[12px] text-muted">
+          <div className="mt-3 flex items-center justify-start gap-1.5 text-[12px] text-muted">
             <Calendar className="h-3.5 w-3.5" />
             <span>
               {post.published_at
@@ -232,25 +244,47 @@ export default async function BlogPostDetailPage({ params }: BlogPostPageProps) 
 
           {/* FAQ Accordion */}
           {post.faqs && post.faqs.length > 0 && (
-            <section className="mt-10 rounded-fuse-md border border-line bg-bg p-5 md:p-6">
-              <div className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted mb-1.5">
-                <HelpCircle className="h-3.5 w-3.5" />
-                Frequently Asked Questions
+            <section className="relative mt-12 overflow-hidden rounded-fuse border border-line bg-[linear-gradient(145deg,#f8f7f3_0%,#ffffff_55%,#f2f4f7_100%)] p-5 shadow-[0_18px_50px_-30px_rgba(35,40,52,.38)] md:p-8">
+              <div className="pointer-events-none absolute -right-16 -top-20 h-48 w-48 rounded-full bg-accent-soft/70 blur-3xl" />
+              <div className="relative mb-6 flex items-start gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-fuse-md bg-heading text-white shadow-sm">
+                  <HelpCircle className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-muted">
+                    Helpful answers
+                  </p>
+                  <h2 className="mt-0.5 text-[21px] font-bold tracking-tight text-heading md:text-[24px]">
+                    Frequently Asked Questions
+                  </h2>
+                  <p className="mt-1 max-w-[620px] text-[13px] leading-relaxed text-muted md:text-[14px]">
+                    Quick, practical guidance for the questions readers ask most often.
+                  </p>
+                </div>
               </div>
-              <h3 className="text-[18px] font-bold text-heading mb-4">
-                Common Questions & Guidance
-              </h3>
 
-              <div className="space-y-4 divide-y divide-line/60">
+              <div className="relative space-y-2.5">
                 {post.faqs.map((faq, i) => (
-                  <div key={i} className={i > 0 ? "pt-4" : ""}>
-                    <h4 className="text-[15px] font-bold text-heading mb-1.5">
-                      {faq.question}
-                    </h4>
-                    <p className="text-[14px] leading-[1.65] text-[#2b2f38]">
-                      {faq.answer}
-                    </p>
-                  </div>
+                  <details
+                    key={`${faq.question}-${i}`}
+                    open={i === 0}
+                    className="group overflow-hidden rounded-fuse-md border border-line/90 bg-white/90 shadow-[0_5px_20px_-18px_rgba(35,40,52,.7)] transition hover:border-line-hover open:shadow-[0_12px_30px_-22px_rgba(35,40,52,.65)]"
+                  >
+                    <summary className="flex cursor-pointer list-none items-center gap-3 px-4 py-4 text-left [&::-webkit-details-marker]:hidden md:px-5">
+                      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-bg text-[11px] font-bold text-heading transition-colors group-open:bg-heading group-open:text-white">
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                      <span className="flex-1 text-[14px] font-bold leading-snug text-heading md:text-[15px]">
+                        {faq.question}
+                      </span>
+                      <ChevronDown className="h-4 w-4 shrink-0 text-muted transition-transform duration-300 group-open:rotate-180" />
+                    </summary>
+                    <div className="border-t border-line/60 px-4 py-4 pl-14 md:px-5 md:pl-[60px]">
+                      <p className="text-[14px] leading-[1.75] text-[#424752]">
+                        {faq.answer}
+                      </p>
+                    </div>
+                  </details>
                 ))}
               </div>
             </section>

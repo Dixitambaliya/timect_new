@@ -177,7 +177,7 @@ function generateEditorialWatchSvg(prompt: string, style: string, width: number,
 
   <!-- Editorial Metadata Label -->
   <g transform="translate(60, ${height - 50})">
-    <text x="0" y="0" font-family="'Cinzel', serif" font-size="11" font-weight="600" letter-spacing="3" fill="${accentGold}">TIMECT JOURNAL</text>
+    <text x="0" y="0" font-family="'Cinzel', serif" font-size="11" font-weight="600" letter-spacing="3" fill="${accentGold}">TIMECT BLOGS</text>
     <text x="0" y="20" font-family="sans-serif" font-size="13" font-weight="500" letter-spacing="0.5" fill="${textColor}">${safeTitle}</text>
   </g>
 </svg>`;

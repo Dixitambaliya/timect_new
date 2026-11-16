@@ -2,6 +2,8 @@ import type { MetadataRoute } from "next";
 import { sql } from "@/db/neon";
 import { absoluteUrl } from "@/lib/seo/site-config";
 import { isValidPublicSlug } from "@/lib/seo/seo-validation";
+import { getCatalogFilters } from "@/db/content";
+import { FIXED_CATALOG_LANDINGS } from "@/lib/seo/catalog-pages";
 
 const staticRoutes: MetadataRoute.Sitemap = [
   { url: absoluteUrl("/"), changeFrequency: "weekly", priority: 1 },
@@ -17,6 +19,16 @@ const staticRoutes: MetadataRoute.Sitemap = [
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
+    const filters = await getCatalogFilters();
+    const catalogLandingSlugs = [
+      ...Object.keys(FIXED_CATALOG_LANDINGS),
+      ...Object.keys(filters).filter((slug) => !["him", "her"].includes(slug)),
+    ];
+    const catalogLandings: MetadataRoute.Sitemap = Array.from(new Set(catalogLandingSlugs)).map((slug) => ({
+      url: absoluteUrl(`/watches/${slug}`),
+      changeFrequency: "weekly",
+      priority: 0.8,
+    }));
     const rows = await sql`SELECT slug, image FROM products WHERE status = 'published' AND slug IS NOT NULL ORDER BY id ASC`;
     const seen = new Set<string>();
     const products: MetadataRoute.Sitemap = [];
@@ -52,7 +64,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     }));
 
-    return [...staticRoutes, ...products, ...blogPosts, ...blogCategories];
+    return [...staticRoutes, ...catalogLandings, ...products, ...blogPosts, ...blogCategories];
   } catch (error) {
     console.error("Unable to build product sitemap:", error);
     return staticRoutes;

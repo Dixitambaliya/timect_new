@@ -1,4 +1,4 @@
-const FALLBACK_SITE_URL = "https://timect.com";
+const FALLBACK_SITE_URL = "https://www.timectwatches.com";
 
 function normalizeSiteUrl(value?: string): string {
   const candidate = value?.trim();
@@ -12,12 +12,14 @@ function normalizeSiteUrl(value?: string): string {
 }
 
 export const SITE_CONFIG = {
-  name: "TIMECT",
-  legalName: "TIMECT",
+  name: "Timect Watches",
+  shortName: "Timect",
+  legalName: "Timect Watches",
+  alternateNames: ["TIMECT", "Timect Watch", "Timect Watches India"],
   url: normalizeSiteUrl(process.env.NEXT_PUBLIC_SITE_URL),
-  title: "TIMECT | Precision Watches & Refined Timepieces",
+  title: "Timect Watches | Official Website",
   description:
-    "Discover TIMECT watches, thoughtfully designed timepieces with distinctive collections and detailed watch specifications.",
+    "Discover Timect Watches on the official website. Explore men's and women's wristwatches, chronographs, quartz timepieces, new arrivals, and corporate watch gifts.",
   locale: "en_IN",
   language: "en",
   currency: "INR",
@@ -32,5 +34,6 @@ export function absoluteUrl(path = "/"): string {
 
 export const SEO_IDS = {
   organization: absoluteUrl("/#organization"),
+  brand: absoluteUrl("/#brand"),
   website: absoluteUrl("/#website"),
 } as const;

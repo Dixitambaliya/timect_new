@@ -8,14 +8,20 @@ type PageMetadataInput = {
   path: string;
   image?: string;
   noIndex?: boolean;
+  keywords?: string[];
 };
 
-export function createPageMetadata({ title, description, path, image, noIndex }: PageMetadataInput): Metadata {
+export function createPageMetadata({ title, description, path, image, noIndex, keywords }: PageMetadataInput): Metadata {
   const canonical = canonicalUrl(path);
   const socialImage = absoluteUrl(image || SITE_CONFIG.logo);
+  const fullTitle = /timect/i.test(title) ? title : `${title} | ${SITE_CONFIG.name}`;
   return {
-    title,
+    title: { absolute: fullTitle },
     description,
+    ...(keywords?.length ? { keywords } : {}),
+    category: "Watches",
+    creator: SITE_CONFIG.name,
+    publisher: SITE_CONFIG.name,
     alternates: { canonical },
     robots: noIndex ? { index: false, follow: true } : { index: true, follow: true },
     openGraph: {
@@ -23,13 +29,13 @@ export function createPageMetadata({ title, description, path, image, noIndex }:
       siteName: SITE_CONFIG.name,
       locale: SITE_CONFIG.locale,
       url: canonical,
-      title,
+      title: fullTitle,
       description,
       images: [{ url: socialImage, alt: `${SITE_CONFIG.name} watches` }],
     },
     twitter: {
       card: "summary_large_image",
-      title,
+      title: fullTitle,
       description,
       images: [socialImage],
     },

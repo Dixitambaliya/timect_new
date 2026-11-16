@@ -53,7 +53,7 @@ export default function LiveVisitorWidget() {
             </div>
             <p className="text-xs text-[var(--admin-muted)] mt-0.5">
               {stats.authenticated} authenticated • {stats.anonymous} anonymous •{" "}
-              {stats.viewingProduct} viewing watches • {stats.viewingBlog} on journal
+              {stats.viewingProduct} viewing watches • {stats.viewingBlog} on blogs
             </p>
           </div>
         </div>

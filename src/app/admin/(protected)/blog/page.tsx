@@ -86,7 +86,7 @@ export default function AdminBlogPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-[var(--admin-heading)]">
-            Journal Articles
+            Blog Articles
           </h1>
           <p className="mt-1 text-sm text-[var(--admin-muted)]">
             Manage luxury watch editorial articles, specifications, and SEO metadata.
@@ -100,7 +100,7 @@ export default function AdminBlogPage() {
             className="admin-btn admin-btn-secondary"
           >
             <ExternalLink className="h-4 w-4" />
-            Live Journal
+            Live Blogs
           </Link>
           <Link
             href="/admin/blog/new"

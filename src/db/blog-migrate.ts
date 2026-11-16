@@ -1,5 +1,5 @@
 /**
- * Database migration for the Watch Journal / Blog CMS
+ * Database migration for the Timect Blogs CMS
  * Tables:
  * - blog_authors
  * - blog_categories
@@ -47,7 +47,7 @@ if (!dbUrl) {
 const sql = neon(dbUrl);
 
 export async function migrateBlogSchema() {
-  console.log("Starting Watch Journal Blog CMS schema migration...");
+  console.log("Starting Timect Blogs CMS schema migration...");
 
   // 1. Authors
   await sql`
@@ -225,7 +225,7 @@ export async function migrateBlogSchema() {
   await sql`CREATE INDEX IF NOT EXISTS idx_blog_posts_published ON blog_posts(published_at DESC);`;
   await sql`CREATE INDEX IF NOT EXISTS idx_blog_images_type ON blog_images(image_type);`;
 
-  console.log("\nWatch Journal Database Migration successfully completed!");
+  console.log("\nTimect Blogs database migration successfully completed!");
 }
 
 if (require.main === module) {

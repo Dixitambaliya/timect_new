@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { neon } from "@neondatabase/serverless";
+import { buildSeedFaqs } from "./blog-faq-utils";
 
 // Load env
 for (const envFile of [".env.local", ".env"]) {
@@ -95,14 +96,14 @@ function generateWatchEditorialSvg(title: string, isDark = false, accent = "#D4A
     <rect x="185" y="-18" width="14" height="36" rx="3" fill="url(#gold)" />
   </g>
   <g transform="translate(60, 750)">
-    <text x="0" y="0" font-family="'Cinzel', serif" font-size="11" font-weight="600" letter-spacing="3" fill="${accent}">TIMECT JOURNAL</text>
+    <text x="0" y="0" font-family="'Cinzel', serif" font-size="11" font-weight="600" letter-spacing="3" fill="${accent}">TIMECT BLOGS</text>
     <text x="0" y="20" font-family="sans-serif" font-size="13" font-weight="500" letter-spacing="0.5" fill="${textColor}">${cleanTitle}</text>
   </g>
 </svg>`;
 }
 
 export async function seedBlogDatabase() {
-  console.log("Seeding Watch Journal database with 30 authoritative articles...");
+  console.log("Seeding Timect Blogs database with 30 authoritative articles...");
 
   // 1. Authors
   const authorsData = [
@@ -876,7 +877,7 @@ export async function seedBlogDatabase() {
         aeo_score
       ) VALUES (
         ${postId},
-        ${art.title.slice(0, 55) + " | Timect Journal"},
+        ${art.title.slice(0, 55) + " | Timect Blogs"},
         ${art.excerpt.slice(0, 155)},
         ${art.focusKeyword},
         ${["luxury watches", "horology", "automatic watches"]},
@@ -898,11 +899,15 @@ export async function seedBlogDatabase() {
     `;
 
     // 4. Insert FAQs
+    const faqFeed = buildSeedFaqs(art.faqs, {
+      focusKeyword: art.focusKeyword,
+      directAnswer: art.directAnswer,
+    });
     await sql`DELETE FROM blog_post_faqs WHERE blog_post_id = ${postId}`;
-    for (let i = 0; i < art.faqs.length; i++) {
+    for (let i = 0; i < faqFeed.length; i++) {
       await sql`
         INSERT INTO blog_post_faqs (blog_post_id, question, answer, sort_order)
-        VALUES (${postId}, ${art.faqs[i].question}, ${art.faqs[i].answer}, ${i})
+        VALUES (${postId}, ${faqFeed[i].question}, ${faqFeed[i].answer}, ${i})
       `;
     }
 
