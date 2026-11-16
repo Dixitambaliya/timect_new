@@ -31,6 +31,15 @@ export type PromoBanner = {
   buttonLabel: string;
 };
 
+export type WhatsAppButtonSettings = {
+  enabled: boolean;
+  buttonText: string;
+  phoneNumber: string;
+  messageTemplate: string;
+  corporateMessage: string;
+  conciergeMessage: string;
+};
+
 export type StorefrontSettings = {
   announcement: string[];
   heroSlides: HeroSlide[];
@@ -44,6 +53,7 @@ export type StorefrontSettings = {
     hours: string;
     whatsapp: string;
   };
+  whatsappButton?: WhatsAppButtonSettings;
   social: { instagram: string; facebook: string; youtube: string };
 };
 
@@ -142,6 +152,14 @@ export const DEFAULT_STOREFRONT: StorefrontSettings = {
     hours: "Monday – Saturday, 10 am – 7 pm IST",
     whatsapp: "",
   },
+  whatsappButton: {
+    enabled: true,
+    buttonText: "Ask on WhatsApp",
+    phoneNumber: "",
+    messageTemplate: "Hi Timect, I would like to enquire about {name} ({price}). {url}\n{image}",
+    corporateMessage: "Hi Timect, I'd like help with a corporate gifting order.",
+    conciergeMessage: "Hi Timect, I have a question about your watches.",
+  },
   social: {
     instagram: "https://instagram.com",
     facebook: "https://facebook.com",
@@ -157,6 +175,8 @@ export function mergeStorefront(
 ): StorefrontSettings {
   const d = DEFAULT_STOREFRONT;
   if (!stored || typeof stored !== "object") return d;
+  const storedWp = stored.whatsappButton;
+  const dWp = d.whatsappButton!;
   return {
     announcement: Array.isArray(stored.announcement)
       ? stored.announcement.filter(Boolean)
@@ -169,6 +189,43 @@ export function mergeStorefront(
     statement: { ...d.statement, ...(stored.statement || {}) },
     quote: { ...d.quote, ...(stored.quote || {}) },
     contact: { ...d.contact, ...(stored.contact || {}) },
+    whatsappButton: {
+      enabled: storedWp?.enabled !== undefined ? Boolean(storedWp.enabled) : dWp.enabled,
+      buttonText: storedWp?.buttonText?.trim() || dWp.buttonText,
+      phoneNumber: (storedWp?.phoneNumber || stored.contact?.whatsapp || dWp.phoneNumber).replace(/[^\d+]/g, ""),
+      messageTemplate: storedWp?.messageTemplate?.trim() || dWp.messageTemplate,
+      corporateMessage: storedWp?.corporateMessage?.trim() || dWp.corporateMessage,
+      conciergeMessage: storedWp?.conciergeMessage?.trim() || dWp.conciergeMessage,
+    },
     social: { ...d.social, ...(stored.social || {}) },
   };
+}
+
+/** Build a WhatsApp deep link with optional variable replacement. */
+export function buildWhatsAppLink(
+  number: string,
+  message: string,
+  variables?: { name?: string; price?: string; code?: string; url?: string; image?: string },
+): string {
+  const cleanNumber = (number || "").replace(/[^\d]/g, "");
+  let text = message || "";
+  if (variables) {
+    if (variables.name) {
+      text = text.replace(/\{name\}/g, variables.name).replace(/\{product\}/g, variables.name);
+    }
+    if (variables.price) {
+      text = text.replace(/\{price\}/g, variables.price);
+    }
+    if (variables.code) {
+      text = text.replace(/\{code\}/g, variables.code);
+    }
+    if (variables.url) {
+      text = text.replace(/\{url\}/g, variables.url);
+    }
+    if (variables.image) {
+      text = text.replace(/\{image\}/g, variables.image);
+    }
+  }
+  if (!cleanNumber) return `https://wa.me/?text=${encodeURIComponent(text)}`;
+  return `https://wa.me/${cleanNumber}?text=${encodeURIComponent(text)}`;
 }

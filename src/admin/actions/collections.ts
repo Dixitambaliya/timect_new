@@ -77,6 +77,23 @@ export async function adminListCollections(): Promise<CollectionSummary[]> {
   }
 }
 
+/** Distinct product.tag values */
+export async function adminListTags(): Promise<string[]> {
+  await requireAdminSession();
+  try {
+    const rows = await sql`
+      SELECT DISTINCT TRIM(tag) AS tag
+      FROM products
+      WHERE tag IS NOT NULL AND TRIM(tag) <> ''
+      ORDER BY tag ASC
+    `;
+    return rows.map((r) => String((r as { tag: string }).tag)).filter(Boolean);
+  } catch (err) {
+    console.error("adminListTags:", err);
+    return [];
+  }
+}
+
 export async function adminRenameCollection(
   from: string,
   to: string,

@@ -80,7 +80,11 @@ function GiftCard({ item, onOpen, index }: { item: GiftSample; onOpen: () => voi
 }
 
 export default function CorporateGifting({ items }: { items: GiftSample[] }) {
-  const { whatsappNumber } = useSite();
+  const { storefront, whatsappNumber } = useSite();
+  const wpSettings = storefront.whatsappButton;
+  const activeWpNumber = wpSettings?.phoneNumber || whatsappNumber;
+  const wpButtonText = wpSettings?.buttonText || "Ask on WhatsApp";
+  const wpEnabled = wpSettings?.enabled !== false;
   const [colour, setColour] = useState("all");
   const [list, setList] = useState(items);
   const [loading, setLoading] = useState(false);
@@ -185,7 +189,7 @@ export default function CorporateGifting({ items }: { items: GiftSample[] }) {
           <ButtonPrimary href={enquiryHref()} bg="#f0f2f4">
             Start a gifting enquiry
           </ButtonPrimary>
-          <ButtonOutline href={whatsappLink(whatsappNumber, "Hi Timect, I'd like help with a corporate gifting order.")} external>
+          <ButtonOutline href={whatsappLink(activeWpNumber, wpSettings?.corporateMessage || "Hi Timect, I'd like help with a corporate gifting order.")} external>
             Chat on WhatsApp
           </ButtonOutline>
         </div>
@@ -228,14 +232,16 @@ export default function CorporateGifting({ items }: { items: GiftSample[] }) {
                 </div>
               )}
               <div className="flex flex-col gap-2 rounded-fuse bg-white p-3 md:p-4">
-                <a
-                  href={whatsappLink(whatsappNumber, `Hi, I'm interested in ${selected.name} (${selected.price}) for corporate gifting.`)}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex items-center justify-center gap-2.5 rounded-fuse bg-whatsapp px-6 py-[17px] font-semibold text-white transition-[filter] duration-400 hover:brightness-95"
-                >
-                  <WhatsApp /> Ask on WhatsApp
-                </a>
+                {wpEnabled && (
+                  <a
+                    href={whatsappLink(activeWpNumber, `Hi, I'm interested in ${selected.name} (${selected.price}) for corporate gifting.`)}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center justify-center gap-2.5 rounded-fuse bg-whatsapp px-6 py-[17px] font-semibold text-white transition-[filter] duration-400 hover:brightness-95"
+                  >
+                    <WhatsApp /> {wpButtonText}
+                  </a>
+                )}
                 <a
                   href={enquiryHref(selected.name)}
                   className="flex items-center justify-center gap-2.5 rounded-fuse border border-line bg-btn px-6 py-[17px] font-semibold transition-colors duration-400 hover:border-line-hover hover:bg-white"

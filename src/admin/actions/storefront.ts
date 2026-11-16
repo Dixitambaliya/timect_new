@@ -5,9 +5,11 @@ import { sql } from "@/db/neon";
 import { canWrite } from "@/admin/lib/constants";
 import { requireAdminSession } from "@/admin/lib/session";
 import {
+  DEFAULT_STOREFRONT,
   mergeStorefront,
   STOREFRONT_SETTING_KEY,
   type StorefrontSettings,
+  type WhatsAppButtonSettings,
 } from "@/data/storefront";
 
 export async function adminGetStorefront(): Promise<StorefrontSettings> {
@@ -73,6 +75,14 @@ export async function adminSaveStorefront(
         hours: clean(input.contact?.hours, 120),
         whatsapp: clean(input.contact?.whatsapp, 30).replace(/[^\d+]/g, ""),
       },
+      whatsappButton: {
+        enabled: input.whatsappButton?.enabled !== undefined ? Boolean(input.whatsappButton.enabled) : true,
+        buttonText: clean(input.whatsappButton?.buttonText, 80) || "Ask on WhatsApp",
+        phoneNumber: clean(input.whatsappButton?.phoneNumber || input.contact?.whatsapp, 30).replace(/[^\d+]/g, ""),
+        messageTemplate: clean(input.whatsappButton?.messageTemplate, 500) || "Hi Timect, I would like to enquire about {name} ({price}). {url}",
+        corporateMessage: clean(input.whatsappButton?.corporateMessage, 500) || "Hi Timect, I'd like help with a corporate gifting order.",
+        conciergeMessage: clean(input.whatsappButton?.conciergeMessage, 500) || "Hi Timect, I have a question about your watches.",
+      },
       social: {
         instagram: clean(input.social?.instagram, 300),
         facebook: clean(input.social?.facebook, 300),
@@ -98,5 +108,48 @@ export async function adminSaveStorefront(
   } catch (err) {
     console.error("adminSaveStorefront:", err);
     return { ok: false, error: "Save failed. Make sure the admin migration has been run." };
+  }
+}
+
+export async function adminGetWhatsAppSettings(): Promise<WhatsAppButtonSettings> {
+  const sf = await adminGetStorefront();
+  return sf.whatsappButton || DEFAULT_STOREFRONT.whatsappButton!;
+}
+
+export async function adminSaveWhatsAppSettings(
+  input: Partial<WhatsAppButtonSettings>,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  try {
+    const session = await requireAdminSession();
+    if (!canWrite(session.role)) return { ok: false, error: "You don't have permission to edit storefront settings." };
+
+    const sf = await adminGetStorefront();
+    const currentWp = sf.whatsappButton || DEFAULT_STOREFRONT.whatsappButton!;
+
+    const updatedWp: WhatsAppButtonSettings = {
+      enabled: input.enabled !== undefined ? Boolean(input.enabled) : currentWp.enabled,
+      buttonText: clean(input.buttonText, 80) || currentWp.buttonText || "Ask on WhatsApp",
+      phoneNumber: clean(input.phoneNumber !== undefined ? input.phoneNumber : currentWp.phoneNumber, 30).replace(/[^\d+]/g, ""),
+      messageTemplate: clean(input.messageTemplate, 500) || currentWp.messageTemplate,
+      corporateMessage: clean(input.corporateMessage, 500) || currentWp.corporateMessage,
+      conciergeMessage: clean(input.conciergeMessage, 500) || currentWp.conciergeMessage,
+    };
+
+    sf.whatsappButton = updatedWp;
+    if (updatedWp.phoneNumber) {
+      sf.contact.whatsapp = updatedWp.phoneNumber;
+    }
+
+    const res = await adminSaveStorefront(sf);
+    if (res.ok) {
+      revalidatePath("/", "layout");
+      revalidatePath("/watches", "layout");
+      revalidatePath("/product/[slug]", "page");
+      revalidatePath("/corporate-gifting", "page");
+    }
+    return res;
+  } catch (err) {
+    console.error("adminSaveWhatsAppSettings:", err);
+    return { ok: false, error: "Failed to update WhatsApp settings." };
   }
 }

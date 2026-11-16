@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import {
   Check,
@@ -24,6 +24,32 @@ import SpecificationBuilder from "./SpecificationBuilder";
 import ProductPreview from "./ProductPreview";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectOption } from "@/components/ui/select";
+import DropdownWithAdd from "./DropdownWithAdd";
+import { adminListCollections, adminListTags } from "@/admin/actions/collections";
+
+const DEFAULT_COLLECTIONS = [
+  "Anniversary",
+  "Classic",
+  "Conquest",
+  "Corporate",
+  "Dress",
+  "Heritage",
+  "HydroConquest",
+  "Master",
+  "Sport",
+];
+
+const DEFAULT_TAGS = [
+  "NEW",
+  "Quartz",
+  "Automatic",
+  "Mechanical",
+  "Chronograph",
+  "Best Seller",
+  "Limited Edition",
+  "Exclusive",
+  "Sale",
+];
 
 const STEPS = [
   { id: 1, label: "Basic" },
@@ -49,6 +75,32 @@ export default function ProductForm({
   const [step, setStep] = useState(1);
   const [data, setData] = useState<ProductInput>(initial);
   const [pending, startTransition] = useTransition();
+
+  const [collectionOptions, setCollectionOptions] = useState<string[]>(() =>
+    Array.from(new Set([...DEFAULT_COLLECTIONS, ...(initial.collection ? [initial.collection] : [])]))
+  );
+  const [tagOptions, setTagOptions] = useState<string[]>(() =>
+    Array.from(new Set([...DEFAULT_TAGS, ...(initial.tag ? [initial.tag] : [])]))
+  );
+
+  useEffect(() => {
+    let cancelled = false;
+    Promise.all([adminListCollections(), adminListTags()])
+      .then(([cols, tags]) => {
+        if (cancelled) return;
+        if (cols.length) {
+          const names = cols.map((c) => c.name).filter(Boolean);
+          setCollectionOptions((prev) => Array.from(new Set([...prev, ...names])));
+        }
+        if (tags.length) {
+          setTagOptions((prev) => Array.from(new Set([...prev, ...tags])));
+        }
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const patch = (p: Partial<ProductInput>) =>
     setData((prev) => ({ ...prev, ...p }));
@@ -133,24 +185,24 @@ export default function ProductForm({
                 <button
                   type="button"
                   onClick={() => setStep(s.id)}
-                  className={`flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium transition ${
+                  className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition ${
                     active
-                      ? "bg-[var(--admin-accent)] text-[#15171c]"
+                      ? "border-[var(--admin-accent-border)] bg-[var(--admin-accent-soft)] text-[var(--admin-heading)] font-semibold shadow-xs"
                       : done
-                        ? "bg-[var(--admin-accent-soft)] text-[var(--admin-ink)]"
-                        : "text-[var(--admin-muted)] hover:bg-[var(--admin-bg)]"
+                        ? "border-[var(--admin-line)] bg-[var(--admin-surface)] text-[var(--admin-ink)]"
+                        : "border-transparent text-[var(--admin-muted)] hover:bg-[var(--admin-bg)]"
                   }`}
                 >
                   <span
-                    className={`flex h-5 w-5 items-center justify-center rounded-full text-[10px] ${
+                    className={`flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold ${
                       active
-                        ? "bg-white/20"
+                        ? "bg-[var(--admin-accent)] text-white"
                         : done
-                          ? "bg-[var(--admin-accent)] text-white"
-                          : "bg-[var(--admin-line)]"
+                          ? "bg-emerald-600 text-white"
+                          : "bg-[var(--admin-line)] text-[var(--admin-muted)]"
                     }`}
                   >
-                    {done ? <Check className="h-3 w-3" /> : s.id}
+                    {done ? <Check className="h-3 w-3 stroke-[2.5]" /> : s.id}
                   </span>
                   {s.label}
                 </button>
@@ -217,15 +269,16 @@ export default function ProductForm({
               />
             </div>
             <div>
-              <label className="admin-label" htmlFor="collection">
-                Collection
-              </label>
-              <input
+              <DropdownWithAdd
                 id="collection"
-                className="admin-input"
+                label="Collection"
                 value={data.collection || ""}
-                onChange={(e) => patch({ collection: e.target.value })}
-                placeholder="HYDROCONQUEST"
+                options={collectionOptions}
+                onChange={(collection) => patch({ collection })}
+                onAddOption={(newCol) =>
+                  setCollectionOptions((prev) => Array.from(new Set([...prev, newCol])))
+                }
+                placeholder="-- Select collection --"
               />
             </div>
             <div>
@@ -240,15 +293,16 @@ export default function ProductForm({
               />
             </div>
             <div>
-              <label className="admin-label" htmlFor="tag">
-                Tag
-              </label>
-              <input
+              <DropdownWithAdd
                 id="tag"
-                className="admin-input"
+                label="Tag"
                 value={data.tag || ""}
-                onChange={(e) => patch({ tag: e.target.value })}
-                placeholder="NEW"
+                options={tagOptions}
+                onChange={(tag) => patch({ tag })}
+                onAddOption={(newTag) =>
+                  setTagOptions((prev) => Array.from(new Set([...prev, newTag])))
+                }
+                placeholder="-- Select tag --"
               />
             </div>
             <div>

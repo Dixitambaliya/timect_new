@@ -15,7 +15,11 @@ import { useSite, whatsappLink } from "./SiteProvider";
 const cache = new Map<string, Product | null>();
 
 export default function QuickView() {
-  const { quickView, closeQuickView, whatsappNumber } = useSite();
+  const { quickView, closeQuickView, storefront, whatsappNumber } = useSite();
+  const wpSettings = storefront.whatsappButton;
+  const activeWpNumber = wpSettings?.phoneNumber || whatsappNumber;
+  const wpButtonText = wpSettings?.buttonText || "Ask on WhatsApp";
+  const wpEnabled = wpSettings?.enabled !== false;
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(false);
   const [image, setImage] = useState(0);
@@ -127,17 +131,34 @@ export default function QuickView() {
             )}
 
             <div className="flex flex-col gap-2 rounded-fuse bg-white p-3 md:p-4">
-              <a
-                href={whatsappLink(
-                  whatsappNumber,
-                  `Hi, I need help with ${name}${size ? ` (${size})` : ""} -${displayPrice(product.price)}\n${typeof window !== "undefined" ? window.location.origin : ""}/product/${product.slug}`,
-                )}
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center justify-center gap-2.5 rounded-fuse bg-whatsapp px-6 py-[17px] font-semibold text-white transition-[filter] duration-400 hover:brightness-95"
-              >
-                <WhatsApp /> Ask on WhatsApp
-              </a>
+              {wpEnabled && (
+                <a
+                  href={whatsappLink(
+                    activeWpNumber,
+                    (() => {
+                      const primaryImage = product.image || product.images?.[0] || "";
+                      const productUrl = typeof window !== "undefined" ? `${window.location.origin}/product/${product.slug}` : `/product/${product.slug}`;
+                      const baseMsg = wpSettings?.messageTemplate
+                        ? wpSettings.messageTemplate
+                            .replace(/\{name\}/g, name)
+                            .replace(/\{product\}/g, name)
+                            .replace(/\{price\}/g, displayPrice(product.price))
+                            .replace(/\{code\}/g, product.code || "")
+                            .replace(/\{url\}/g, productUrl)
+                            .replace(/\{image\}/g, primaryImage)
+                        : `Hi, I need help with ${name}${size ? ` (${size})` : ""} -${displayPrice(product.price)}\n${productUrl}`;
+                      return primaryImage && !baseMsg.includes(primaryImage)
+                        ? `${baseMsg}\nImage: ${primaryImage}`
+                        : baseMsg;
+                    })(),
+                  )}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center justify-center gap-2.5 rounded-fuse bg-whatsapp px-6 py-[17px] font-semibold text-white transition-[filter] duration-400 hover:brightness-95"
+                >
+                  <WhatsApp /> {wpButtonText}
+                </a>
+              )}
               <ButtonPrimary href={`/product/${product.slug}`} className="w-full" bg="#f0f2f4" onClick={closeQuickView}>
                 View full details
               </ButtonPrimary>

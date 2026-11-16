@@ -15,11 +15,31 @@ import {
   Users,
   BookOpen,
   Activity,
+  MessageCircle,
+  ChevronDown,
   X,
 } from "lucide-react";
 import { TIMECT_LOGO } from "@/data/storefront";
 
-const GROUPS = [
+type SubItem = {
+  href: string;
+  label: string;
+};
+
+type Item = {
+  href: string;
+  label: string;
+  icon: any;
+  badge?: "inbox";
+  children?: SubItem[];
+};
+
+type Group = {
+  title: string;
+  items: Item[];
+};
+
+const GROUPS: Group[] = [
   {
     title: "Catalog",
     items: [
@@ -40,7 +60,15 @@ const GROUPS = [
     title: "Storefront",
     items: [
       { href: "/admin/live-visitors", label: "Live Visitors", icon: Activity },
-      { href: "/admin/storefront", label: "Homepage & content", icon: Palette },
+      {
+        href: "/admin/storefront",
+        label: "Homepage & content",
+        icon: Palette,
+        children: [
+          { href: "/admin/storefront", label: "Homepage sections" },
+          { href: "/admin/whatsapp", label: "WhatsApp Button" },
+        ],
+      },
       { href: "/admin/inbox", label: "Inbox", icon: Inbox, badge: "inbox" as const },
     ],
   },
@@ -107,20 +135,24 @@ export default function Sidebar({
               </p>
               <ul className="space-y-1">
                 {group.items.map((item) => {
-                  const active =
+                  const isChildActive = item.children?.some((c) => pathname === c.href);
+                  const isParentActive =
                     pathname === item.href ||
-                    (item.href !== "/admin/dashboard" && pathname.startsWith(item.href));
+                    (!item.children && item.href !== "/admin/dashboard" && pathname.startsWith(item.href));
+                  const active = isParentActive || isChildActive;
                   const Icon = item.icon;
                   const count = "badge" in item && item.badge === "inbox" ? unread : 0;
                   return (
-                    <li key={item.href}>
+                    <li key={item.href} className="space-y-1">
                       <Link
                         href={item.href}
                         onClick={onClose}
                         className={`group flex items-center gap-3 rounded-fuse-md border px-3 py-2.5 text-[15px] font-semibold transition-colors duration-400 ${
-                          active
+                          isParentActive && !isChildActive
                             ? "border-[var(--admin-accent-border)] bg-[var(--admin-accent-soft)] text-[var(--admin-heading)]"
-                            : "border-transparent text-[var(--admin-muted)] hover:bg-[var(--admin-surface)] hover:text-[var(--admin-ink)]"
+                            : active
+                              ? "border-transparent text-[var(--admin-heading)] font-bold"
+                              : "border-transparent text-[var(--admin-muted)] hover:bg-[var(--admin-surface)] hover:text-[var(--admin-ink)]"
                         }`}
                       >
                         <Icon className="h-[18px] w-[18px] shrink-0" strokeWidth={1.6} />
@@ -131,6 +163,33 @@ export default function Sidebar({
                           </span>
                         )}
                       </Link>
+                      {item.children && (
+                        <ul className="ms-4 space-y-0.5 border-s border-[var(--admin-line)] ps-3 pt-0.5 pb-1">
+                          {item.children.map((child) => {
+                            const childActive = pathname === child.href;
+                            return (
+                              <li key={child.href}>
+                                <Link
+                                  href={child.href}
+                                  onClick={onClose}
+                                  className={`flex items-center gap-2 rounded-fuse-sm px-2.5 py-1.5 text-[13px] font-medium transition ${
+                                    childActive
+                                      ? "bg-[var(--admin-accent-soft)] font-semibold text-[var(--admin-heading)]"
+                                      : "text-[var(--admin-muted)] hover:bg-[var(--admin-surface)] hover:text-[var(--admin-ink)]"
+                                  }`}
+                                >
+                                  <span
+                                    className={`h-1.5 w-1.5 rounded-full ${
+                                      childActive ? "bg-[var(--admin-accent)]" : "bg-[var(--admin-line-strong)]"
+                                    }`}
+                                  />
+                                  <span>{child.label}</span>
+                                </Link>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      )}
                     </li>
                   );
                 })}

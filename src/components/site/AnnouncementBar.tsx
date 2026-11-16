@@ -71,7 +71,10 @@ export default function AnnouncementBar() {
 
         <div className="hidden items-center justify-end lg:flex">
           <a
-            href={whatsappLink(whatsappNumber, "Hi Timect, I have a question about your watches.")}
+            href={whatsappLink(
+              storefront.whatsappButton?.phoneNumber || whatsappNumber,
+              storefront.whatsappButton?.conciergeMessage || "Hi Timect, I have a question about your watches.",
+            )}
             target="_blank"
             rel="noreferrer"
             className="link-hover flex items-center gap-2"

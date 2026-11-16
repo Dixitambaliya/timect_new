@@ -187,10 +187,10 @@ export default async function BlogPostDetailPage({ params }: BlogPostPageProps) 
             <span>
               {post.published_at
                 ? new Date(post.published_at).toLocaleDateString("en-US", {
-                    month: "long",
-                    day: "numeric",
-                    year: "numeric",
-                  })
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                })
                 : ""}
             </span>
           </div>

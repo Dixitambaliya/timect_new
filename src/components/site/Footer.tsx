@@ -128,7 +128,15 @@ export default function Footer() {
             )}
             <li className="flex items-start gap-3">
               <WhatsApp className="h-6 w-6 shrink-0 text-whatsapp" />
-              <a href={whatsappLink(whatsappNumber, "Hi Timect, I have a question.")} target="_blank" rel="noreferrer" className="link-hover">
+              <a
+                href={whatsappLink(
+                  storefront.whatsappButton?.phoneNumber || whatsappNumber,
+                  storefront.whatsappButton?.conciergeMessage || "Hi Timect, I have a question.",
+                )}
+                target="_blank"
+                rel="noreferrer"
+                className="link-hover"
+              >
                 WhatsApp concierge
               </a>
             </li>
