@@ -6,6 +6,7 @@ import type { HeroSlide } from "@/data/storefront";
 import { cx } from "@/lib/cx";
 import { catalogThumbUrl } from "@/lib/catalog-image";
 import { ArrowLeft, ArrowRight } from "@/components/fuse/icons";
+import { canonicalCatalogHref } from "@/components/site/navigation";
 
 const AUTOPLAY = 5500;
 
@@ -126,7 +127,7 @@ export default function HomeHero({ slides }: { slides: HeroSlide[] }) {
                   </p>
                   <div className="mt-5 flex flex-col items-start gap-4 sm:flex-row sm:flex-wrap sm:items-center md:mt-7 lg:mt-8">
                     <Link
-                      href={slide.href}
+                      href={canonicalCatalogHref(slide.href)}
                       tabIndex={active ? 0 : -1}
                       className="group inline-flex w-full max-w-[280px] items-center justify-between gap-8 rounded-full bg-[#102852] px-6 py-3.5 text-[14px] font-semibold text-white shadow-[0_12px_28px_rgba(16,40,82,.16)] transition-transform duration-300 hover:-translate-y-0.5 sm:w-auto sm:justify-start md:px-7 md:py-4 md:text-[15px]"
                     >

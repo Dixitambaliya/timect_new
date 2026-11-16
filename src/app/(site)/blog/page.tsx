@@ -5,18 +5,20 @@ import {
   getBlogCategories,
 } from "@/db/blog-actions";
 import { createPageMetadata } from "@/lib/seo/metadata";
+import { absoluteUrl } from "@/lib/seo/site-config";
 import { JsonLd } from "@/lib/seo/structured-data";
 import { Breadcrumbs } from "@/components/fuse/buttons";
 import { Clock, ArrowRight } from "lucide-react";
 
 export const metadata: Metadata = {
   ...createPageMetadata({
-    title: "Journal | TIMECT Watches & Editorial",
+    title: "Watch Guides & Journal | Timect Watches",
     description:
       "Explore TIMECT watch guides, automatic movements, hands-on reviews, and horological education.",
     path: "/blog",
+    keywords: ["watch guides", "watch buying guide", "watch care guide", "automatic vs quartz", "Timect Watches journal"],
   }),
-  title: { absolute: "Journal | TIMECT Watches & Editorial" },
+  title: { absolute: "Watch Guides & Journal | Timect Watches" },
 };
 
 export default async function BlogHomePage() {
@@ -36,15 +38,15 @@ export default async function BlogHomePage() {
         data={{
           "@context": "https://schema.org",
           "@type": "Blog",
-          name: "TIMECT Journal",
+          name: "Timect Watches Journal",
           description: "Authoritative luxury watch editorial, buying guides, and horological education.",
-          url: "https://timect-mu.vercel.app/blog",
+          url: absoluteUrl("/blog"),
           publisher: {
             "@type": "Organization",
-            name: "TIMECT",
+            name: "Timect Watches",
             logo: {
               "@type": "ImageObject",
-              url: "https://timect-mu.vercel.app/favicon.ico",
+              url: absoluteUrl("/favicon.ico"),
             },
           },
         }}

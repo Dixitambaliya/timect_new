@@ -10,15 +10,16 @@ import {
 } from "@/components/home/HomeSections";
 import { toCard } from "@/lib/product-view";
 import { createPageMetadata } from "@/lib/seo/metadata";
-import { JsonLd, webPageSchema } from "@/lib/seo/structured-data";
+import { JsonLd, breadcrumbSchema, webPageSchema } from "@/lib/seo/structured-data";
 
 export const metadata: Metadata = {
   ...createPageMetadata({
-  title: "TIMECT | Precision Watches & Refined Timepieces",
-  description: "Explore TIMECT watch collections, new arrivals, detailed specifications, and timepieces for everyday wear and gifting.",
+  title: "Timect Watches | Official Website",
+  description: "Visit the official Timect Watches website for men's and women's wristwatches, quartz watches, chronographs, new arrivals, and corporate watch gifts.",
   path: "/",
+  keywords: ["Timect Watches", "Timect Watch", "Timect", "Timect Watches official website", "wrist watches in India"],
   }),
-  title: { absolute: "TIMECT | Precision Watches & Refined Timepieces" },
+  title: { absolute: "Timect Watches | Official Website" },
 };
 
 export default async function HomePage() {
@@ -36,14 +37,15 @@ export default async function HomePage() {
 
   return (
     <>
-      <JsonLd data={webPageSchema({ name: "TIMECT | Precision Watches & Refined Timepieces", description: "Explore TIMECT watch collections, new arrivals, detailed specifications, and timepieces for everyday wear and gifting.", path: "/" })} />
+      <JsonLd data={webPageSchema({ name: "Timect Watches | Official Website", description: "The official Timect Watches website for wristwatch collections, specifications, new arrivals, and corporate gifting.", path: "/" })} />
+      <JsonLd data={breadcrumbSchema([{ name: "Timect Watches", path: "/" }])} />
       <HomeHero slides={storefront.heroSlides} />
       <HomeStatement heading={storefront.statement.heading} text={storefront.statement.text} categories={categories} />
       <ProductTabs
         heading="New this season"
         tabs={[
-          { id: "new", label: "New arrivals", href: "/watches?category=new", products: arrivals.map(toCard) },
-          { id: "recommended", label: "Recommended", href: "/watches?category=recommended", products: recommended.map(toCard) },
+          { id: "new", label: "New arrivals", href: "/watches/new-arrivals", products: arrivals.map(toCard) },
+          { id: "recommended", label: "Recommended", href: "/watches/recommended-watches", products: recommended.map(toCard) },
         ]}
       />
       <CategoryCarousel categories={categories} />

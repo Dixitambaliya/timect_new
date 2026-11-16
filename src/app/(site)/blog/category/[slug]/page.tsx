@@ -7,6 +7,7 @@ import {
 } from "@/db/blog-actions";
 import { createPageMetadata } from "@/lib/seo/metadata";
 import { Breadcrumbs } from "@/components/fuse/buttons";
+import { JsonLd, breadcrumbSchema, webPageSchema } from "@/lib/seo/structured-data";
 
 interface CategoryPageProps {
   params: Promise<{ slug: string }>;
@@ -18,16 +19,17 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
   const current = categories.find((c) => c.slug === slug);
 
   if (!current) {
-    return { title: "Category Not Found | TIMECT Journal" };
+    return { title: "Category Not Found | Timect Watches" };
   }
 
   return {
     ...createPageMetadata({
-      title: `${current.name} | TIMECT Watch Journal`,
-      description: current.description || `Articles, reviews, and guides in ${current.name} from TIMECT Journal.`,
+      title: current.seo_title || `${current.name} Watch Guides | Timect Watches`,
+      description: current.seo_description || current.description || `Read ${current.name} watch guides and practical articles from the Timect Watches Journal.`,
       path: `/blog/category/${slug}`,
+      keywords: [`${current.name} watch guides`, current.name, "Timect Watches Journal", "watch education"],
     }),
-    title: { absolute: `${current.name} | TIMECT Watch Journal` },
+    title: { absolute: current.seo_title || `${current.name} Watch Guides | Timect Watches` },
   };
 }
 
@@ -44,6 +46,8 @@ export default async function BlogCategoryPage({ params }: CategoryPageProps) {
 
   return (
     <div className="container-fuse pb-20 pt-12 md:pt-20">
+      <JsonLd data={webPageSchema({ name: `${currentCategory.name} Watch Guides`, description: currentCategory.seo_description || currentCategory.description || `Watch guides about ${currentCategory.name}.`, path: `/blog/category/${slug}`, type: "CollectionPage" })} />
+      <JsonLd data={breadcrumbSchema([{ name: "Home", path: "/" }, { name: "Journal", path: "/blog" }, { name: currentCategory.name, path: `/blog/category/${slug}` }])} />
       {/* Category Masthead */}
       <div className="px-2">
         <Breadcrumbs items={[["Home", "/"], ["Journal", "/blog"], [currentCategory.name]]} />

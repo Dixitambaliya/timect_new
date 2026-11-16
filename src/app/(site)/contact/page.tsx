@@ -5,11 +5,13 @@ import { Clock, Mail, Phone } from "@/components/fuse/icons";
 import { getStorefront } from "@/db/content";
 import { getProductBySlug } from "@/db/actions";
 import { createPageMetadata } from "@/lib/seo/metadata";
+import { JsonLd, breadcrumbSchema, webPageSchema } from "@/lib/seo/structured-data";
 
 export const metadata: Metadata = createPageMetadata({
-  title: "Contact TIMECT",
-  description: "Contact TIMECT for watch specifications, product enquiries, corporate gifting, and available customer support.",
+  title: "Contact Timect Watches",
+  description: "Contact the official Timect Watches team for product specifications, watch enquiries, corporate gifting, service, warranty, and customer support.",
   path: "/contact",
+  keywords: ["contact Timect Watches", "Timect customer care", "Timect watch service", "Timect watch enquiry"],
 });
 
 export default async function ContactPage({
@@ -26,6 +28,9 @@ export default async function ContactPage({
   const productName = product ? product.title || product.name : "";
 
   return (
+    <>
+      <JsonLd data={webPageSchema({ name: "Contact Timect Watches", description: "Official contact page for Timect Watches product, service, warranty, and corporate gifting enquiries.", path: "/contact", type: "ContactPage" })} />
+      <JsonLd data={breadcrumbSchema([{ name: "Home", path: "/" }, { name: "Contact Timect Watches", path: "/contact" }])} />
     <ContentPage
       title="Contact Us"
       subtitle="Questions about a Timect wristwatch, an order, or after-sales service? We are here to help."
@@ -108,5 +113,6 @@ export default async function ContactPage({
         </div>
       </div>
     </ContentPage>
+    </>
   );
 }

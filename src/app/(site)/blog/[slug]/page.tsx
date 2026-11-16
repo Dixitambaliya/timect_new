@@ -6,9 +6,11 @@ import {
   getRelatedBlogPosts,
 } from "@/db/blog-actions";
 import { createPageMetadata } from "@/lib/seo/metadata";
-import { JsonLd } from "@/lib/seo/structured-data";
+import { absoluteUrl } from "@/lib/seo/site-config";
+import { SITE_CONFIG } from "@/lib/seo/site-config";
+import { JsonLd, type JsonLdValue } from "@/lib/seo/structured-data";
 import { Breadcrumbs } from "@/components/fuse/buttons";
-import { Clock, Calendar, HelpCircle, Sparkles, ArrowRight } from "lucide-react";
+import { Clock, Calendar, HelpCircle, Sparkles } from "lucide-react";
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
@@ -19,22 +21,26 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   const post = await getBlogPostBySlug(slug);
 
   if (!post) {
-    return { title: "Article Not Found | TIMECT Journal" };
+    return { title: "Article Not Found | Timect Watches" };
   }
 
-  const seoTitle = `${post.title} | TIMECT Journal`;
-  const seoDescription = post.excerpt;
+  const seoTitle = post.seo?.meta_title || `${post.title} | Timect Watches`;
+  const seoDescription = post.seo?.meta_description || post.excerpt;
+  const canonical = absoluteUrl(`/blog/${slug}`);
 
   return {
     ...createPageMetadata({
       title: seoTitle,
       description: seoDescription,
       path: `/blog/${slug}`,
+      keywords: [post.seo?.focus_keyword, ...(post.seo?.secondary_keywords || []), "Timect Watches"].filter((value): value is string => Boolean(value)),
     }),
     title: { absolute: seoTitle },
     openGraph: {
       title: post.title,
       description: post.excerpt,
+      url: canonical,
+      siteName: SITE_CONFIG.name,
       images: [
         {
           url: post.featured_image_url || "/api/blog/images/1",
@@ -45,6 +51,8 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       ],
       type: "article",
       publishedTime: post.published_at || undefined,
+      modifiedTime: post.updated_at || undefined,
+      authors: post.author?.name ? [post.author.name] : [SITE_CONFIG.name],
     },
     twitter: {
       card: "summary_large_image",
@@ -65,7 +73,7 @@ export default async function BlogPostDetailPage({ params }: BlogPostPageProps) 
 
   const related = await getRelatedBlogPosts(post.id, post.category_id, 4);
 
-  const structuredData: any[] = [
+  const structuredData: JsonLdValue[] = [
     {
       "@context": "https://schema.org",
       "@type": "BlogPosting",
@@ -76,16 +84,20 @@ export default async function BlogPostDetailPage({ params }: BlogPostPageProps) 
       dateModified: post.updated_at,
       publisher: {
         "@type": "Organization",
-        name: "TIMECT",
+        name: SITE_CONFIG.name,
         logo: {
           "@type": "ImageObject",
-          url: "https://timect-mu.vercel.app/favicon.ico",
+          url: absoluteUrl("/favicon.ico"),
         },
       },
       mainEntityOfPage: {
         "@type": "WebPage",
-        "@id": `https://timect-mu.vercel.app/blog/${post.slug}`,
+        "@id": absoluteUrl(`/blog/${post.slug}`),
       },
+      author: post.author?.name
+        ? { "@type": "Person", name: post.author.name, ...(post.author.designation ? { jobTitle: post.author.designation } : {}) }
+        : { "@id": `${SITE_CONFIG.url}/#organization` },
+      isPartOf: { "@id": absoluteUrl("/blog#blog") },
     },
     {
       "@context": "https://schema.org",
@@ -95,19 +107,19 @@ export default async function BlogPostDetailPage({ params }: BlogPostPageProps) 
           "@type": "ListItem",
           position: 1,
           name: "Home",
-          item: "https://timect-mu.vercel.app",
+          item: absoluteUrl("/"),
         },
         {
           "@type": "ListItem",
           position: 2,
           name: "Journal",
-          item: "https://timect-mu.vercel.app/blog",
+          item: absoluteUrl("/blog"),
         },
         {
           "@type": "ListItem",
           position: 3,
           name: post.title,
-          item: `https://timect-mu.vercel.app/blog/${post.slug}`,
+          item: absoluteUrl(`/blog/${post.slug}`),
         },
       ],
     },

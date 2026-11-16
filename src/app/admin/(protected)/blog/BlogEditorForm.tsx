@@ -186,7 +186,7 @@ export default function BlogEditorForm({ postId }: { postId?: number }) {
     const postStatus = newStatus || status;
 
     // Automatic SEO based on article title & excerpt
-    const autoMetaTitle = `${title.trim()} | TIMECT Journal`;
+    const autoMetaTitle = `${title.trim()} | Timect Watches`;
     const autoMetaDescription = excerpt.trim();
 
     const payload = {

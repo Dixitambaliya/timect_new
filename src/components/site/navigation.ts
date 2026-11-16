@@ -5,7 +5,7 @@ export type NavLink = { title: string; href: string };
 export const MAIN_NAV: (NavLink & { mega?: boolean })[] = [
   { title: "Watches", href: "/watches", mega: true },
   { title: "Journal", href: "/blog" },
-  { title: "New Arrivals", href: "/watches?category=new" },
+  { title: "New Arrivals", href: "/watches/new-arrivals" },
   { title: "Corporate Gifting", href: "/corporate-gifting" },
   { title: "About", href: "/about" },
   { title: "Contact", href: "/contact" },
@@ -13,10 +13,10 @@ export const MAIN_NAV: (NavLink & { mega?: boolean })[] = [
 
 export const SHOP_LINKS: NavLink[] = [
   { title: "All watches", href: "/watches" },
-  { title: "New arrivals", href: "/watches?category=new" },
-  { title: "Recommended", href: "/watches?category=recommended" },
-  { title: "For him", href: "/watches?gender=Men" },
-  { title: "For her", href: "/watches?gender=Women" },
+  { title: "New arrivals", href: "/watches/new-arrivals" },
+  { title: "Recommended", href: "/watches/recommended-watches" },
+  { title: "For him", href: "/watches/mens-watches" },
+  { title: "For her", href: "/watches/womens-watches" },
 ];
 
 export const UTILITY_LINKS: NavLink[] = [
@@ -29,10 +29,10 @@ export const FOOTER_MENUS: { title: string; links: NavLink[] }[] = [
     title: "Collections",
     links: [
       { title: "All Watches", href: "/watches" },
-      { title: "New Arrivals", href: "/watches?category=new" },
-      { title: "Recommended", href: "/watches?category=recommended" },
-      { title: "For Him", href: "/watches?gender=Men" },
-      { title: "For Her", href: "/watches?gender=Women" },
+      { title: "New Arrivals", href: "/watches/new-arrivals" },
+      { title: "Recommended", href: "/watches/recommended-watches" },
+      { title: "For Him", href: "/watches/mens-watches" },
+      { title: "For Her", href: "/watches/womens-watches" },
     ],
   },
   {
@@ -66,5 +66,18 @@ export const SEARCHABLE_PAGES: NavLink[] = [
 ];
 
 export function watchesFilterHref(slug: string): string {
-  return `/watches?filter=${encodeURIComponent(slug)}`;
+  return `/watches/${encodeURIComponent(slug)}`;
+}
+
+/** Preserve CMS links while routing known catalog queries to indexable landing pages. */
+export function canonicalCatalogHref(href?: string): string {
+  if (!href) return "/watches";
+  const routes: Record<string, string> = {
+    "/watches?category=new": "/watches/new-arrivals",
+    "/watches?category=recommended": "/watches/recommended-watches",
+    "/watches?gender=Men": "/watches/mens-watches",
+    "/watches?gender=Women": "/watches/womens-watches",
+    "/watches?gender=Unisex": "/watches/unisex-watches",
+  };
+  return routes[href] || href;
 }

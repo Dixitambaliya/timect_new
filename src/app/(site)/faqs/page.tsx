@@ -4,12 +4,13 @@ import ContentPage from "@/components/site/ContentPage";
 import FaqAccordion from "@/components/site/FaqAccordion";
 import { ButtonPrimary } from "@/components/fuse/buttons";
 import { createPageMetadata } from "@/lib/seo/metadata";
-import { JsonLd, webPageSchema } from "@/lib/seo/structured-data";
+import { JsonLd, breadcrumbSchema, webPageSchema } from "@/lib/seo/structured-data";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Watch FAQs & Practical Guides",
   description: "Clear answers about automatic and quartz watches, sizing, water resistance, chronographs, crystals, straps, care, and TIMECT enquiries.",
   path: "/faqs",
+  keywords: ["watch FAQs", "how to choose a watch", "automatic vs quartz watch", "watch size guide", "watch water resistance", "Timect Watches FAQ"],
 });
 
 const FAQS = [
@@ -41,6 +42,7 @@ export default function FaqsPage() {
     <ContentPage title="Watch FAQs" subtitle="Direct, practical answers about watch movements, sizing, materials, water resistance, care, and TIMECT product enquiries." bare>
       <JsonLd data={FAQ_SCHEMA} />
       <JsonLd data={webPageSchema({ name: "TIMECT Watch FAQs", description: "Practical answers about watch movements, sizing, water resistance, materials, and care.", path: "/faqs", type: "FAQPage" })} />
+      <JsonLd data={breadcrumbSchema([{ name: "Home", path: "/" }, { name: "Watch FAQs", path: "/faqs" }])} />
       <FaqAccordion items={FAQS} />
       <p className="mt-6 text-center text-[15px] text-muted">
         Browse <Link href="/watches" className="link-underline">watch specifications</Link> or use the{" "}

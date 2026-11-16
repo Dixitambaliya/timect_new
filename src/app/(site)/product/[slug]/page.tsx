@@ -13,7 +13,7 @@ import ProductMain from "@/components/product/ProductMain";
 import RecentlyViewed from "@/components/product/RecentlyViewed";
 import { resolveVariants, toCard } from "@/lib/product-view";
 import { createPageMetadata } from "@/lib/seo/metadata";
-import { productName, productSchemas, productSeoDescription } from "@/lib/seo/product-seo";
+import { productMetaDescription, productName, productSchemas } from "@/lib/seo/product-seo";
 import { JsonLd } from "@/lib/seo/structured-data";
 
 type Params = { params: Promise<{ slug: string }> };
@@ -43,10 +43,16 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const product = /^\d+$/.test(slug) ? await getProductById(Number(slug)) : await getProductBySlug(decodeURIComponent(slug));
   if (!product) return createPageMetadata({ title: "Watch not found", description: "The requested TIMECT watch could not be found.", path: `/product/${slug}`, noIndex: true });
   const name = productName(product);
-  const title = product.collection ? `${name} - ${product.collection}` : name;
-  const description = productSeoDescription(product);
+  const title = `${name}${product.collection ? ` - ${product.collection}` : ""} | Timect Watches`;
+  const description = productMetaDescription(product);
   const image = product.image || product.images?.[0];
-  return createPageMetadata({ title, description, path: `/product/${product.slug}`, image });
+  return createPageMetadata({
+    title,
+    description,
+    path: `/product/${product.slug}`,
+    image,
+    keywords: [name, `${name} watch`, "Timect Watches", product.collection, product.gender && `${product.gender}'s watches`].filter((value): value is string => Boolean(value)),
+  });
 }
 
 export default async function ProductPage({ params }: Params) {

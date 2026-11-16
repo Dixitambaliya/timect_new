@@ -90,7 +90,7 @@ function MegaMenu({ open, onEnter, onLeave, onNavigate }: {
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={catalogThumbUrl(c.image, 360)}
-                      alt=""
+                      alt={`${c.label} watches by Timect`}
                       loading="lazy"
                       className="img-fill transition-transform duration-700 group-hover/m:scale-110"
                     />

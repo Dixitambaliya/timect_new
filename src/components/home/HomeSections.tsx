@@ -11,7 +11,7 @@ import { CarouselProgress, Section, SectionHeading, SliderArrows } from "@/compo
 import { ButtonOutline, ButtonPrimary } from "@/components/fuse/buttons";
 import { ArrowRight } from "@/components/fuse/icons";
 import ProductCard, { type CardProduct } from "@/components/site/ProductCard";
-import { watchesFilterHref } from "@/components/site/navigation";
+import { canonicalCatalogHref, watchesFilterHref } from "@/components/site/navigation";
 
 /** Oversized statement heading with category link chips (Fuse "short links"). */
 export function HomeStatement({
@@ -156,7 +156,7 @@ export function CategoryCarousel({ categories }: { categories: ShopCategory[] })
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={catalogThumbUrl(c.image, 480)}
-                    alt=""
+                    alt={`${c.label} watches by Timect`}
                     loading="lazy"
                     className="img-fill transition-transform duration-[1100ms] ease-fuse-out group-hover/c:scale-110"
                   />
@@ -194,7 +194,7 @@ export function GridBanner({ banners }: { banners: PromoBanner[] }) {
             style={{ "--delay": `${i * 0.15}s` } as CSSProperties}
           >
             <Link
-              href={b.href || "/watches"}
+              href={canonicalCatalogHref(b.href)}
               tabIndex={-1}
               aria-hidden
               className="absolute inset-0 z-[1]"
@@ -203,7 +203,7 @@ export function GridBanner({ banners }: { banners: PromoBanner[] }) {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={catalogThumbUrl(b.image, 1400)}
-                alt=""
+                alt={`${b.title} Timect watches`}
                 loading="lazy"
                 className="img-fill transition-transform duration-[1.6s] ease-fuse group-hover/gb:scale-[1.06]"
               />
@@ -212,7 +212,7 @@ export function GridBanner({ banners }: { banners: PromoBanner[] }) {
             <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] flex flex-col items-start bg-[linear-gradient(180deg,rgba(35,35,35,0),rgba(35,35,35,.65))] p-6 pt-32 text-white transition-[opacity,transform] duration-[600ms] ease-fuse-out md:translate-y-10 md:p-12 md:pt-48 md:opacity-0 md:group-focus-within/gb:translate-y-0 md:group-focus-within/gb:opacity-100 md:group-hover/gb:translate-y-0 md:group-hover/gb:opacity-100">
               <h2 className="text-[28px] font-bold text-white md:text-[44px] md:leading-[1.09]">{b.title}</h2>
               {b.text && <p className="mt-3 max-w-[460px] text-[16px] leading-[1.5]">{b.text}</p>}
-              <ButtonPrimary href={b.href || "/watches"} glass bg="#ffffff" className="pointer-events-auto mt-6 !bg-white/10">
+              <ButtonPrimary href={canonicalCatalogHref(b.href)} glass bg="#ffffff" className="pointer-events-auto mt-6 !bg-white/10">
                 {b.buttonLabel || "Explore"}
               </ButtonPrimary>
             </div>
