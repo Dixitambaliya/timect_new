@@ -44,7 +44,7 @@ export default async function BlogHomePage() {
             name: "TIMECT",
             logo: {
               "@type": "ImageObject",
-              url: "https://timect-mu.vercel.app/favicon.ico",
+              url: "https://timect-mu.vercel.app/favicon.png",
             },
           },
         }}

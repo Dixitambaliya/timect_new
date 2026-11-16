@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
-import { ArrowDown, ArrowUp, ExternalLink, Loader2, Plus, Save, Trash2 } from "lucide-react";
+import Link from "next/link";
+import { ArrowDown, ArrowUp, ExternalLink, Loader2, MessageCircle, Plus, Save, Trash2 } from "lucide-react";
 import { PageHeader } from "@/admin/components/layout/Breadcrumbs";
 import ImageField from "@/admin/components/ui/ImageField";
 import { adminGetStorefront, adminSaveStorefront } from "@/admin/actions/storefront";
@@ -390,6 +391,15 @@ export default function StorefrontPage() {
             <Field label="WhatsApp number" hint="Digits with country code, e.g. 919876543210. Leave empty to use NEXT_PUBLIC_WHATSAPP_NUMBER.">
               <input className="admin-input font-mono" value={data.contact.whatsapp} onChange={(e) => patch({ contact: { ...data.contact, whatsapp: e.target.value } })} />
             </Field>
+            <div className="pt-2 border-t border-[var(--admin-line)]">
+              <Link
+                href="/admin/whatsapp"
+                className="inline-flex items-center gap-2 rounded-fuse-sm border border-[var(--admin-accent-border)] bg-[var(--admin-accent-soft)] px-3 py-2 text-xs font-semibold text-[var(--admin-heading)] transition hover:opacity-90"
+              >
+                <MessageCircle className="h-4 w-4" />
+                Configure &quot;Ask on WhatsApp&quot; button, text & templates &rarr;
+              </Link>
+            </div>
           </div>
           <div className="admin-card space-y-4 p-5 md:p-6">
             <h2 className="text-[17px] font-bold">Social links</h2>

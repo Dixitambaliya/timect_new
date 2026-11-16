@@ -79,7 +79,7 @@ export default async function BlogPostDetailPage({ params }: BlogPostPageProps) 
         name: "TIMECT",
         logo: {
           "@type": "ImageObject",
-          url: "https://timect-mu.vercel.app/favicon.ico",
+          url: "https://timect-mu.vercel.app/favicon.png",
         },
       },
       mainEntityOfPage: {
@@ -175,10 +175,10 @@ export default async function BlogPostDetailPage({ params }: BlogPostPageProps) 
             <span>
               {post.published_at
                 ? new Date(post.published_at).toLocaleDateString("en-US", {
-                    month: "long",
-                    day: "numeric",
-                    year: "numeric",
-                  })
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                })
                 : ""}
             </span>
           </div>

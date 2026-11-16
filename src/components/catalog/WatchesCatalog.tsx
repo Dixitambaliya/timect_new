@@ -333,8 +333,8 @@ export default function WatchesCatalog({
         </div>
       )}
 
-      {/* Catalog controls */}
-      <div className="pointer-events-none sticky top-3 z-40 mt-8 mb-6 flex justify-center gap-3 md:top-6">
+      {/* Catalog controls - offset to float cleanly beneath the stacked sticky header without overlap */}
+      <div className="pointer-events-none sticky top-[76px] z-40 mt-8 mb-6 flex justify-center gap-3 md:top-[92px]">
         <div className="glass-dark pointer-events-auto flex items-center gap-2 rounded-fuse !bg-[#232323cc] p-1.5 text-white">
           <button
             type="button"

@@ -106,7 +106,11 @@ export default function ProductMain({
   headingAs?: "h1" | "h2";
 }) {
   const router = useRouter();
-  const { whatsappNumber } = useSite();
+  const { storefront, whatsappNumber } = useSite();
+  const wpSettings = storefront.whatsappButton;
+  const activeWpNumber = wpSettings?.phoneNumber || whatsappNumber;
+  const wpButtonText = wpSettings?.buttonText || "Ask on WhatsApp";
+  const wpEnabled = wpSettings?.enabled !== false;
   const sizes = product.sizes || [];
   const [size, setSize] = useState(sizes[1] || sizes[0] || "");
   const [panel, setPanel] = useState<string | null>(null);
@@ -144,13 +148,57 @@ export default function ProductMain({
   const panels = [...specs.map((s) => s.title), ...Object.keys(SERVICE_PANELS)];
   const Heading = headingAs;
 
-  const message = `Hi, I need help with ${title}${size ? ` (${size})` : ""}${subtitle ? ` -${subtitle}` : ""} -${displayPrice(product.price)}\n${pageUrl}`;
+  const primaryImage = activeVariant?.image || product.image || images[0] || "";
+
+  const baseWpMessage = wpSettings?.messageTemplate
+    ? wpSettings.messageTemplate
+        .replace(/\{name\}/g, title)
+        .replace(/\{product\}/g, title)
+        .replace(/\{price\}/g, displayPrice(product.price))
+        .replace(/\{code\}/g, product.code || "")
+        .replace(/\{url\}/g, pageUrl)
+        .replace(/\{image\}/g, primaryImage)
+    : `Hi, I need help with ${title}${size ? ` (${size})` : ""}${subtitle ? ` -${subtitle}` : ""} -${displayPrice(product.price)}\n${pageUrl}`;
+
+  const message = primaryImage && !baseWpMessage.includes(primaryImage)
+    ? `${baseWpMessage}\nImage: ${primaryImage}`
+    : baseWpMessage;
 
   const share = async () => {
     try {
-      if (navigator.share) await navigator.share({ title, url: pageUrl });
-      else {
-        await navigator.clipboard.writeText(pageUrl);
+      if (typeof navigator !== "undefined" && navigator.share) {
+        let fileToShare: File | null = null;
+        if (primaryImage && typeof fetch !== "undefined") {
+          try {
+            const res = await fetch(primaryImage);
+            if (res.ok) {
+              const blob = await res.blob();
+              const ext = blob.type.includes("png") ? "png" : "jpg";
+              fileToShare = new File([blob], `${product.slug || "watch"}.${ext}`, {
+                type: blob.type || "image/jpeg",
+              });
+            }
+          } catch {
+            /* ignore CORS / fetch failure */
+          }
+        }
+
+        if (fileToShare && navigator.canShare && navigator.canShare({ files: [fileToShare] })) {
+          await navigator.share({
+            title,
+            text: `${title} - ${displayPrice(product.price)}\n${pageUrl}`,
+            files: [fileToShare],
+          });
+          return;
+        }
+
+        await navigator.share({
+          title,
+          text: `${title} - ${displayPrice(product.price)}${primaryImage ? `\nImage: ${primaryImage}` : ""}`,
+          url: pageUrl,
+        });
+      } else {
+        await navigator.clipboard.writeText(`${title} - ${pageUrl}${primaryImage ? `\nImage: ${primaryImage}` : ""}`);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
       }
@@ -266,14 +314,16 @@ export default function ProductMain({
 
         <InfoCard>
           <div className="flex flex-col gap-2">
-            <a
-              href={whatsappLink(whatsappNumber, message)}
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-center justify-center gap-2.5 rounded-fuse bg-whatsapp px-6 py-[18px] text-[16px] font-semibold text-white transition-[filter] duration-400 hover:brightness-95"
-            >
-              <WhatsApp /> Ask on WhatsApp
-            </a>
+            {wpEnabled && (
+              <a
+                href={whatsappLink(activeWpNumber, message)}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center justify-center gap-2.5 rounded-fuse bg-whatsapp px-6 py-[18px] text-[16px] font-semibold text-white transition-[filter] duration-400 hover:brightness-95"
+              >
+                <WhatsApp /> {wpButtonText}
+              </a>
+            )}
             <Link
               href={`/contact?product=${encodeURIComponent(product.slug)}`}
               className="flex items-center justify-center gap-2.5 rounded-fuse border border-line bg-btn px-6 py-[17px] font-semibold transition-colors duration-400 hover:border-line-hover hover:bg-white"
@@ -338,10 +388,24 @@ export default function ProductMain({
                 </span>
               )}
             </button>
-            <a href={`https://wa.me/?text=${encodeURIComponent(`${title} -${pageUrl}`)}`} target="_blank" rel="noreferrer" aria-label="Share on WhatsApp" className="icon-btn h-16 w-16 bg-white">
+            <a
+              href={`https://wa.me/?text=${encodeURIComponent(
+                `${title} - ${displayPrice(product.price)}\n${pageUrl}${primaryImage ? `\n\nImage: ${primaryImage}` : ""}`,
+              )}`}
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Share on WhatsApp"
+              className="icon-btn h-16 w-16 bg-white"
+            >
               <WhatsApp />
             </a>
-            <a href={`mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(pageUrl)}`} aria-label="Share by email" className="icon-btn h-16 w-16 bg-white">
+            <a
+              href={`mailto:?subject=${encodeURIComponent(`Timect - ${title}`)}&body=${encodeURIComponent(
+                `Check out this watch from Timect:\n\n${title}\nPrice: ${displayPrice(product.price)}\n\nView watch: ${pageUrl}${primaryImage ? `\n\nProduct image: ${primaryImage}` : ""}`,
+              )}`}
+              aria-label="Share by email"
+              className="icon-btn h-16 w-16 bg-white"
+            >
               <Mail className="h-5 w-5" />
             </a>
           </div>

@@ -53,7 +53,7 @@ function TrendingCategories({ onNavigate }: { onNavigate: () => void }) {
  * nested level with shop links and every CMS category.
  */
 export default function MenuDrawer() {
-  const { panel, closePanel, categories, whatsappNumber } = useSite();
+  const { panel, closePanel, categories, storefront, whatsappNumber } = useSite();
   const pathname = usePathname();
   const open = panel === "menu";
   const [nested, setNested] = useState(false);
@@ -99,7 +99,10 @@ export default function MenuDrawer() {
           <CloseIcon />
         </button>
         <a
-          href={whatsappLink(whatsappNumber, "Hi Timect, I have a question about your watches.")}
+          href={whatsappLink(
+            storefront.whatsappButton?.phoneNumber || whatsappNumber,
+            storefront.whatsappButton?.conciergeMessage || "Hi Timect, I have a question about your watches.",
+          )}
           target="_blank"
           rel="noreferrer"
           className="flex items-center gap-2 rounded-fuse-md bg-[#ffffff99] px-4 py-3 text-[16px] font-semibold shadow-[inset_0_0_0_1px_#fff] md:py-4"
