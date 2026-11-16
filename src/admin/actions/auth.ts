@@ -7,7 +7,11 @@ import {
   signAdminToken,
   verifyPassword,
 } from "@/admin/lib/auth";
-import type { AdminRole } from "@/admin/lib/constants";
+import {
+  ADMIN_REMEMBER_ME_SECONDS,
+  ADMIN_SESSION_SECONDS,
+  type AdminRole,
+} from "@/admin/lib/constants";
 import {
   clearAdminSessionCookie,
   getAdminSession,
@@ -63,14 +67,24 @@ export async function loginAdmin(
       return { ok: false, error: "Invalid email or password." };
     }
 
-    const token = await signAdminToken({
-      id: user.id,
-      email: user.email,
-      fullName: user.full_name,
-      role: user.role,
-    });
+    const rememberMe =
+      formData.get("rememberMe") === "on" ||
+      formData.get("rememberMe") === "true";
+    const maxAge = rememberMe
+      ? ADMIN_REMEMBER_ME_SECONDS
+      : ADMIN_SESSION_SECONDS;
 
-    await setAdminSessionCookie(token);
+    const token = await signAdminToken(
+      {
+        id: user.id,
+        email: user.email,
+        fullName: user.full_name,
+        role: user.role,
+      },
+      { rememberMe, maxAge },
+    );
+
+    await setAdminSessionCookie(token, maxAge);
 
     await sql`
       UPDATE admin_users

@@ -38,9 +38,12 @@ export async function requireAdminSession(): Promise<AdminSession> {
   return session;
 }
 
-export async function setAdminSessionCookie(token: string): Promise<void> {
+export async function setAdminSessionCookie(
+  token: string,
+  maxAge?: number,
+): Promise<void> {
   const jar = await cookies();
-  const opts = adminCookieOptions();
+  const opts = adminCookieOptions(maxAge);
   jar.set(opts.name, token, {
     httpOnly: opts.httpOnly,
     secure: opts.secure,

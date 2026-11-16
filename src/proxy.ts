@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
-import { ADMIN_COOKIE } from "@/admin/lib/constants";
+import { ADMIN_COOKIE, ADMIN_MAX_INACTIVITY_SECONDS } from "@/admin/lib/constants";
 
 function getJwtSecret(): Uint8Array {
   const secret =
@@ -30,8 +30,15 @@ export async function proxy(request: NextRequest) {
   let valid = false;
   if (token) {
     try {
-      await jwtVerify(token, getJwtSecret());
-      valid = true;
+      const { payload } = await jwtVerify(token, getJwtSecret());
+      if (payload.sub && payload.email && payload.role) {
+        const now = Math.floor(Date.now() / 1000);
+        const iat = payload.iat || 0;
+        // Invalidate if inactive for more than 90 days
+        if (now - iat <= ADMIN_MAX_INACTIVITY_SECONDS) {
+          valid = true;
+        }
+      }
     } catch {
       valid = false;
     }

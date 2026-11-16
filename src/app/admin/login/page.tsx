@@ -1,16 +1,17 @@
 "use client";
 
-import { useActionState } from "react";
-import { Loader2, Lock } from "lucide-react";
+import { useState, useActionState } from "react";
+import { Eye, EyeOff, Loader2, Lock } from "lucide-react";
 import { loginAdmin, type LoginResult } from "@/admin/actions/auth";
 import { TIMECT_LOGO } from "@/data/storefront";
 
 const initial: LoginResult | null = null;
 const HERO =
-  "https://res.cloudinary.com/dphscxzb4/image/upload/f_auto,q_auto,w_1400/v1784048474/timect/image_4.png";
+  "https://res.cloudinary.com/dphscxzb4/image/upload/v1794738506/timect/admin/general/lkjubswku6x0ybptntps.png";
 
 export default function AdminLoginPage() {
   const [state, formAction, pending] = useActionState(loginAdmin, initial);
+  const [showPassword, setShowPassword] = useState(false);
 
   return (
     <div className="admin-root grid min-h-screen gap-3 p-2 md:p-3 lg:grid-cols-2">
@@ -63,7 +64,47 @@ export default function AdminLoginPage() {
               <label className="admin-label" htmlFor="password">
                 Password
               </label>
-              <input id="password" name="password" type="password" autoComplete="current-password" required className="admin-input !py-4" placeholder="••••••••" />
+              <div className="relative">
+                <input
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="current-password"
+                  required
+                  className="admin-input !py-4 pr-12"
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[var(--admin-muted)] transition-colors hover:text-[var(--admin-heading)] focus:outline-none"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  tabIndex={-1}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <label
+                htmlFor="rememberMe"
+                className="flex items-center gap-2.5 cursor-pointer select-none text-[14px] text-[var(--admin-muted)] hover:text-[var(--admin-heading)] transition-colors"
+              >
+                <input
+                  type="checkbox"
+                  name="rememberMe"
+                  id="rememberMe"
+                  value="true"
+                  defaultChecked
+                  className="h-4 w-4 rounded border-[var(--admin-line)] text-[var(--admin-accent)] focus:ring-[var(--admin-accent)] cursor-pointer"
+                />
+                <span>Remember me (30 days)</span>
+              </label>
             </div>
 
             {state && !state.ok && (
@@ -83,8 +124,6 @@ export default function AdminLoginPage() {
               )}
             </button>
           </form>
-
-          <p className="mt-8 text-[12px] text-[var(--admin-muted)]">Protected by JWT session · Credentials stored with bcrypt</p>
         </div>
       </div>
     </div>

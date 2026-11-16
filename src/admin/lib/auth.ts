@@ -2,6 +2,9 @@ import { SignJWT, jwtVerify, type JWTPayload } from "jose";
 import bcrypt from "bcryptjs";
 import {
   ADMIN_COOKIE,
+  ADMIN_MAX_INACTIVITY_SECONDS,
+  ADMIN_REMEMBER_ME_SECONDS,
+  ADMIN_SESSION_SECONDS,
   ADMIN_TOKEN_MAX_AGE_SECONDS,
   type AdminRole,
 } from "./constants";
@@ -11,6 +14,7 @@ export type AdminSessionPayload = JWTPayload & {
   email: string;
   fullName: string;
   role: AdminRole;
+  rememberMe?: boolean;
 };
 
 function getJwtSecret(): Uint8Array {
@@ -33,21 +37,32 @@ export async function verifyPassword(
   return bcrypt.compare(password, passwordHash);
 }
 
-export async function signAdminToken(payload: {
-  id: number;
-  email: string;
-  fullName: string;
-  role: AdminRole;
-}): Promise<string> {
+export async function signAdminToken(
+  payload: {
+    id: number;
+    email: string;
+    fullName: string;
+    role: AdminRole;
+  },
+  options?: {
+    rememberMe?: boolean;
+    maxAge?: number;
+  },
+): Promise<string> {
+  const maxAge =
+    options?.maxAge ??
+    (options?.rememberMe ? ADMIN_REMEMBER_ME_SECONDS : ADMIN_SESSION_SECONDS);
+
   return new SignJWT({
     email: payload.email,
     fullName: payload.fullName,
     role: payload.role,
+    rememberMe: Boolean(options?.rememberMe),
   })
     .setProtectedHeader({ alg: "HS256" })
     .setSubject(String(payload.id))
     .setIssuedAt()
-    .setExpirationTime(`${ADMIN_TOKEN_MAX_AGE_SECONDS}s`)
+    .setExpirationTime(`${maxAge}s`)
     .sign(getJwtSecret());
 }
 
@@ -57,6 +72,14 @@ export async function verifyAdminToken(
   try {
     const { payload } = await jwtVerify(token, getJwtSecret());
     if (!payload.sub || !payload.email || !payload.role) return null;
+
+    // Inactivity check: if token was issued more than 90 days ago, invalidate it
+    const now = Math.floor(Date.now() / 1000);
+    const iat = payload.iat || 0;
+    if (now - iat > ADMIN_MAX_INACTIVITY_SECONDS) {
+      return null;
+    }
+
     return payload as AdminSessionPayload;
   } catch {
     return null;

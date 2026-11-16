@@ -11,9 +11,12 @@ export const ADMIN_ROLES: { value: AdminRole; label: string }[] = [
 /** Cookie name for admin JWT session */
 export const ADMIN_COOKIE = "timect_admin_token";
 
-/** JWT expiry: 7 days */
-export const ADMIN_TOKEN_TTL = "7d";
-export const ADMIN_TOKEN_MAX_AGE_SECONDS = 60 * 60 * 24 * 7;
+/** Session TTLs */
+export const ADMIN_REMEMBER_ME_SECONDS = 60 * 60 * 24 * 30; // 30 days
+export const ADMIN_MAX_INACTIVITY_SECONDS = 60 * 60 * 24 * 90; // 90 days inactivity logout
+export const ADMIN_SESSION_SECONDS = 60 * 60 * 24 * 1; // 1 day default without remember me
+export const ADMIN_TOKEN_TTL = "30d";
+export const ADMIN_TOKEN_MAX_AGE_SECONDS = ADMIN_REMEMBER_ME_SECONDS;
 
 export const GENDER_OPTIONS = ["Men", "Women", "Unisex"] as const;
 
