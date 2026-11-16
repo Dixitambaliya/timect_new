@@ -12,13 +12,13 @@ import { Clock, ArrowRight } from "lucide-react";
 
 export const metadata: Metadata = {
   ...createPageMetadata({
-    title: "Watch Guides & Journal | Timect Watches",
+    title: "Watch Guides & Blogs | Timect Watches",
     description:
       "Explore TIMECT watch guides, automatic movements, hands-on reviews, and horological education.",
     path: "/blog",
-    keywords: ["watch guides", "watch buying guide", "watch care guide", "automatic vs quartz", "Timect Watches journal"],
+    keywords: ["watch guides", "watch buying guide", "watch care guide", "automatic vs quartz", "Timect Watches blogs"],
   }),
-  title: { absolute: "Watch Guides & Journal | Timect Watches" },
+  title: { absolute: "Watch Guides & Blogs | Timect Watches" },
 };
 
 export default async function BlogHomePage() {
@@ -38,7 +38,7 @@ export default async function BlogHomePage() {
         data={{
           "@context": "https://schema.org",
           "@type": "Blog",
-          name: "Timect Watches Journal",
+          name: "Timect Watches Blogs",
           description: "Authoritative luxury watch editorial, buying guides, and horological education.",
           url: absoluteUrl("/blog"),
           publisher: {
@@ -54,9 +54,9 @@ export default async function BlogHomePage() {
 
       {/* Header aligned strictly inside container-fuse matching site pages */}
       <div className="px-2">
-        <Breadcrumbs items={[["Home", "/"], ["Journal"]]} />
+        <Breadcrumbs items={[["Home", "/"], ["Blogs"]]} />
         <h1 className="fuse-h1 mx-auto mt-2 max-w-[900px] animate-rise-in text-center">
-          Journal
+          Blogs
         </h1>
         <p className="mx-auto mt-4 max-w-[640px] text-center text-[15px] leading-[1.6] text-muted md:text-[17px]">
           Essential insights into mechanical timekeeping, movement craftsmanship, case metallurgy, and collector guides.
@@ -194,11 +194,6 @@ export default async function BlogHomePage() {
                   alt={post.title}
                   className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
                 />
-                <div className="absolute top-2.5 left-2.5">
-                  <span className="rounded-fuse-sm bg-white/95 px-2 py-0.5 text-[10px] font-semibold text-heading backdrop-blur shadow-sm">
-                    {post.category?.name || "Journal"}
-                  </span>
-                </div>
               </div>
 
               <div className="flex flex-1 flex-col justify-between p-4 sm:p-5">

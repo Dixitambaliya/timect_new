@@ -345,7 +345,7 @@ export default function WatchesCatalog({
       )}
 
       {/* Catalog controls */}
-      <div className="pointer-events-none sticky top-3 z-40 mt-8 mb-6 flex justify-center gap-3 md:top-6">
+      <div className="pointer-events-none sticky top-[88px] z-40 mt-8 mb-6 flex justify-center gap-3 md:top-[96px]">
         <div className="glass-dark pointer-events-auto flex items-center gap-2 rounded-fuse !bg-[#232323cc] p-1.5 text-white">
           <button
             type="button"

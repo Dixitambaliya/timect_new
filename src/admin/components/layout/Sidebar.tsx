@@ -31,7 +31,7 @@ const GROUPS = [
     ],
   },
   {
-    title: "Journal / Blog",
+    title: "Blogs",
     items: [
       { href: "/admin/blog", label: "Articles", icon: BookOpen },
     ],

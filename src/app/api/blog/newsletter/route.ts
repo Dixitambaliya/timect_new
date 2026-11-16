@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
       ON CONFLICT (email) DO NOTHING
     `;
 
-    return NextResponse.json({ success: true, message: "Thank you for subscribing to Timect Journal." });
+    return NextResponse.json({ success: true, message: "Thank you for subscribing to Timect Blogs." });
   } catch (err: any) {
     return NextResponse.json({ error: "Subscription failed" }, { status: 500 });
   }

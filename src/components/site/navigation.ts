@@ -4,7 +4,7 @@ export type NavLink = { title: string; href: string };
 
 export const MAIN_NAV: (NavLink & { mega?: boolean })[] = [
   { title: "Watches", href: "/watches", mega: true },
-  { title: "Journal", href: "/blog" },
+  { title: "Blogs", href: "/blog" },
   { title: "New Arrivals", href: "/watches/new-arrivals" },
   { title: "Corporate Gifting", href: "/corporate-gifting" },
   { title: "About", href: "/about" },
@@ -46,7 +46,7 @@ export const FOOTER_MENUS: { title: string; links: NavLink[] }[] = [
   {
     title: "Company",
     links: [
-      { title: "Journal", href: "/blog" },
+      { title: "Blogs", href: "/blog" },
       { title: "About Us", href: "/about" },
       { title: "Corporate Gifting", href: "/corporate-gifting" },
       { title: "Privacy Policy", href: "/privacy" },

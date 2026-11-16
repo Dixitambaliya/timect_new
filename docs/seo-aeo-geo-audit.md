@@ -47,7 +47,7 @@ Exact monthly volume and numeric keyword difficulty are intentionally not fabric
 | Medium | Commercial | dress watches, luxury-style dress watches, classic wrist watches | `/watches/dress-luxury` |
 | Medium | Commercial | blue dial watches, rose gold watches, stainless steel watches | Relevant collection pages |
 | Medium | Discovery | new watch arrivals, latest watches for men and women | `/watches/new-arrivals` |
-| Medium | Informational | automatic vs quartz watch, how to choose a watch, watch size guide, water resistance explained | `/faqs` and Journal |
+| Medium | Informational | automatic vs quartz watch, how to choose a watch, watch size guide, water resistance explained | `/faqs` and Blogs |
 | Medium | Informational | chronograph meaning, sapphire crystal, watch strap care, stainless steel watch care | `/faqs` and focused articles |
 | Long-tail | Product | `[model] watch`, `[model] price`, `[model] specifications`, `[model] movement`, `[model] case size` | Product pages |
 | Long-tail | Brand support | Timect customer care, Timect watch service, Timect warranty, contact Timect Watches | `/contact` |
@@ -107,7 +107,7 @@ Primary naming must remain natural. Use “Timect Watches” as the official nam
 **Primary targets:** automatic vs quartz, watch sizing, water resistance, sapphire crystal, watch care.  
 **Next:** keep answers aligned with visible copy and avoid FAQ schema on pages where the same questions are not visible.
 
-### Journal `/blog`, article, and category pages
+### Blogs `/blog`, article, and category pages
 
 **Before:** useful editorial architecture and direct-answer/FAQ fields, but inconsistent TIMECT naming, old deployment URLs in JSON-LD, underused author and CMS SEO fields, and incomplete article Open Graph properties.  
 **Implemented:** official-domain URLs, Timect Watches publisher naming, CMS SEO title/description/keyword use, author data, modified date, article canonical/Open Graph URL, and collection/breadcrumb schema.  

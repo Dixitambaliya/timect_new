@@ -51,7 +51,7 @@ function generateWatchEditorialArticle(topic: string, focusKeyword?: string, cat
   const keyword = focusKeyword || topic.split(" ").slice(0, 3).join(" ");
   const slug = slugify(topic);
   const title = topic.includes(":") ? topic : `${topic}: The Definitive Editorial Guide`;
-  const seoTitle = `${title.slice(0, 52)} | Timect Journal`;
+  const seoTitle = `${title.slice(0, 52)} | Timect Blogs`;
   const metaDescription = `An authoritative exploration into ${topic.toLowerCase()}. Understand mechanical horology, materials, movement specifications, and collector considerations.`;
   const excerpt = `Delve into the nuances of ${topic.toLowerCase()}. From engineering tolerances to finishing artistry, our horological analysis reveals what truly separates exceptional timepieces from the ordinary.`;
 
