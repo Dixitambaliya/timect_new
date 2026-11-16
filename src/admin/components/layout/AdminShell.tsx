@@ -59,19 +59,17 @@ export default function AdminShell({
     <ToastProvider>
       <div className={`admin-root flex min-h-screen gap-3 p-2 md:p-3 ${dark ? "admin-dark" : ""}`}>
         <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} unread={unread} />
-        <div className="flex min-w-0 flex-1 flex-col gap-2 md:gap-3">
-          <div className="sticky top-0 z-30 -mt-2 -mx-2 bg-[var(--admin-bg)]/95 backdrop-blur-sm px-2 pt-2 pb-1.5 md:-mt-3 md:-mx-3 md:px-3 md:pt-3 md:pb-2">
-            <TopNavbar
-              user={user}
-              dark={dark}
-              onToggleDark={toggleDark}
-              onMenu={() => setSidebarOpen(true)}
-              search={search}
-              onSearch={onSearch}
-              onSubmitSearch={onSubmitSearch}
-              searchPlaceholder={searchPlaceholder}
-            />
-          </div>
+        <div className="flex min-w-0 flex-1 flex-col gap-3">
+          <TopNavbar
+            user={user}
+            dark={dark}
+            onToggleDark={toggleDark}
+            onMenu={() => setSidebarOpen(true)}
+            search={search}
+            onSearch={onSearch}
+            onSubmitSearch={onSubmitSearch}
+            searchPlaceholder={searchPlaceholder}
+          />
           <main className="flex-1 px-1 pb-6 pt-1 md:px-2 md:pt-2 lg:px-3">{children}</main>
         </div>
       </div>
