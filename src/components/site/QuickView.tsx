@@ -136,7 +136,6 @@ export default function QuickView() {
                   href={whatsappLink(
                     activeWpNumber,
                     (() => {
-                      const primaryImage = product.image || product.images?.[0] || "";
                       const productUrl = typeof window !== "undefined" ? `${window.location.origin}/product/${product.slug}` : `/product/${product.slug}`;
                       const baseMsg = wpSettings?.messageTemplate
                         ? wpSettings.messageTemplate
@@ -145,11 +144,12 @@ export default function QuickView() {
                             .replace(/\{price\}/g, displayPrice(product.price))
                             .replace(/\{code\}/g, product.code || "")
                             .replace(/\{url\}/g, productUrl)
-                            .replace(/\{image\}/g, primaryImage)
+                            .replace(/\s*\{image\}/g, "")
+                            .replace(/\s*Image:\s*https?:\/\/\S+/gi, "")
+                            .replace(/\s*Image:\s*\{image\}/gi, "")
+                            .trim()
                         : `Hi, I need help with ${name}${size ? ` (${size})` : ""} -${displayPrice(product.price)}\n${productUrl}`;
-                      return primaryImage && !baseMsg.includes(primaryImage)
-                        ? `${baseMsg}\nImage: ${primaryImage}`
-                        : baseMsg;
+                      return baseMsg;
                     })(),
                   )}
                   target="_blank"

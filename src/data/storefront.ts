@@ -156,7 +156,7 @@ export const DEFAULT_STOREFRONT: StorefrontSettings = {
     enabled: true,
     buttonText: "Ask on WhatsApp",
     phoneNumber: "",
-    messageTemplate: "Hi Timect, I would like to enquire about {name} ({price}). {url}\n{image}",
+    messageTemplate: "Hi Timect, I would like to enquire about {name} ({price}). {url}",
     corporateMessage: "Hi Timect, I'd like help with a corporate gifting order.",
     conciergeMessage: "Hi Timect, I have a question about your watches.",
   },
@@ -193,7 +193,11 @@ export function mergeStorefront(
       enabled: storedWp?.enabled !== undefined ? Boolean(storedWp.enabled) : dWp.enabled,
       buttonText: storedWp?.buttonText?.trim() || dWp.buttonText,
       phoneNumber: (storedWp?.phoneNumber || stored.contact?.whatsapp || dWp.phoneNumber).replace(/[^\d+]/g, ""),
-      messageTemplate: storedWp?.messageTemplate?.trim() || dWp.messageTemplate,
+      messageTemplate: (storedWp?.messageTemplate || dWp.messageTemplate || "")
+        .replace(/\s*\{image\}/g, "")
+        .replace(/\s*Image:\s*\{image\}/gi, "")
+        .replace(/\s*Image:\s*https?:\/\/\S+/gi, "")
+        .trim() || dWp.messageTemplate,
       corporateMessage: storedWp?.corporateMessage?.trim() || dWp.corporateMessage,
       conciergeMessage: storedWp?.conciergeMessage?.trim() || dWp.conciergeMessage,
     },
@@ -224,8 +228,13 @@ export function buildWhatsAppLink(
     }
     if (variables.image) {
       text = text.replace(/\{image\}/g, variables.image);
+    } else {
+      text = text.replace(/\s*\{image\}/g, "").replace(/\s*Image:\s*\{image\}/gi, "");
     }
+  } else {
+    text = text.replace(/\s*\{image\}/g, "").replace(/\s*Image:\s*\{image\}/gi, "");
   }
+  text = text.trim();
   if (!cleanNumber) return `https://wa.me/?text=${encodeURIComponent(text)}`;
   return `https://wa.me/${cleanNumber}?text=${encodeURIComponent(text)}`;
 }

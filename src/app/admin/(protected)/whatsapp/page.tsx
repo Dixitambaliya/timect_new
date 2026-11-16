@@ -35,8 +35,7 @@ const VARIABLE_TAGS = [
   { tag: "{name}", label: "Product name" },
   { tag: "{price}", label: "Price (e.g. ₹1,30,000)" },
   { tag: "{code}", label: "Product code (Ref. code)" },
-  { tag: "{url}", label: "Product page link" },
-  { tag: "{image}", label: "Primary image link" },
+  { tag: "{url}", label: "Product link (attaches preview image)" },
 ];
 
 export default function WhatsAppAdminPage() {
@@ -97,7 +96,6 @@ export default function WhatsAppAdminPage() {
   }
 
   const sampleUrl = typeof window !== "undefined" ? `${window.location.origin}/product/anniversary` : "https://timect.com/product/anniversary";
-  const sampleImage = "https://res.cloudinary.com/dphscxzb4/image/upload/v1784048472/timect/image_2.png";
   const previewLink = buildWhatsAppLink(
     data.phoneNumber,
     data.messageTemplate,
@@ -106,7 +104,6 @@ export default function WhatsAppAdminPage() {
       price: "₹1,30,000",
       code: "T145-ANNIV",
       url: sampleUrl,
-      image: sampleImage,
     },
   );
 
@@ -250,6 +247,9 @@ export default function WhatsAppAdminPage() {
                   </button>
                 ))}
               </div>
+              <p className="mt-2.5 text-[11.5px] text-[var(--admin-muted)]">
+                💡 <span className="font-medium">Image preview:</span> WhatsApp automatically generates a rich preview card with the watch&apos;s photo from the product <code>{`{url}`}</code>. A separate raw image URL is not needed.
+              </p>
             </div>
           </div>
 
@@ -329,7 +329,9 @@ export default function WhatsAppAdminPage() {
                   .replace(/\{price\}/g, "₹1,30,000")
                   .replace(/\{code\}/g, "T145-ANNIV")
                   .replace(/\{url\}/g, sampleUrl)
-                  .replace(/\{image\}/g, sampleImage)}
+                  .replace(/\s*\{image\}/g, "")
+                  .replace(/\s*Image:\s*\{image\}/gi, "")
+                  .trim()}
               </p>
             </div>
 

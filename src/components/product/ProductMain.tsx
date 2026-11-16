@@ -157,12 +157,13 @@ export default function ProductMain({
         .replace(/\{price\}/g, displayPrice(product.price))
         .replace(/\{code\}/g, product.code || "")
         .replace(/\{url\}/g, pageUrl)
-        .replace(/\{image\}/g, primaryImage)
+        .replace(/\s*\{image\}/g, "")
+        .replace(/\s*Image:\s*https?:\/\/\S+/gi, "")
+        .replace(/\s*Image:\s*\{image\}/gi, "")
+        .trim()
     : `Hi, I need help with ${title}${size ? ` (${size})` : ""}${subtitle ? ` -${subtitle}` : ""} -${displayPrice(product.price)}\n${pageUrl}`;
 
-  const message = primaryImage && !baseWpMessage.includes(primaryImage)
-    ? `${baseWpMessage}\nImage: ${primaryImage}`
-    : baseWpMessage;
+  const message = baseWpMessage;
 
   const share = async () => {
     try {
@@ -194,11 +195,11 @@ export default function ProductMain({
 
         await navigator.share({
           title,
-          text: `${title} - ${displayPrice(product.price)}${primaryImage ? `\nImage: ${primaryImage}` : ""}`,
+          text: `${title} - ${displayPrice(product.price)}`,
           url: pageUrl,
         });
       } else {
-        await navigator.clipboard.writeText(`${title} - ${pageUrl}${primaryImage ? `\nImage: ${primaryImage}` : ""}`);
+        await navigator.clipboard.writeText(`${title} - ${displayPrice(product.price)}\n${pageUrl}`);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
       }
@@ -390,7 +391,7 @@ export default function ProductMain({
             </button>
             <a
               href={`https://wa.me/?text=${encodeURIComponent(
-                `${title} - ${displayPrice(product.price)}\n${pageUrl}${primaryImage ? `\n\nImage: ${primaryImage}` : ""}`,
+                `${title} - ${displayPrice(product.price)}\n${pageUrl}`,
               )}`}
               target="_blank"
               rel="noreferrer"
@@ -401,7 +402,7 @@ export default function ProductMain({
             </a>
             <a
               href={`mailto:?subject=${encodeURIComponent(`Timect - ${title}`)}&body=${encodeURIComponent(
-                `Check out this watch from Timect:\n\n${title}\nPrice: ${displayPrice(product.price)}\n\nView watch: ${pageUrl}${primaryImage ? `\n\nProduct image: ${primaryImage}` : ""}`,
+                `Check out this watch from Timect:\n\n${title}\nPrice: ${displayPrice(product.price)}\n\nView watch: ${pageUrl}`,
               )}`}
               aria-label="Share by email"
               className="icon-btn h-16 w-16 bg-white"

@@ -79,7 +79,12 @@ export async function adminSaveStorefront(
         enabled: input.whatsappButton?.enabled !== undefined ? Boolean(input.whatsappButton.enabled) : true,
         buttonText: clean(input.whatsappButton?.buttonText, 80) || "Ask on WhatsApp",
         phoneNumber: clean(input.whatsappButton?.phoneNumber || input.contact?.whatsapp, 30).replace(/[^\d+]/g, ""),
-        messageTemplate: clean(input.whatsappButton?.messageTemplate, 500) || "Hi Timect, I would like to enquire about {name} ({price}). {url}",
+        messageTemplate:
+          clean(input.whatsappButton?.messageTemplate, 500)
+            .replace(/\s*\{image\}/g, "")
+            .replace(/\s*Image:\s*\{image\}/gi, "")
+            .replace(/\s*Image:\s*https?:\/\/\S+/gi, "")
+            .trim() || "Hi Timect, I would like to enquire about {name} ({price}). {url}",
         corporateMessage: clean(input.whatsappButton?.corporateMessage, 500) || "Hi Timect, I'd like help with a corporate gifting order.",
         conciergeMessage: clean(input.whatsappButton?.conciergeMessage, 500) || "Hi Timect, I have a question about your watches.",
       },
@@ -130,7 +135,12 @@ export async function adminSaveWhatsAppSettings(
       enabled: input.enabled !== undefined ? Boolean(input.enabled) : currentWp.enabled,
       buttonText: clean(input.buttonText, 80) || currentWp.buttonText || "Ask on WhatsApp",
       phoneNumber: clean(input.phoneNumber !== undefined ? input.phoneNumber : currentWp.phoneNumber, 30).replace(/[^\d+]/g, ""),
-      messageTemplate: clean(input.messageTemplate, 500) || currentWp.messageTemplate,
+      messageTemplate:
+        clean(input.messageTemplate, 500)
+          .replace(/\s*\{image\}/g, "")
+          .replace(/\s*Image:\s*\{image\}/gi, "")
+          .replace(/\s*Image:\s*https?:\/\/\S+/gi, "")
+          .trim() || currentWp.messageTemplate,
       corporateMessage: clean(input.corporateMessage, 500) || currentWp.corporateMessage,
       conciergeMessage: clean(input.conciergeMessage, 500) || currentWp.conciergeMessage,
     };
