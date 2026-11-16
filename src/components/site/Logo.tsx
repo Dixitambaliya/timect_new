@@ -8,8 +8,8 @@ export default function Logo({ light = false, compact = false }: { light?: boole
     <img
       src={TIMECT_LOGO}
       alt="Timect"
-      width={1552}
-      height={889}
+      width={1296}
+      height={718}
       className={cx(
         "block w-auto shrink-0 object-contain",
         // Artwork is black-on-transparent -knock it out to white on dark backgrounds.

@@ -23,7 +23,7 @@ export const SITE_CONFIG = {
   locale: "en_IN",
   language: "en",
   currency: "INR",
-  logo: "/images/timect_logo.png",
+  logo: "/logo_name.png",
 } as const;
 
 export function absoluteUrl(path = "/"): string {

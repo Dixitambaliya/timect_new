@@ -167,7 +167,7 @@ export const DEFAULT_STOREFRONT: StorefrontSettings = {
   },
 };
 
-export const TIMECT_LOGO = `${CDN}/v1784048492/timect/timect_logo.png`;
+export const TIMECT_LOGO = "/logo_name.png";
 
 /** Merge a partially stored settings object over the defaults. */
 export function mergeStorefront(
