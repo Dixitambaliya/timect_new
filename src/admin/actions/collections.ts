@@ -24,6 +24,15 @@ export type CollectionSummary = {
   sampleImage?: string;
 };
 
+export type CollectionProductItem = {
+  id: number;
+  name: string;
+  price: string;
+  image?: string;
+  collection?: string;
+  slug: string;
+};
+
 async function assertWrite() {
   const session = await requireAdminSession();
   if (!canWrite(session.role)) throw new Error("FORBIDDEN");
@@ -51,7 +60,7 @@ async function setSetting(key: string, value: unknown) {
   `;
 }
 
-/** Distinct product.collection values with counts */
+/** Distinct product.collection values with counts, merged with custom collections */
 export async function adminListCollections(): Promise<CollectionSummary[]> {
   await requireAdminSession();
   try {
@@ -65,12 +74,33 @@ export async function adminListCollections(): Promise<CollectionSummary[]> {
       GROUP BY collection
       ORDER BY collection ASC
     `;
-    return rows.map((r) => ({
-      name: String((r as { name: string }).name),
-      productCount: Number((r as { product_count: number }).product_count),
-      sampleImage:
-        ((r as { sample_image?: string }).sample_image as string) || undefined,
-    }));
+    const map = new Map<string, CollectionSummary>();
+    for (const r of rows) {
+      const name = String((r as { name: string }).name).trim();
+      if (!name) continue;
+      map.set(name, {
+        name,
+        productCount: Number((r as { product_count: number }).product_count),
+        sampleImage:
+          ((r as { sample_image?: string }).sample_image as string) || undefined,
+      });
+    }
+
+    const custom = await getSetting<string[]>("custom_collections", []);
+    if (Array.isArray(custom)) {
+      for (const name of custom) {
+        const trimmed = String(name).trim();
+        if (trimmed && !map.has(trimmed)) {
+          map.set(trimmed, {
+            name: trimmed,
+            productCount: 0,
+            sampleImage: undefined,
+          });
+        }
+      }
+    }
+
+    return Array.from(map.values()).sort((a, b) => a.name.localeCompare(b.name));
   } catch (err) {
     console.error("adminListCollections:", err);
     return [];
@@ -94,28 +124,228 @@ export async function adminListTags(): Promise<string[]> {
   }
 }
 
+export async function adminCreateCollection(
+  name: string,
+): Promise<{ ok: true; name: string } | { ok: false; error: string }> {
+  try {
+    await assertWrite();
+    const trimmed = name.trim();
+    if (!trimmed) {
+      return { ok: false, error: "Collection name cannot be empty." };
+    }
+    const current = await getSetting<string[]>("custom_collections", []);
+    const list = Array.isArray(current) ? [...current] : [];
+    if (!list.some((c) => c.toLowerCase() === trimmed.toLowerCase())) {
+      list.push(trimmed);
+      await setSetting("custom_collections", list);
+    }
+    revalidatePath("/admin/collections");
+    revalidatePath("/admin/products");
+    return { ok: true, name: trimmed };
+  } catch (err) {
+    console.error("adminCreateCollection:", err);
+    return { ok: false, error: "Failed to create collection." };
+  }
+}
+
 export async function adminRenameCollection(
   from: string,
   to: string,
 ): Promise<{ ok: true; count: number } | { ok: false; error: string }> {
   try {
     await assertWrite();
+    const oldName = from.trim();
     const next = to.trim();
-    if (!from.trim() || !next) {
+    if (!oldName || !next) {
       return { ok: false, error: "Both names are required." };
     }
     const result = await sql`
       UPDATE products SET collection = ${next}
-      WHERE collection = ${from}
+      WHERE collection = ${oldName}
       RETURNING id
     `;
+    const current = await getSetting<string[]>("custom_collections", []);
+    if (Array.isArray(current)) {
+      const updated = current.map((c) =>
+        c.toLowerCase() === oldName.toLowerCase() ? next : c,
+      );
+      if (!updated.some((c) => c.toLowerCase() === next.toLowerCase())) {
+        updated.push(next);
+      }
+      await setSetting("custom_collections", updated);
+    }
     revalidatePath("/");
     revalidatePath("/watches");
     revalidatePath("/admin/collections");
+    revalidatePath("/admin/products");
     return { ok: true, count: result.length };
   } catch (err) {
     console.error("adminRenameCollection:", err);
     return { ok: false, error: "Rename failed." };
+  }
+}
+
+export async function adminDeleteCollection(
+  name: string,
+): Promise<{ ok: true; unassignedCount: number } | { ok: false; error: string }> {
+  try {
+    await assertWrite();
+    const trimmed = name.trim();
+    if (!trimmed) {
+      return { ok: false, error: "Collection name is required." };
+    }
+    const result = await sql`
+      UPDATE products SET collection = NULL
+      WHERE collection = ${trimmed}
+      RETURNING id
+    `;
+    const current = await getSetting<string[]>("custom_collections", []);
+    if (Array.isArray(current)) {
+      const updated = current.filter(
+        (c) => c.toLowerCase() !== trimmed.toLowerCase(),
+      );
+      await setSetting("custom_collections", updated);
+    }
+    revalidatePath("/");
+    revalidatePath("/watches");
+    revalidatePath("/admin/collections");
+    revalidatePath("/admin/products");
+    return { ok: true, unassignedCount: result.length };
+  } catch (err) {
+    console.error("adminDeleteCollection:", err);
+    return { ok: false, error: "Failed to delete collection." };
+  }
+}
+
+export async function adminGetCollectionProducts(
+  collectionName: string,
+): Promise<CollectionProductItem[]> {
+  await requireAdminSession();
+  try {
+    const trimmed = collectionName.trim();
+    if (!trimmed) return [];
+    const rows = await sql`
+      SELECT id, name, title, price, image, collection, slug
+      FROM products
+      WHERE collection = ${trimmed}
+      ORDER BY id DESC
+    `;
+    return rows.map((r) => ({
+      id: Number((r as { id: number }).id),
+      name: String(
+        (r as { name: string | null; title: string | null }).name ||
+          (r as { title: string | null }).title ||
+          "Untitled",
+      ),
+      price: String((r as { price: string }).price || ""),
+      image: ((r as { image: string | null }).image as string) || undefined,
+      collection:
+        ((r as { collection: string | null }).collection as string) || undefined,
+      slug: String((r as { slug: string }).slug || ""),
+    }));
+  } catch (err) {
+    console.error("adminGetCollectionProducts:", err);
+    return [];
+  }
+}
+
+export async function adminAddProductsToCollection(
+  collectionName: string,
+  productIds: number[],
+): Promise<{ ok: true; count: number } | { ok: false; error: string }> {
+  try {
+    await assertWrite();
+    const trimmed = collectionName.trim();
+    if (!trimmed) return { ok: false, error: "Collection name is required." };
+    if (!productIds.length) return { ok: false, error: "No products selected." };
+
+    const result = await sql`
+      UPDATE products SET collection = ${trimmed}
+      WHERE id = ANY(${productIds})
+      RETURNING id
+    `;
+
+    const current = await getSetting<string[]>("custom_collections", []);
+    const list = Array.isArray(current) ? [...current] : [];
+    if (!list.some((c) => c.toLowerCase() === trimmed.toLowerCase())) {
+      list.push(trimmed);
+      await setSetting("custom_collections", list);
+    }
+
+    revalidatePath("/");
+    revalidatePath("/watches");
+    revalidatePath("/admin/collections");
+    revalidatePath("/admin/products");
+    return { ok: true, count: result.length };
+  } catch (err) {
+    console.error("adminAddProductsToCollection:", err);
+    return { ok: false, error: "Failed to add products to collection." };
+  }
+}
+
+export async function adminRemoveProductFromCollection(
+  productId: number,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  try {
+    await assertWrite();
+    await sql`
+      UPDATE products SET collection = NULL
+      WHERE id = ${productId}
+    `;
+    revalidatePath("/");
+    revalidatePath("/watches");
+    revalidatePath("/admin/collections");
+    revalidatePath("/admin/products");
+    return { ok: true };
+  } catch (err) {
+    console.error("adminRemoveProductFromCollection:", err);
+    return { ok: false, error: "Failed to remove product." };
+  }
+}
+
+export async function adminSearchProductsForCollection(
+  query = "",
+  excludeCollection?: string,
+): Promise<CollectionProductItem[]> {
+  await requireAdminSession();
+  try {
+    const q = query.trim().toLowerCase();
+    const rows = await sql`
+      SELECT id, name, title, price, image, collection, slug
+      FROM products
+      ORDER BY id DESC
+      LIMIT 100
+    `;
+    let items: CollectionProductItem[] = rows.map((r) => ({
+      id: Number((r as { id: number }).id),
+      name: String(
+        (r as { name: string | null; title: string | null }).name ||
+          (r as { title: string | null }).title ||
+          "Untitled",
+      ),
+      price: String((r as { price: string }).price || ""),
+      image: ((r as { image: string | null }).image as string) || undefined,
+      collection:
+        ((r as { collection: string | null }).collection as string) || undefined,
+      slug: String((r as { slug: string }).slug || ""),
+    }));
+
+    if (excludeCollection) {
+      items = items.filter((p) => p.collection !== excludeCollection);
+    }
+
+    if (q) {
+      items = items.filter(
+        (p) =>
+          p.name.toLowerCase().includes(q) ||
+          (p.collection && p.collection.toLowerCase().includes(q)),
+      );
+    }
+
+    return items;
+  } catch (err) {
+    console.error("adminSearchProductsForCollection:", err);
+    return [];
   }
 }
 

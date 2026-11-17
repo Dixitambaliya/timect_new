@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { ProductInput } from "@/admin/lib/product-mapper";
 import { flattenSpecifications } from "@/lib/specifications";
 import { catalogThumbUrl } from "@/lib/catalog-image";
+import { displayPrice, formatPrice, calculateDiscount, isNumericPrice } from "@/lib/price";
 
 /**
  * Storefront preview that mirrors the Fuse product page: stacked white info
@@ -19,6 +20,8 @@ export default function ProductPreview({ data }: { data: ProductInput }) {
   const sizes = data.sizes || [];
   const variants = data.variants || [];
   const brand = data.brand || data.collection || "Timect";
+  const originalPriceStr = data.originalPrice || data.priceSubtext;
+  const discount = originalPriceStr && isNumericPrice(originalPriceStr) ? calculateDiscount(data.price, originalPriceStr) : 0;
   const flags = [
     data.isMainProduct && "Main product",
     data.isNewArrival && "New arrival",
@@ -44,11 +47,25 @@ export default function ProductPreview({ data }: { data: ProductInput }) {
               {data.gender && <span className="text-[12px] font-semibold text-[#5a5a5a]">{data.gender}</span>}
             </div>
             <h1 className="mt-3 text-[22px] font-bold leading-tight text-[#343d50]">{title}</h1>
-            {(data.subtitle || data.description) && <p className="mt-2 text-[14px] text-[#5a5a5a]">{data.subtitle || data.description}</p>}
+            {data.subtitle && <p className="mt-2 text-[14px] text-[#5a5a5a]">{data.subtitle}</p>}
             {data.code && <p className="mt-1 text-[13px] text-[#5a5a5a]">Ref. {data.code}</p>}
             <div className="mt-4 border-t border-[#d4d4d4] pt-4">
-              <p className="text-[22px] font-semibold">{data.price || "-"}</p>
-              <p className="mt-0.5 text-[12px] text-[#5a5a5a]">{data.priceSubtext || "Recommended Retail Price"}</p>
+              <div className="flex flex-wrap items-baseline gap-2">
+                <p className="text-[22px] font-semibold">{data.price ? displayPrice(data.price) : "-"}</p>
+                {discount > 0 && originalPriceStr && (
+                  <>
+                    <span className="text-[14px] text-[#5a5a5a] line-through">{formatPrice(originalPriceStr)}</span>
+                    <span className="rounded-full bg-emerald-100 px-1.5 py-0.5 text-[11px] font-bold text-emerald-800">
+                      {discount}% OFF
+                    </span>
+                  </>
+                )}
+              </div>
+              {originalPriceStr && !isNumericPrice(originalPriceStr) ? (
+                <p className="mt-0.5 text-[12px] text-[#5a5a5a]">{originalPriceStr}</p>
+              ) : (
+                <p className="mt-0.5 text-[11px] text-[#5a5a5a]">Inclusive of all taxes </p>
+              )}
             </div>
           </div>
 
@@ -59,9 +76,8 @@ export default function ProductPreview({ data }: { data: ProductInput }) {
                 {sizes.map((s, i) => (
                   <span
                     key={s}
-                    className={`rounded-fuse border px-3 py-2 text-[14px] font-semibold ${
-                      i === (sizes.length > 1 ? 1 : 0) ? "border-[#7c92b7] bg-[#dfe9f9]" : "border-[#cacaca]"
-                    }`}
+                    className={`rounded-fuse border px-3 py-2 text-[14px] font-semibold ${i === (sizes.length > 1 ? 1 : 0) ? "border-[#7c92b7] bg-[#dfe9f9]" : "border-[#cacaca]"
+                      }`}
                   >
                     {s}
                   </span>
@@ -92,8 +108,14 @@ export default function ProductPreview({ data }: { data: ProductInput }) {
             <div className="rounded-fuse bg-[#128c7e] py-3.5 text-center text-[14px] font-semibold text-white">Ask on WhatsApp</div>
           </div>
 
-          {specs.length > 0 && (
+          {(data.description?.trim() || specs.length > 0) && (
             <div className="rounded-fuse bg-white p-3">
+              {data.description?.trim() && (
+                <details className="group mb-2 rounded-fuse border border-[#cacaca] px-4 py-3" open={!specs.length}>
+                  <summary className="cursor-pointer list-none text-[14px] font-semibold">Description</summary>
+                  <p className="mt-3 text-[13px] leading-relaxed text-[#2b2f38] whitespace-pre-line">{data.description}</p>
+                </details>
+              )}
               {specs.map((spec, i) => {
                 const rows = spec.type === "text" ? [] : flattenSpecifications([spec]).rows;
                 return (

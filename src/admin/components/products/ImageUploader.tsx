@@ -10,6 +10,7 @@ import {
   Replace,
 } from "lucide-react";
 import MediaPicker from "@/admin/components/media/MediaPicker";
+import AdminModal from "@/admin/components/ui/AdminModal";
 import { adminUploadMedia } from "@/admin/actions/media";
 import { useToast } from "@/admin/hooks/useToast";
 
@@ -36,6 +37,7 @@ export default function ImageUploader({
     "multi",
   );
   const [replaceIndex, setReplaceIndex] = useState<number | null>(null);
+  const [deleteConfirmIdx, setDeleteConfirmIdx] = useState<number | null>(null);
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [uploading, setUploading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -153,15 +155,15 @@ export default function ImageUploader({
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={url} alt="" className="h-full w-full object-cover" />
-              <div className="absolute inset-x-0 top-0 flex items-start justify-between p-1.5 opacity-0 transition group-hover:opacity-100">
-                <span className="admin-drag-handle rounded bg-black/50 p-1 text-white">
+              <div className="absolute inset-x-0 top-0 flex items-start justify-between p-1.5 opacity-100 transition sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100">
+                <span className="admin-drag-handle rounded bg-black/60 p-1 text-white backdrop-blur-xs">
                   <GripVertical className="h-3.5 w-3.5" />
                 </span>
                 <div className="flex gap-1">
                   <button
                     type="button"
                     title="Set primary"
-                    className="rounded bg-black/50 p-1 text-white hover:bg-black/70"
+                    className="rounded bg-black/60 p-1.5 text-white backdrop-blur-xs hover:bg-black/80 sm:p-1"
                     onClick={() => onPrimaryChange?.(url)}
                   >
                     <Star
@@ -171,7 +173,7 @@ export default function ImageUploader({
                   <button
                     type="button"
                     title="Replace"
-                    className="rounded bg-black/50 p-1 text-white hover:bg-black/70"
+                    className="rounded bg-black/60 p-1.5 text-white backdrop-blur-xs hover:bg-black/80 sm:p-1"
                     onClick={() => {
                       setReplaceIndex(idx);
                       setPickerMode("replace");
@@ -183,8 +185,8 @@ export default function ImageUploader({
                   <button
                     type="button"
                     title="Remove"
-                    className="rounded bg-black/50 p-1 text-white hover:bg-red-600"
-                    onClick={() => removeAt(idx)}
+                    className="rounded bg-black/60 p-1.5 text-white backdrop-blur-xs hover:bg-red-600 sm:p-1"
+                    onClick={() => setDeleteConfirmIdx(idx)}
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
@@ -262,6 +264,54 @@ export default function ImageUploader({
           if (!primary && urls[0]) onPrimaryChange?.(urls[0]);
         }}
       />
+
+      {/* Delete confirmation modal */}
+      <AdminModal
+        open={deleteConfirmIdx !== null}
+        title="Remove Image"
+        onClose={() => setDeleteConfirmIdx(null)}
+        width="max-w-md"
+        footer={
+          <div className="flex justify-end gap-2">
+            <button
+              type="button"
+              className="admin-btn admin-btn-secondary"
+              onClick={() => setDeleteConfirmIdx(null)}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              className="admin-btn bg-red-600 text-white hover:bg-red-700"
+              onClick={() => {
+                if (deleteConfirmIdx !== null) {
+                  removeAt(deleteConfirmIdx);
+                  setDeleteConfirmIdx(null);
+                  success("Image removed from product");
+                }
+              }}
+            >
+              Remove image
+            </button>
+          </div>
+        }
+      >
+        <div className="space-y-4 py-2">
+          <p className="text-sm text-[var(--admin-muted)]">
+            Are you sure you want to remove this image from the product? This action cannot be undone.
+          </p>
+          {deleteConfirmIdx !== null && images[deleteConfirmIdx] && (
+            <div className="mx-auto flex h-40 w-40 items-center justify-center overflow-hidden rounded-fuse-md border border-[var(--admin-border)] bg-[var(--admin-bg)] p-2">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={images[deleteConfirmIdx]}
+                alt="Product preview"
+                className="max-h-full max-w-full object-contain"
+              />
+            </div>
+          )}
+        </div>
+      </AdminModal>
     </div>
   );
 }

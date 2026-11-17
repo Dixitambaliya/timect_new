@@ -46,6 +46,7 @@ export interface Product {
   brand?: string;
   title?: string;
   subtitle?: string;
+  originalPrice?: string;
   priceSubtext?: string;
   sizes?: string[];
   images?: string[];
@@ -82,7 +83,8 @@ function mapRowToProduct(row: any): Product {
     brand: row.brand || undefined,
     title: row.title || undefined,
     subtitle: row.subtitle || undefined,
-    priceSubtext: row.price_subtext || undefined,
+    originalPrice: row.original_price || row.price_subtext || undefined,
+    priceSubtext: row.original_price || row.price_subtext || undefined,
     sizes: row.sizes || undefined,
     images: row.images || undefined,
     variants: row.variants || undefined,

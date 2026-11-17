@@ -1,6 +1,6 @@
 "use client";
 
-import { displayPrice } from "@/lib/price";
+import { displayPrice, formatPrice, calculateDiscount, isNumericPrice } from "@/lib/price";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
@@ -125,13 +125,15 @@ export default function ProductMain({
 
   const title = product.title || product.name || "Timect watch";
   const brand = product.brand || product.collection || "Timect";
-  const subtitle = product.subtitle || product.description || "";
+  const subtitle = product.subtitle || "";
   const images = product.images?.length ? product.images : product.image ? [product.image] : [];
   const specs = product.specifications?.length
     ? product.specifications
-    : subtitle
-      ? [{ title: "Description", type: "text", content: subtitle }]
-      : [];
+    : product.description
+      ? [{ title: "Description", type: "text", content: product.description }]
+      : subtitle
+        ? [{ title: "Description", type: "text", content: subtitle }]
+        : [];
   const keySpecs = flattenSpecifications(product.specifications).rows.filter((r) => r.label && r.value).slice(0, 4);
 
   // Variants: current product is always part of the family.
@@ -145,22 +147,26 @@ export default function ProductMain({
     : selectedVariant;
 
   const labels = [product.tag || (product.isMainProduct ? "Exclusive" : "")].filter(Boolean) as string[];
-  const panels = [...specs.map((s) => s.title), ...Object.keys(SERVICE_PANELS)];
+  const panels = [
+    ...(product.description?.trim() ? ["Description"] : []),
+    ...specs.map((s) => s.title),
+    ...Object.keys(SERVICE_PANELS),
+  ];
   const Heading = headingAs;
 
   const primaryImage = activeVariant?.image || product.image || images[0] || "";
 
   const baseWpMessage = wpSettings?.messageTemplate
     ? wpSettings.messageTemplate
-        .replace(/\{name\}/g, title)
-        .replace(/\{product\}/g, title)
-        .replace(/\{price\}/g, displayPrice(product.price))
-        .replace(/\{code\}/g, product.code || "")
-        .replace(/\{url\}/g, pageUrl)
-        .replace(/\s*\{image\}/g, "")
-        .replace(/\s*Image:\s*https?:\/\/\S+/gi, "")
-        .replace(/\s*Image:\s*\{image\}/gi, "")
-        .trim()
+      .replace(/\{name\}/g, title)
+      .replace(/\{product\}/g, title)
+      .replace(/\{price\}/g, displayPrice(product.price))
+      .replace(/\{code\}/g, product.code || "")
+      .replace(/\{url\}/g, pageUrl)
+      .replace(/\s*\{image\}/g, "")
+      .replace(/\s*Image:\s*https?:\/\/\S+/gi, "")
+      .replace(/\s*Image:\s*\{image\}/gi, "")
+      .trim()
     : `Hi, I need help with ${title}${size ? ` (${size})` : ""}${subtitle ? ` -${subtitle}` : ""} -${displayPrice(product.price)}\n${pageUrl}`;
 
   const message = baseWpMessage;
@@ -208,8 +214,18 @@ export default function ProductMain({
     }
   };
 
+  const originalPriceStr = product.originalPrice || product.priceSubtext;
+  const discount = originalPriceStr && isNumericPrice(originalPriceStr) ? calculateDiscount(product.price, originalPriceStr) : 0;
+
   const panelBody = () => {
     if (!panel) return null;
+    if (panel === "Description" && product.description) {
+      return (
+        <div className="rte leading-relaxed text-[16px] text-[#343d50] whitespace-pre-line">
+          {product.description}
+        </div>
+      );
+    }
     if (SERVICE_PANELS[panel]) return SERVICE_PANELS[panel];
     const spec = specs.find((s) => s.title === panel);
     return spec ? <SpecContent spec={spec} /> : null;
@@ -236,10 +252,26 @@ export default function ProductMain({
           {subtitle && <p className="mt-3 text-[16px] leading-[1.5] text-muted">{subtitle}</p>}
           {product.code && <p className="mt-2 text-[14px] text-muted">Ref. {product.code}</p>}
           <div className="mt-6 border-t border-line-soft pt-6">
-            <p className="text-[28px] font-semibold text-ink">{displayPrice(product.price)}</p>
-            <p className="mt-1 max-w-sm text-[13px] leading-relaxed text-muted">
-              {product.priceSubtext || "Recommended Retail Price"}
-            </p>
+            <div className="flex flex-wrap items-baseline gap-3">
+              <p className="text-[28px] font-semibold text-ink">{displayPrice(product.price)}</p>
+              {discount > 0 && originalPriceStr && (
+                <>
+                  <span className="text-[18px] text-muted line-through">{formatPrice(originalPriceStr)}</span>
+                  <span className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-[12px] font-bold text-emerald-700">
+                    {discount}% OFF
+                  </span>
+                </>
+              )}
+            </div>
+            {originalPriceStr && !isNumericPrice(originalPriceStr) ? (
+              <p className="mt-1 max-w-sm text-[13px] leading-relaxed text-muted">
+                {originalPriceStr}
+              </p>
+            ) : (
+              <p className="mt-1 text-[12px] text-muted">
+                Inclusive of all taxes
+              </p>
+            )}
           </div>
         </InfoCard>
 

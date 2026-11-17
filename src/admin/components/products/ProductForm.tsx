@@ -12,6 +12,7 @@ import {
 import type { ProductInput } from "@/admin/lib/product-mapper";
 import { slugify } from "@/admin/lib/slug";
 import { GENDER_OPTIONS } from "@/admin/lib/constants";
+import { calculateDiscount, parsePriceNumber } from "@/lib/price";
 import {
   adminCreateProduct,
   adminUpdateProduct,
@@ -153,8 +154,11 @@ export default function ProductForm({
     const payload: ProductInput = {
       ...data,
       image: data.image || data.images?.[0] || "",
-      title: data.title || data.name,
-      subtitle: data.subtitle || data.description,
+      name: data.name,
+      title: data.name,
+      subtitle: data.subtitle,
+      originalPrice: data.originalPrice || data.priceSubtext,
+      priceSubtext: data.originalPrice || data.priceSubtext,
     };
 
     startTransition(async () => {
@@ -217,161 +221,220 @@ export default function ProductForm({
 
       <div className="admin-card p-5 lg:p-6">
         {step === 1 && (
-          <div className="grid gap-5 md:grid-cols-2">
-            <div className="md:col-span-2">
-              <label className="admin-label" htmlFor="status">
-                Visibility
-              </label>
-              <Select
-                id="status"
-                className="admin-input"
-                value={data.status || "published"}
-                onChange={(e) => patch({ status: e.target.value as "published" | "draft" })}
-              >
-                <SelectOption value="published">Published - visible on storefront</SelectOption>
-                <SelectOption value="draft">Draft - hidden from storefront</SelectOption>
-              </Select>
-              <p className="mt-1 text-xs text-[var(--admin-muted)]">
-                Draft products remain editable in admin but cannot be opened or found by customers.
-              </p>
+          <div className="space-y-6">
+            {/* Section 1: General Information */}
+            <div className="space-y-4">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--admin-muted)]">
+                General Information
+              </h3>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="md:col-span-2">
+                  <label className="admin-label" htmlFor="status">
+                    Visibility
+                  </label>
+                  <Select
+                    id="status"
+                    className="admin-input"
+                    value={data.status || "published"}
+                    onChange={(e) => patch({ status: e.target.value as "published" | "draft" })}
+                  >
+                    <SelectOption value="published">Published - visible on storefront</SelectOption>
+                    <SelectOption value="draft">Draft - hidden from storefront</SelectOption>
+                  </Select>
+                  <p className="mt-1 text-xs text-[var(--admin-muted)]">
+                    Draft products remain editable in admin but cannot be opened or found by customers.
+                  </p>
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="admin-label" htmlFor="name">
+                    Product name *
+                  </label>
+                  <input
+                    id="name"
+                    className="admin-input text-base font-medium"
+                    value={data.name || ""}
+                    onChange={(e) => {
+                      const name = e.target.value;
+                      patch({ name, title: name });
+                    }}
+                    placeholder="e.g. Timect Two-Tone Black & Silver"
+                    autoFocus
+                  />
+                  <p className="mt-1 font-mono text-[11px] text-[var(--admin-muted)]">
+                    /product/{autoSlug || "…"} · URL is generated from the name
+                  </p>
+                </div>
+
+                <div>
+                  <label className="admin-label" htmlFor="brand">
+                    Brand
+                  </label>
+                  <input
+                    id="brand"
+                    className="admin-input"
+                    value={data.brand || ""}
+                    onChange={(e) => patch({ brand: e.target.value })}
+                    placeholder="e.g. Timect"
+                  />
+                </div>
+
+                <div>
+                  <DropdownWithAdd
+                    id="collection"
+                    label="Collection"
+                    value={data.collection || ""}
+                    options={collectionOptions}
+                    onChange={(collection) => patch({ collection })}
+                    onAddOption={(newCol) =>
+                      setCollectionOptions((prev) => Array.from(new Set([...prev, newCol])))
+                    }
+                    placeholder="-- Select collection --"
+                  />
+                </div>
+
+                <div>
+                  <DropdownWithAdd
+                    id="tag"
+                    label="Tag / Badge"
+                    value={data.tag || ""}
+                    options={tagOptions}
+                    onChange={(tag) => patch({ tag })}
+                    onAddOption={(newTag) =>
+                      setTagOptions((prev) => Array.from(new Set([...prev, newTag])))
+                    }
+                    placeholder="-- Select badge (e.g. Quartz, Automatic) --"
+                  />
+                </div>
+
+                <div>
+                  <label className="admin-label" htmlFor="code">
+                    Product Code / Ref. SKU
+                  </label>
+                  <input
+                    id="code"
+                    className="admin-input"
+                    value={data.code || ""}
+                    onChange={(e) => patch({ code: e.target.value })}
+                    placeholder="e.g. Ref. L3.788.4.98.6"
+                  />
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="admin-label" htmlFor="gender">
+                    Gender
+                  </label>
+                  <Select
+                    id="gender"
+                    className="admin-input"
+                    value={data.gender || "Unisex"}
+                    onChange={(e) => patch({ gender: e.target.value })}
+                  >
+                    {GENDER_OPTIONS.map((g) => (
+                      <SelectOption key={g} value={g}>
+                        {g}
+                      </SelectOption>
+                    ))}
+                  </Select>
+                </div>
+              </div>
             </div>
-            <div className="md:col-span-2">
-              <label className="admin-label" htmlFor="name">
-                Product name *
-              </label>
-              <input
-                id="name"
-                className="admin-input"
-                value={data.name || ""}
-                onChange={(e) => {
-                  const name = e.target.value;
-                  patch({
-                    name,
-                    title: data.title === data.name ? name : data.title,
-                  });
-                }}
-                placeholder="HYDROCONQUEST EXCLUSIVE EDITION"
-                autoFocus
-              />
-              <p className="mt-1 font-mono text-[11px] text-[var(--admin-muted)]">
-                /product/{autoSlug || "…"} · URL is generated from the name
-              </p>
+
+            {/* Section 2: Pricing & Discounts */}
+            <div className="border-t border-[var(--admin-border)] pt-5 space-y-4">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--admin-muted)]">
+                Pricing & Discounts
+              </h3>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div>
+                  <label className="admin-label" htmlFor="price">
+                    Selling Price *
+                  </label>
+                  <input
+                    id="price"
+                    className="admin-input text-base font-semibold"
+                    value={data.price || ""}
+                    onChange={(e) => patch({ price: e.target.value })}
+                    placeholder="e.g. ₹2,700"
+                  />
+                  <p className="mt-1 text-xs text-[var(--admin-muted)]">
+                    The actual price the customer pays at checkout.
+                  </p>
+                </div>
+
+                <div>
+                  <label className="admin-label" htmlFor="originalPrice">
+                    Original Price / MRP (optional)
+                  </label>
+                  <input
+                    id="originalPrice"
+                    className="admin-input"
+                    value={data.originalPrice || data.priceSubtext || ""}
+                    onChange={(e) =>
+                      patch({
+                        originalPrice: e.target.value,
+                        priceSubtext: e.target.value,
+                      })
+                    }
+                    placeholder="e.g. 5500 or ₹5,500"
+                  />
+                  <p className="mt-1 text-xs text-[var(--admin-muted)]">
+                    Shown crossed out (e.g. ~~₹5,500~~) to display savings to customers.
+                  </p>
+                </div>
+
+                {(() => {
+                  const orig = data.originalPrice || data.priceSubtext;
+                  const discount = orig ? calculateDiscount(data.price, orig) : 0;
+                  const diff = orig ? parsePriceNumber(orig) - parsePriceNumber(data.price) : 0;
+                  if (discount <= 0 || diff <= 0) return null;
+                  return (
+                    <div className="md:col-span-2 flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3.5 py-2 text-xs font-semibold text-emerald-800">
+                      <span>✓ Discount Active: {discount}% OFF — Customer saves ₹{diff.toLocaleString("en-IN")}</span>
+                    </div>
+                  );
+                })()}
+              </div>
             </div>
-            <div>
-              <label className="admin-label" htmlFor="brand">
-                Brand
-              </label>
-              <input
-                id="brand"
-                className="admin-input"
-                value={data.brand || ""}
-                onChange={(e) => patch({ brand: e.target.value })}
-              />
-            </div>
-            <div>
-              <DropdownWithAdd
-                id="collection"
-                label="Collection"
-                value={data.collection || ""}
-                options={collectionOptions}
-                onChange={(collection) => patch({ collection })}
-                onAddOption={(newCol) =>
-                  setCollectionOptions((prev) => Array.from(new Set([...prev, newCol])))
-                }
-                placeholder="-- Select collection --"
-              />
-            </div>
-            <div>
-              <label className="admin-label" htmlFor="code">
-                Product code
-              </label>
-              <input
-                id="code"
-                className="admin-input"
-                value={data.code || ""}
-                onChange={(e) => patch({ code: e.target.value })}
-              />
-            </div>
-            <div>
-              <DropdownWithAdd
-                id="tag"
-                label="Tag"
-                value={data.tag || ""}
-                options={tagOptions}
-                onChange={(tag) => patch({ tag })}
-                onAddOption={(newTag) =>
-                  setTagOptions((prev) => Array.from(new Set([...prev, newTag])))
-                }
-                placeholder="-- Select tag --"
-              />
-            </div>
-            <div>
-              <label className="admin-label" htmlFor="gender">
-                Gender
-              </label>
-              <Select
-                id="gender"
-                className="admin-input"
-                value={data.gender || "Unisex"}
-                onChange={(e) => patch({ gender: e.target.value })}
-              >
-                {GENDER_OPTIONS.map((g) => (
-                  <SelectOption key={g} value={g}>
-                    {g}
-                  </SelectOption>
-                ))}
-              </Select>
-            </div>
-            <div>
-              <label className="admin-label" htmlFor="price">
-                Price *
-              </label>
-              <input
-                id="price"
-                className="admin-input"
-                value={data.price || ""}
-                onChange={(e) => patch({ price: e.target.value })}
-                placeholder="₹ 1,10,000"
-              />
-            </div>
-            <div className="md:col-span-2">
-              <label className="admin-label" htmlFor="priceSubtext">
-                Price subtext
-              </label>
-              <input
-                id="priceSubtext"
-                className="admin-input"
-                value={data.priceSubtext || ""}
-                onChange={(e) => patch({ priceSubtext: e.target.value })}
-                placeholder="Recommended Retail Price…"
-              />
-            </div>
-            <div className="md:col-span-2">
-              <label className="admin-label" htmlFor="title">
-                Long title (optional)
-              </label>
-              <input
-                id="title"
-                className="admin-input"
-                value={data.title || ""}
-                onChange={(e) => patch({ title: e.target.value })}
-              />
-            </div>
-            <div className="md:col-span-2">
-              <label className="admin-label" htmlFor="description">
-                Description
-              </label>
-              <textarea
-                id="description"
-                className="admin-input min-h-[100px]"
-                value={data.description || ""}
-                onChange={(e) =>
-                  patch({
-                    description: e.target.value,
-                    subtitle: e.target.value,
-                  })
-                }
-              />
+
+            {/* Section 3: Content & Highlights */}
+            <div className="border-t border-[var(--admin-border)] pt-5 space-y-4">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-[var(--admin-muted)]">
+                Content & Description
+              </h3>
+              <div className="grid gap-4">
+                <div>
+                  <label className="admin-label" htmlFor="subtitle">
+                    Subtitle / Key Highlights (optional)
+                  </label>
+                  <input
+                    id="subtitle"
+                    className="admin-input"
+                    value={data.subtitle || ""}
+                    onChange={(e) => patch({ subtitle: e.target.value })}
+                    placeholder="e.g. Quartz watch, Ø 40mm, steel case"
+                  />
+                  <p className="mt-1 text-xs text-[var(--admin-muted)]">
+                    Short one-line summary displayed directly under the watch title on the storefront.
+                  </p>
+                </div>
+
+                <div>
+                  <label className="admin-label" htmlFor="description">
+                    Full Description
+                  </label>
+                  <textarea
+                    id="description"
+                    className="admin-input min-h-[120px] leading-relaxed"
+                    value={data.description || ""}
+                    onChange={(e) => patch({ description: e.target.value })}
+                    placeholder="Detailed description of the watch, materials, movement, and design features…"
+                  />
+                  <p className="mt-1 text-xs text-[var(--admin-muted)]">
+                    Displayed in the Description accordion drawer on the product page.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         )}

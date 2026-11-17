@@ -15,9 +15,10 @@ export function mapRowToProduct(row: Record<string, unknown>): Product {
     isRecommended: Boolean(row.is_recommended),
     isRelated: Boolean(row.is_related),
     brand: (row.brand as string) || undefined,
-    title: (row.title as string) || undefined,
+    title: (row.name as string) || (row.title as string) || undefined,
     subtitle: (row.subtitle as string) || undefined,
-    priceSubtext: (row.price_subtext as string) || undefined,
+    originalPrice: (row.original_price as string) || (row.price_subtext as string) || undefined,
+    priceSubtext: (row.original_price as string) || (row.price_subtext as string) || undefined,
     sizes: (row.sizes as string[]) || undefined,
     images: (row.images as string[]) || undefined,
     variants: (row.variants as Variant[]) || undefined,
@@ -48,6 +49,7 @@ export type ProductInput = {
   tag?: string;
   gender?: string;
   price: string;
+  originalPrice?: string;
   priceSubtext?: string;
   title?: string;
   subtitle?: string;
@@ -76,6 +78,7 @@ export function emptyProductInput(): ProductInput {
     tag: "",
     gender: "Unisex",
     price: "",
+    originalPrice: "",
     priceSubtext: "",
     title: "",
     subtitle: "",
@@ -101,13 +104,14 @@ export function productToInput(p: Product): ProductInput {
     brand: p.brand || "",
     collection: p.collection || "",
     code: p.code || "",
-    description: p.description || p.subtitle || "",
+    description: p.description || "",
     tag: p.tag || "",
     gender: p.gender || "Unisex",
     price: p.price || "",
-    priceSubtext: p.priceSubtext || "",
-    title: p.title || p.name || "",
-    subtitle: p.subtitle || p.description || "",
+    originalPrice: p.originalPrice || p.priceSubtext || "",
+    priceSubtext: p.originalPrice || p.priceSubtext || "",
+    title: p.name || p.title || "",
+    subtitle: p.subtitle || "",
     isMainProduct: p.isMainProduct,
     isNewArrival: p.isNewArrival,
     isRecommended: p.isRecommended,

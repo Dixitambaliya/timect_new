@@ -1,6 +1,6 @@
 "use client";
 
-import { displayPrice } from "@/lib/price";
+import { displayPrice, formatPrice, calculateDiscount, isNumericPrice } from "@/lib/price";
 import Link from "next/link";
 import { useState } from "react";
 import { cx } from "@/lib/cx";
@@ -16,6 +16,8 @@ export type CardProduct = {
   name?: string;
   title?: string;
   price: string;
+  originalPrice?: string;
+  priceSubtext?: string;
   image?: string;
   hoverImage?: string;
   brand?: string;
@@ -168,7 +170,21 @@ export default function ProductCard({
             {[product.code && `Ref. ${product.code}`, product.gender].filter(Boolean).join(" · ")}
           </p>
         )}
-        <p className="mt-auto pt-3 text-[16px] font-semibold text-ink md:pt-4 md:text-[20px]">{displayPrice(product.price)}</p>
+        {(() => {
+          const orig = product.originalPrice || product.priceSubtext;
+          const discount = orig && isNumericPrice(orig) ? calculateDiscount(product.price, orig) : 0;
+          return (
+            <div className="mt-auto flex flex-wrap items-baseline gap-2 pt-3 md:pt-4">
+              <span className="text-[16px] font-semibold text-ink md:text-[20px]">{displayPrice(product.price)}</span>
+              {discount > 0 && orig && (
+                <>
+                  <span className="text-[13px] text-muted line-through md:text-[14px]">{formatPrice(orig)}</span>
+                  <span className="text-[11px] font-bold text-emerald-700">{discount}% off</span>
+                </>
+              )}
+            </div>
+          );
+        })()}
       </div>
     </article>
   );

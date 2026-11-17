@@ -33,3 +33,26 @@ export function displayPrice(price: string | number | undefined | null): string 
   const n = parseFloat(String(price ?? "").replace(/[^\d.]/g, ""));
   return Number.isFinite(n) && n > 0 ? formatPrice(price) : "Price on request";
 }
+
+export function parsePriceNumber(price: string | number | undefined | null): number {
+  if (price === undefined || price === null) return 0;
+  const cleaned = String(price).replace(/[^\d.]/g, "");
+  const num = parseFloat(cleaned);
+  return Number.isFinite(num) ? num : 0;
+}
+
+export function isNumericPrice(price: string | number | undefined | null): boolean {
+  if (!price) return false;
+  const num = parsePriceNumber(price);
+  return num > 0;
+}
+
+export function calculateDiscount(
+  currentPrice: string | number | undefined | null,
+  originalPrice: string | number | undefined | null,
+): number {
+  const current = parsePriceNumber(currentPrice);
+  const original = parsePriceNumber(originalPrice);
+  if (original <= 0 || current <= 0 || original <= current) return 0;
+  return Math.round(((original - current) / original) * 100);
+}

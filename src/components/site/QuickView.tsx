@@ -1,6 +1,6 @@
 "use client";
 
-import { displayPrice } from "@/lib/price";
+import { displayPrice, formatPrice, calculateDiscount, isNumericPrice } from "@/lib/price";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getProductBySlug, type Product } from "@/db/actions";
@@ -111,8 +111,30 @@ export default function QuickView() {
               {(product.subtitle || product.description) && (
                 <p className="mt-3 line-clamp-3 text-muted">{product.subtitle || product.description}</p>
               )}
-              <p className="mt-6 text-[24px] font-semibold">{displayPrice(product.price)}</p>
-              {product.priceSubtext && <p className="mt-1 text-[13px] text-muted">{product.priceSubtext}</p>}
+              {(() => {
+                const orig = product.originalPrice || product.priceSubtext;
+                const discount = orig && isNumericPrice(orig) ? calculateDiscount(product.price, orig) : 0;
+                return (
+                  <div className="mt-6 flex flex-wrap items-baseline gap-2.5">
+                    <p className="text-[24px] font-semibold">{displayPrice(product.price)}</p>
+                    {discount > 0 && orig && (
+                      <>
+                        <span className="text-[16px] text-muted line-through">{formatPrice(orig)}</span>
+                        <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-bold text-emerald-700">
+                          {discount}% OFF
+                        </span>
+                      </>
+                    )}
+                  </div>
+                );
+              })()}
+              {(() => {
+                const orig = product.originalPrice || product.priceSubtext;
+                if (orig && !isNumericPrice(orig)) {
+                  return <p className="mt-1 text-[13px] text-muted">{orig}</p>;
+                }
+                return null;
+              })()}
             </div>
 
             {!!product.sizes?.length && (

@@ -71,11 +71,18 @@ function normalizeInput(input: ProductInput): ProductInput {
   const images = (input.images || []).filter(Boolean);
   const primary = input.image || images[0] || "";
   const name = (input.name || input.title || "").trim();
-  const title = (input.title || input.name || "").trim();
+  const title = name;
+  const subtitle = input.subtitle !== undefined ? input.subtitle.trim() : undefined;
+  const description = input.description !== undefined ? input.description.trim() : undefined;
+  const originalPrice = input.originalPrice?.trim() || input.priceSubtext?.trim() || undefined;
   return {
     ...input,
     name,
     title,
+    subtitle,
+    description,
+    originalPrice,
+    priceSubtext: originalPrice,
     price: formatPrice(input.price),
     image: primary,
     images: images.length ? images : primary ? [primary] : [],
@@ -224,7 +231,7 @@ export async function adminCreateProduct(
     const rows = await sql`
       INSERT INTO products (
         slug, status, is_main_product, is_new_arrival, is_recommended, is_related,
-        name, price, image, brand, title, subtitle, price_subtext,
+        name, price, original_price, price_subtext, image, brand, title, subtitle,
         sizes, images, variants, specifications,
         tag, code, collection, description, gender, rating, hover_image
       ) VALUES (
@@ -236,11 +243,12 @@ export async function adminCreateProduct(
         ${Boolean(data.isRelated)},
         ${data.name || null},
         ${data.price},
+        ${data.originalPrice || null},
+        ${data.originalPrice || null},
         ${data.image || null},
         ${data.brand || null},
-        ${data.title || null},
-        ${data.subtitle || data.description || null},
-        ${data.priceSubtext || null},
+        ${data.name || null},
+        ${data.subtitle || null},
         ${JSON.stringify(data.sizes || [])},
         ${JSON.stringify(data.images || [])},
         ${JSON.stringify(data.variants || [])},
@@ -338,11 +346,12 @@ export async function adminUpdateProduct(
         is_related = ${Boolean(data.isRelated)},
         name = ${data.name || null},
         price = ${data.price},
+        original_price = ${data.originalPrice || null},
+        price_subtext = ${data.originalPrice || null},
         image = ${data.image || null},
         brand = ${data.brand || null},
-        title = ${data.title || null},
-        subtitle = ${data.subtitle || data.description || null},
-        price_subtext = ${data.priceSubtext || null},
+        title = ${data.name || null},
+        subtitle = ${data.subtitle || null},
         sizes = ${JSON.stringify(data.sizes || [])},
         images = ${JSON.stringify(data.images || [])},
         variants = ${JSON.stringify(data.variants || [])},
