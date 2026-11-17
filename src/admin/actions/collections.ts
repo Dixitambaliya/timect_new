@@ -10,6 +10,7 @@ import {
 import { canWrite } from "@/admin/lib/constants";
 import { requireAdminSession } from "@/admin/lib/session";
 import { slugify } from "@/admin/lib/slug";
+import { addToRecycleBin } from "@/admin/actions/recycle-bin";
 
 export type ShopCategoryCard = {
   slug: string;
@@ -164,6 +165,15 @@ export async function adminRenameCollection(
       WHERE collection = ${oldName}
       RETURNING id
     `;
+
+    await addToRecycleBin({
+      entityType: "collection",
+      entityId: next,
+      entityName: next,
+      actionType: "rename",
+      snapshot: { from: oldName, to: next },
+      details: `Collection renamed from "${oldName}" to "${next}"`,
+    });
     const current = await getSetting<string[]>("custom_collections", []);
     if (Array.isArray(current)) {
       const updated = current.map((c) =>
@@ -194,11 +204,25 @@ export async function adminDeleteCollection(
     if (!trimmed) {
       return { ok: false, error: "Collection name is required." };
     }
+    const assignedProducts = await sql`
+      SELECT id FROM products WHERE collection = ${trimmed}
+    `;
+    const productIds = assignedProducts.map((p) => Number((p as { id: number }).id));
+
     const result = await sql`
       UPDATE products SET collection = NULL
       WHERE collection = ${trimmed}
       RETURNING id
     `;
+
+    await addToRecycleBin({
+      entityType: "collection",
+      entityId: trimmed,
+      entityName: trimmed,
+      actionType: "delete",
+      snapshot: { name: trimmed, productIds },
+      details: `Deleted collection "${trimmed}" (${productIds.length} watch(es) unassigned)`,
+    });
     const current = await getSetting<string[]>("custom_collections", []);
     if (Array.isArray(current)) {
       const updated = current.filter(

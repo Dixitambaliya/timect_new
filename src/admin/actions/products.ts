@@ -11,6 +11,7 @@ import { slugify, uniqueSlug } from "@/admin/lib/slug";
 import { canDelete, canWrite } from "@/admin/lib/constants";
 import { requireAdminSession } from "@/admin/lib/session";
 import { formatPrice } from "@/lib/price";
+import { addToRecycleBin } from "@/admin/actions/recycle-bin";
 
 export type ProductListFilters = {
   search?: string;
@@ -312,9 +313,21 @@ export async function adminUpdateProduct(
     if (imageErr) return { ok: false, error: imageErr };
 
     const existing = await sql`
-      SELECT id, slug, variants FROM products WHERE id = ${id} LIMIT 1
+      SELECT * FROM products WHERE id = ${id} LIMIT 1
     `;
     if (existing.length === 0) return { ok: false, error: "Product not found." };
+
+    const previousRow = existing[0] as Record<string, unknown>;
+    const previousName = (previousRow.name as string) || (previousRow.title as string) || `Product #${id}`;
+    await addToRecycleBin({
+      entityType: "product",
+      entityId: String(id),
+      entityName: previousName,
+      actionType: "update",
+      snapshot: previousRow,
+      details: `Watch "${previousName}" updated`,
+    });
+
     const previousSlug = String(
       (existing[0] as { slug: string | null }).slug || "",
     );
@@ -405,10 +418,21 @@ export async function adminDeleteProduct(
   try {
     const session = await assertDelete();
 
-    // Fetch slug of the product to delete first
-    const pRow = await sql`SELECT slug FROM products WHERE id = ${id} LIMIT 1`;
+    // Fetch full product row before deletion to preserve in recycle bin
+    const pRow = await sql`SELECT * FROM products WHERE id = ${id} LIMIT 1`;
     if (pRow.length > 0) {
-      const slug = pRow[0].slug as string;
+      const p = pRow[0] as Record<string, unknown>;
+      const prodName = (p.name as string) || (p.title as string) || `Product #${id}`;
+      await addToRecycleBin({
+        entityType: "product",
+        entityId: String(id),
+        entityName: prodName,
+        actionType: "delete",
+        snapshot: p,
+        details: `Deleted watch "${prodName}" (${(p.price as string) || ""})`,
+      });
+
+      const slug = p.slug as string;
       
       // Delete relationship from other products' variants
       const affectedProducts = await sql`
@@ -456,6 +480,19 @@ export async function adminBulkDeleteProducts(
     if (!ids.length) return { ok: true, count: 0 };
     let count = 0;
     for (const id of ids) {
+      const pRow = await sql`SELECT * FROM products WHERE id = ${id} LIMIT 1`;
+      if (pRow.length > 0) {
+        const p = pRow[0] as Record<string, unknown>;
+        const prodName = (p.name as string) || (p.title as string) || `Product #${id}`;
+        await addToRecycleBin({
+          entityType: "product",
+          entityId: String(id),
+          entityName: prodName,
+          actionType: "delete",
+          snapshot: p,
+          details: `Bulk deleted watch "${prodName}"`,
+        });
+      }
       await sql`DELETE FROM products WHERE id = ${id}`;
       count += 1;
     }

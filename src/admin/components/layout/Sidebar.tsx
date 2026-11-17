@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "@/admin/lib/navigation";
 import { usePathname } from "@/admin/lib/navigation";
 import {
@@ -16,6 +17,8 @@ import {
   BookOpen,
   Activity,
   X,
+  ChevronDown,
+  RotateCcw,
 } from "lucide-react";
 import { TIMECT_LOGO } from "@/data/storefront";
 
@@ -46,6 +49,7 @@ const GROUPS: Group[] = [
       { href: "/admin/collections", label: "Collections", icon: Layers },
       { href: "/admin/corporate-gifting", label: "Corporate Gifting", icon: Gift },
       { href: "/admin/media", label: "Media", icon: ImageIcon },
+      { href: "/admin/recycle-bin", label: "Recycle Bin", icon: RotateCcw },
     ],
   },
   {
@@ -89,6 +93,14 @@ export default function Sidebar({
   unread?: number;
 }) {
   const pathname = usePathname();
+  const [openDropdowns, setOpenDropdowns] = useState<Record<string, boolean>>({});
+
+  const toggleDropdown = (label: string, defaultOpen: boolean) => {
+    setOpenDropdowns((prev) => {
+      const current = prev[label] ?? defaultOpen;
+      return { ...prev, [label]: !current };
+    });
+  };
 
   return (
     <>
@@ -135,38 +147,63 @@ export default function Sidebar({
               </p>
               <ul className="admin-sidebar-items">
                 {group.items.map((item) => {
+                  const hasChildren = Boolean(item.children && item.children.length > 0);
                   const isChildActive = item.children?.some((c) => pathname === c.href);
                   const isParentActive =
                     pathname === item.href ||
-                    (!item.children && item.href !== "/admin/dashboard" && pathname.startsWith(item.href));
+                    (!hasChildren && item.href !== "/admin/dashboard" && pathname.startsWith(item.href));
                   const active = isParentActive || isChildActive;
                   const Icon = item.icon;
                   const count = "badge" in item && item.badge === "inbox" ? unread : 0;
+                  const isOpen = hasChildren ? (openDropdowns[item.label] ?? Boolean(isChildActive)) : false;
+
                   return (
-                    <li key={item.href} className="admin-sidebar-item">
-                      <Link
-                        href={item.href}
-                        onClick={onClose}
-                        style={{ gap: "0.5rem" }}
-                        className={`admin-sidebar-link group flex items-center gap-[0.5rem] rounded-fuse-md border px-3.5 transition-colors duration-200 ${
-                          isParentActive && !isChildActive
-                            ? "border-[var(--admin-accent-border)] bg-[var(--admin-accent-soft)] font-semibold text-[var(--admin-heading)]"
-                            : active
-                              ? "border-transparent font-semibold text-[var(--admin-heading)]"
+                    <li key={item.label} className="admin-sidebar-item">
+                      {hasChildren ? (
+                        <button
+                          type="button"
+                          onClick={() => toggleDropdown(item.label, Boolean(isChildActive))}
+                          style={{ gap: "0.5rem" }}
+                          aria-expanded={isOpen}
+                          className={`admin-sidebar-link group flex w-full items-center gap-[0.5rem] rounded-fuse-md border px-3.5 text-left transition-colors duration-200 cursor-pointer ${
+                            active
+                              ? "border-[var(--admin-accent-border)] bg-[var(--admin-accent-soft)] font-semibold text-[var(--admin-heading)]"
                               : "border-transparent font-medium text-[var(--admin-muted)] hover:bg-[var(--admin-surface)] hover:text-[var(--admin-ink)]"
-                        }`}
-                      >
-                        <Icon className="admin-sidebar-icon shrink-0" strokeWidth={1.85} />
-                        <span className="flex-1 truncate">{item.label}</span>
-                        {count > 0 && (
-                          <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--admin-accent)] px-1.5 text-[11px] font-bold text-[var(--admin-surface)]">
-                            {count > 99 ? "99+" : count}
-                          </span>
-                        )}
-                      </Link>
-                      {item.children && (
-                        <ul className="admin-sidebar-children ms-4 border-s border-[var(--admin-line)] ps-3.5">
-                          {item.children.map((child) => {
+                          }`}
+                        >
+                          <Icon className="admin-sidebar-icon shrink-0" strokeWidth={1.85} />
+                          <span className="flex-1 truncate">{item.label}</span>
+                          <ChevronDown
+                            className={`h-4 w-4 shrink-0 text-[var(--admin-muted)] transition-transform duration-200 ${
+                              isOpen ? "rotate-180" : ""
+                            }`}
+                            strokeWidth={2}
+                          />
+                        </button>
+                      ) : (
+                        <Link
+                          href={item.href}
+                          onClick={onClose}
+                          style={{ gap: "0.5rem" }}
+                          className={`admin-sidebar-link group flex items-center gap-[0.5rem] rounded-fuse-md border px-3.5 transition-colors duration-200 ${
+                            isParentActive
+                              ? "border-[var(--admin-accent-border)] bg-[var(--admin-accent-soft)] font-semibold text-[var(--admin-heading)]"
+                              : "border-transparent font-medium text-[var(--admin-muted)] hover:bg-[var(--admin-surface)] hover:text-[var(--admin-ink)]"
+                          }`}
+                        >
+                          <Icon className="admin-sidebar-icon shrink-0" strokeWidth={1.85} />
+                          <span className="flex-1 truncate">{item.label}</span>
+                          {count > 0 && (
+                            <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--admin-accent)] px-1.5 text-[11px] font-bold text-[var(--admin-surface)]">
+                              {count > 99 ? "99+" : count}
+                            </span>
+                          )}
+                        </Link>
+                      )}
+
+                      {hasChildren && isOpen && (
+                        <ul className="admin-sidebar-children ms-4 mt-1 space-y-0.5 border-s border-[var(--admin-line)] ps-3.5">
+                          {item.children!.map((child) => {
                             const childActive = pathname === child.href;
                             return (
                               <li key={child.href}>
@@ -174,7 +211,7 @@ export default function Sidebar({
                                   href={child.href}
                                   onClick={onClose}
                                   style={{ gap: "0.5rem" }}
-                                  className={`admin-sidebar-child-link flex items-center gap-[0.5rem] rounded-fuse-sm px-3 transition ${
+                                  className={`admin-sidebar-child-link flex items-center gap-[0.5rem] rounded-fuse-sm px-3 py-1.5 transition ${
                                     childActive
                                       ? "bg-[var(--admin-accent-soft)] font-semibold text-[var(--admin-heading)]"
                                       : "font-medium text-[var(--admin-muted)] hover:bg-[var(--admin-surface)] hover:text-[var(--admin-ink)]"
