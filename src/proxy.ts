@@ -3,6 +3,31 @@ import { verifyAdminToken } from "@/admin/lib/auth";
 import { ADMIN_COOKIE } from "@/admin/lib/constants";
 import { ADMIN_HOST, PUBLIC_HOSTS, adminPath, isAdminHost, isAdminPath } from "@/admin/lib/routing";
 
+// Exact public assets bypass page routing; dotted admin routes stay protected.
+const PUBLIC_ASSET_PATHS = new Set([
+  "/android-chrome-192x192.png",
+  "/android-chrome-512x512.png",
+  "/android-chrome-maskable-192x192.png",
+  "/android-chrome-maskable-512x512.png",
+  "/apple-icon.png",
+  "/apple-touch-icon-precomposed.png",
+  "/apple-touch-icon.png",
+  "/browserconfig.xml",
+  "/favicon-16x16.png",
+  "/favicon-32x32.png",
+  "/favicon-48x48.png",
+  "/favicon.ico",
+  "/favicon.png",
+  "/icon.png",
+  "/llms.txt",
+  "/logo_name.png",
+  "/mstile-150x150.png",
+  "/robots.txt",
+  "/site.webmanifest",
+  "/sitemap.xml",
+  "/web_fav_icon.png"
+]);
+
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const host = request.nextUrl.hostname.toLowerCase();
@@ -17,7 +42,7 @@ export async function proxy(request: NextRequest) {
   }
   // Keep APIs and framework assets on their existing paths.
   if (subdomain && (pathname === "/api" || pathname.startsWith("/api/") ||
-      pathname.startsWith("/_next/") || ["/favicon.ico", "/icon.png", "/apple-icon.png", "/robots.txt", "/sitemap.xml"].includes(pathname))) {
+      pathname.startsWith("/_next/") || PUBLIC_ASSET_PATHS.has(pathname))) {
     return NextResponse.next();
   }
   if (subdomain && isAdminPath(pathname)) {

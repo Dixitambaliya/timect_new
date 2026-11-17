@@ -1,3 +1,4 @@
+import { readdir, readFile } from "node:fs/promises";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { NextRequest } from "next/server";
@@ -34,4 +35,26 @@ test("public hosts, local development, APIs and assets", async () => {
   assert.equal(adminPath("/admin/products?q=1", true), "/products?q=1");
   assert.equal(adminPath("/admin/products", false), "/admin/products");
   assert.equal(adminPath("/administrator", true), "/administrator");
+});
+
+
+test("all public assets bypass admin rewriting with or without a session", async () => {
+  const token = await signAdminToken({ id: 1, email: "test@example.com", fullName: "Test", role: "admin" });
+  const assets = await readdir(new URL("../public/", import.meta.url), { recursive: true, withFileTypes: true });
+  for (const asset of assets.filter((entry) => entry.isFile())) {
+    const path = `/${asset.name}`;
+    for (const cookie of ["", `${ADMIN_COOKIE}=${token}`]) {
+      const response = await proxy(new NextRequest(`https://admin.timectwatches.com${path}?v=1`, { headers: { cookie } }));
+      assert.equal(response.headers.get("x-middleware-next"), "1", path);
+      assert.equal(response.headers.get("location"), null, path);
+      assert.equal(response.headers.get("x-middleware-rewrite"), null, path);
+    }
+  }
+  const manifest = JSON.parse(await readFile(new URL("../public/site.webmanifest", import.meta.url), "utf8"));
+  assert.ok(manifest.icons.length > 0);
+  for (const icon of manifest.icons) {
+    await readFile(new URL(`../public${icon.src}`, import.meta.url));
+  }
+  const protectedAssetLikeRoute = await proxy(new NextRequest("https://admin.timectwatches.com/products/item.png"));
+  assert.equal(new URL(protectedAssetLikeRoute.headers.get("location")!).pathname, "/login");
 });
