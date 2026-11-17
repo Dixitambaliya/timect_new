@@ -2,7 +2,7 @@
 
 import * as SelectPrimitive from "@radix-ui/react-select";
 import { Check, ChevronDown } from "lucide-react";
-import { Children, isValidElement, type ReactNode } from "react";
+import { Children, isValidElement, useRef, useState, type ReactNode } from "react";
 
 const EMPTY_VALUE = "__shadcn_empty_value__";
 
@@ -18,6 +18,7 @@ type SelectProps = {
   children: ReactNode;
   className?: string;
   disabled?: boolean;
+  closeOnTriggerClick?: boolean;
   "aria-label"?: string;
 };
 
@@ -28,8 +29,12 @@ export function Select({
   children,
   className = "",
   disabled,
+  closeOnTriggerClick = false,
   ...props
 }: SelectProps) {
+  const [open, setOpen] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const wasOpenOnPointerDown = useRef(false);
   const options = Children.toArray(children).flatMap((child) => {
     if (!isValidElement<{ value: string; children: ReactNode }>(child)) return [];
     return [{ value: child.props.value, label: child.props.children }];
@@ -37,6 +42,8 @@ export function Select({
 
   return (
     <SelectPrimitive.Root
+      open={closeOnTriggerClick ? open : undefined}
+      onOpenChange={closeOnTriggerClick ? setOpen : undefined}
       value={value === "" ? EMPTY_VALUE : value}
       disabled={disabled}
       onValueChange={(nextValue) =>
@@ -45,6 +52,17 @@ export function Select({
     >
       <SelectPrimitive.Trigger
         {...props}
+        ref={triggerRef}
+        onPointerDown={closeOnTriggerClick ? () => {
+          wasOpenOnPointerDown.current = open;
+        } : undefined}
+        onClick={closeOnTriggerClick ? (event) => {
+          if (wasOpenOnPointerDown.current) {
+            event.preventDefault();
+            setOpen(false);
+          }
+          wasOpenOnPointerDown.current = false;
+        } : undefined}
         className={`admin-input flex min-h-[42px] items-center justify-between gap-2 text-left ${className}`}
       >
         <SelectPrimitive.Value />
@@ -56,6 +74,13 @@ export function Select({
         <SelectPrimitive.Content
           position="popper"
           sideOffset={4}
+          onPointerDownOutside={closeOnTriggerClick ? (event) => {
+            // Let the trigger handle the complete gesture instead of dismissing
+            // on pointer-down and reopening on the following touch click.
+            if (triggerRef.current?.contains(event.detail.originalEvent.target as Node)) {
+              event.preventDefault();
+            }
+          } : undefined}
           className="admin-portal z-[100] min-w-[var(--radix-select-trigger-width)] overflow-hidden rounded-fuse-md border border-[var(--admin-line-strong)] bg-[var(--admin-surface)] text-[var(--admin-ink)] shadow-[var(--admin-shadow-lg)]"
         >
           <SelectPrimitive.Viewport className="max-h-72 p-1">

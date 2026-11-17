@@ -1,0 +1,253 @@
+.root, .filters, .search { min-width: 0; }
+.table { table-layout: fixed; }
+.table th:first-child { width: 48px; }
+.table th:nth-child(2) { width: 38%; }
+.table th:last-child { width: 144px; }
+.table td { overflow-wrap: anywhere; }
+.table td:nth-child(2) > div > div:last-child { flex: 1; }
+.mobileSelection { display: none; }
+
+/* Keep every visual adjustment below the existing desktop breakpoint. */
+@media (width < 1200px) {
+  .toolbar,
+  .filters,
+  .actions {
+    display: grid;
+    width: 100%;
+    min-width: 0;
+    gap: 8px;
+  }
+  .toolbar {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+  .filters,
+  .actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .search {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+  .search input,
+  .filters > button,
+  .actions > button,
+  .actions > a {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    min-height: 44px;
+    padding-block: 10px;
+    font-size: 14px;
+    line-height: 22px;
+  }
+  .search input {
+    padding-left: 36px;
+    padding-right: 44px;
+  }
+  .search > button {
+    width: 36px;
+    height: 36px;
+    right: 4px;
+  }
+  /* Radix disables outside pointer events while a select is open. Keep its
+     own trigger tappable so a second tap can close it. */
+  .filters > button[data-state="open"] {
+    pointer-events: auto;
+  }
+  .filters > button {
+    padding-inline: 12px;
+  }
+  .filters > button > span:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .actions > button,
+  .actions > a {
+    justify-content: center;
+    padding-inline: 12px;
+  }
+  .actions > a {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+  .listCard {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+  }
+  .mobileSelection {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+    min-height: 40px;
+    margin-bottom: 8px;
+    padding-inline: 4px;
+  }
+  .mobileSelection label {
+    min-height: 40px;
+    cursor: pointer;
+  }
+  .mobileSelection > span {
+    white-space: nowrap;
+  }
+  .table,
+  .table tbody {
+    display: block;
+    width: 100%;
+  }
+  .table thead {
+    display: none;
+  }
+  .table tbody {
+    display: grid;
+    gap: 10px;
+  }
+  .table tr {
+    display: grid;
+    grid-template-columns: 24px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    border: 1px solid var(--admin-line);
+    border-radius: var(--admin-radius-sm);
+    background: var(--admin-surface);
+    box-shadow: var(--admin-shadow);
+  }
+  .table td {
+    display: block;
+    min-width: 0;
+    padding: 0;
+  }
+  .table td:first-child {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    grid-column: 1;
+    grid-row: 1;
+    align-self: start;
+    min-height: 48px;
+  }
+  .table td:nth-child(2) {
+    grid-column: 2 / -1;
+    grid-row: 1;
+  }
+  .table td:nth-child(2) > div {
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .table td:nth-child(2) > div > div:first-child {
+    width: 48px;
+    height: 48px;
+  }
+  .table td:nth-child(2) img {
+    object-fit: contain;
+  }
+  .table td:nth-child(2) p:first-child {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    font-size: 14px;
+    line-height: 20px;
+  }
+  .table td:nth-child(2) p:last-child {
+    margin-top: 4px;
+    font-size: 12px;
+    line-height: 18px;
+  }
+  .table td:nth-child(2) > div > div:last-child > div {
+    gap: 4px;
+    margin-block: 6px;
+  }
+  .table td:nth-child(2) > div > div:last-child > div > span {
+    max-width: 100%;
+  }
+  .table td:nth-child(3) {
+    grid-column: 2;
+    grid-row: 2;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+    white-space: normal;
+    font-variant-numeric: tabular-nums;
+  }
+  .table td:nth-child(4) {
+    grid-column: 2;
+    grid-row: 3;
+  }
+  .table td:nth-child(5) {
+    grid-column: 3;
+    grid-row: 3;
+    justify-self: end;
+    font-size: 12px;
+    line-height: 18px;
+  }
+  .table td:last-child {
+    grid-column: 3;
+    grid-row: 2;
+  }
+  .table td:last-child > div {
+    gap: 0;
+  }
+  .table td:last-child > div > a,
+  .table td:last-child > div > button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 44px;
+    padding: 0;
+  }
+  .table td:last-child > div > div button {
+    min-height: 44px;
+  }
+}
+
+@media (481px <= width < 1200px) {
+  .actions {
+    grid-template-columns: minmax(0, 2fr) repeat(2, minmax(0, 1fr));
+  }
+  .actions > a {
+    grid-column: 1;
+  }
+}
+
+@media (640px <= width < 1200px) {
+  .filters {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .table tr {
+    grid-template-columns: 24px minmax(0, 1fr) minmax(80px, auto) 120px;
+    gap: 8px 12px;
+    padding: 16px;
+  }
+  .table td:nth-child(2) {
+    grid-column: 2;
+  }
+  .table td:nth-child(2) > div > div:first-child {
+    width: 56px;
+    height: 56px;
+  }
+  .table td:nth-child(3) {
+    grid-column: 3;
+    grid-row: 1;
+    text-align: right;
+  }
+  .table td:nth-child(4) {
+    grid-column: 2;
+    grid-row: 2;
+  }
+  .table td:nth-child(5) {
+    grid-column: 3;
+    grid-row: 2;
+  }
+  .table td:last-child {
+    grid-column: 4;
+    grid-row: 1 / 3;
+  }
+}
