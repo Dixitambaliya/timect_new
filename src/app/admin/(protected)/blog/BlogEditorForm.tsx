@@ -26,6 +26,7 @@ import {
   htmlToSections,
 } from "@/admin/lib/article-builder";
 import MediaPicker from "@/admin/components/media/MediaPicker";
+import ConfirmDialog from "@/admin/components/ui/ConfirmDialog";
 
 interface Category {
   id: number;
@@ -69,6 +70,9 @@ export default function BlogEditorForm({ postId }: { postId?: number }) {
   ]);
 
   const [saving, setSaving] = useState(false);
+  const [confirmSaveStatus, setConfirmSaveStatus] = useState<"draft" | "published" | null>(null);
+  const [sectionToDelete, setSectionToDelete] = useState<string | null>(null);
+  const [faqToDelete, setFaqToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/blog/categories")
@@ -237,6 +241,22 @@ export default function BlogEditorForm({ postId }: { postId?: number }) {
     }
   };
 
+  const requestSave = (targetStatus: "draft" | "published") => {
+    const contentHtml = sectionsToHtml(sections);
+    if (!title || !slug || !excerpt || !contentHtml.trim()) {
+      alert("Please fill in Title, Slug, Excerpt, and at least one content section.");
+      return;
+    }
+    setConfirmSaveStatus(targetStatus);
+  };
+
+  const executeSave = async () => {
+    if (!confirmSaveStatus) return;
+    const target = confirmSaveStatus;
+    setConfirmSaveStatus(null);
+    await handleSave(target);
+  };
+
   return (
     <div className="space-y-6">
       {/* Top Header */}
@@ -261,7 +281,7 @@ export default function BlogEditorForm({ postId }: { postId?: number }) {
         <div className="flex items-center gap-2">
           <button
             type="button"
-            onClick={() => handleSave("draft")}
+            onClick={() => requestSave("draft")}
             disabled={saving}
             className="admin-btn admin-btn-secondary disabled:opacity-50"
           >
@@ -269,7 +289,7 @@ export default function BlogEditorForm({ postId }: { postId?: number }) {
           </button>
           <button
             type="button"
-            onClick={() => handleSave("published")}
+            onClick={() => requestSave("published")}
             disabled={saving}
             className="admin-btn admin-btn-primary disabled:opacity-50"
           >
@@ -468,7 +488,7 @@ export default function BlogEditorForm({ postId }: { postId?: number }) {
                         </button>
                         <button
                           type="button"
-                          onClick={() => removeSection(sec.id)}
+                          onClick={() => setSectionToDelete(sec.id)}
                           disabled={sections.length <= 1}
                           className="p-1 rounded text-[var(--admin-muted)] hover:text-[var(--admin-danger)] disabled:opacity-30"
                           title="Delete Section"
@@ -701,7 +721,7 @@ export default function BlogEditorForm({ postId }: { postId?: number }) {
                       </span>
                       <button
                         type="button"
-                        onClick={() => removeFaq(faq.id)}
+                        onClick={() => setFaqToDelete(faq.id)}
                         className="inline-flex items-center gap-1 rounded px-2 py-1 text-xs text-[var(--admin-danger)] hover:bg-[var(--admin-danger-soft)] transition"
                         title="Delete FAQ"
                       >
@@ -792,6 +812,54 @@ export default function BlogEditorForm({ postId }: { postId?: number }) {
         onSelect={(url) => {
           setFeaturedImageUrl(url);
           setShowMediaPicker(false);
+        }}
+      />
+
+      {/* Confirm Save Draft / Publish */}
+      <ConfirmDialog
+        open={confirmSaveStatus !== null}
+        title={confirmSaveStatus === "published" ? "Publish article live?" : "Save article as draft?"}
+        description={
+          confirmSaveStatus === "published"
+            ? `“${title}” will be published live on the Timect Blog and indexed for search engines.`
+            : `“${title}” will be saved as an internal draft and won't be visible to public readers.`
+        }
+        confirmLabel={confirmSaveStatus === "published" ? "Publish Article" : "Save Draft"}
+        icon={<Save className="h-5 w-5" />}
+        loading={saving}
+        onCancel={() => setConfirmSaveStatus(null)}
+        onConfirm={executeSave}
+      />
+
+      {/* Confirm Delete Section */}
+      <ConfirmDialog
+        open={sectionToDelete !== null}
+        title="Delete content section?"
+        description="Are you sure you want to remove this section? Any text or content in this section will be removed."
+        confirmLabel="Delete Section"
+        danger
+        onCancel={() => setSectionToDelete(null)}
+        onConfirm={() => {
+          if (sectionToDelete) {
+            removeSection(sectionToDelete);
+            setSectionToDelete(null);
+          }
+        }}
+      />
+
+      {/* Confirm Delete FAQ */}
+      <ConfirmDialog
+        open={faqToDelete !== null}
+        title="Delete FAQ question?"
+        description="Are you sure you want to remove this FAQ item from the article schema and display?"
+        confirmLabel="Delete FAQ"
+        danger
+        onCancel={() => setFaqToDelete(null)}
+        onConfirm={() => {
+          if (faqToDelete) {
+            removeFaq(faqToDelete);
+            setFaqToDelete(null);
+          }
         }}
       />
     </div>

@@ -1,12 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useParams, useSearchParams } from "next/navigation";
-
+import { useRouter } from "@/admin/lib/navigation";
 import Link from "@/admin/lib/navigation";
-import { Loader2 } from "lucide-react";
+import { Loader2, Trash2 } from "lucide-react";
 import Breadcrumbs from "@/admin/components/layout/Breadcrumbs";
 import ProductForm from "@/admin/components/products/ProductForm";
+import ConfirmDialog from "@/admin/components/ui/ConfirmDialog";
+import { useToast } from "@/admin/hooks/useToast";
 import {
   emptyProductInput,
   productToInput,
@@ -15,6 +17,7 @@ import {
 import {
   adminGetAllProductsQuick,
   adminGetProduct,
+  adminDeleteProduct,
 } from "@/admin/actions/products";
 
 type VariantProduct = {
@@ -25,6 +28,8 @@ type VariantProduct = {
 };
 
 export default function EditProductPage() {
+  const router = useRouter();
+  const { success, error: toastError } = useToast();
   const params = useParams();
   const searchParams = useSearchParams();
   const id = Number(params?.id);
@@ -36,6 +41,21 @@ export default function EditProductPage() {
   const [variantProducts, setVariantProducts] = useState<VariantProduct[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loadedId, setLoadedId] = useState<number | null>(null);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [pendingDelete, startDeleteTransition] = useTransition();
+
+  const handleDelete = () => {
+    startDeleteTransition(async () => {
+      const res = await adminDeleteProduct(id);
+      if (!res.ok) {
+        toastError(res.error);
+      } else {
+        success("Product deleted (moved to Recycle Bin for 3 days)");
+        router.push(returnTo);
+        router.refresh();
+      }
+    });
+  };
 
   useEffect(() => {
     if (!id || Number.isNaN(id)) return;
@@ -101,20 +121,30 @@ export default function EditProductPage() {
 
   return (
     <div className="space-y-4">
-      <div>
-        <Breadcrumbs
-          items={[
-            { label: "Admin", href: "/admin/dashboard" },
-            { label: "Products", href: returnTo },
-            { label: "Edit" },
-          ]}
-        />
-        <h1 className="text-[28px] font-bold leading-tight tracking-tight md:text-[34px]">
-          Edit product
-        </h1>
-        <p className="mt-1 text-sm text-[var(--admin-muted)]">
-          {input.name || input.title || `#${id}`}
-        </p>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <Breadcrumbs
+            items={[
+              { label: "Admin", href: "/admin/dashboard" },
+              { label: "Products", href: returnTo },
+              { label: "Edit" },
+            ]}
+          />
+          <h1 className="text-[28px] font-bold leading-tight tracking-tight md:text-[34px]">
+            Edit product
+          </h1>
+          <p className="mt-1 text-sm text-[var(--admin-muted)]">
+            {input.name || input.title || `#${id}`}
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => setConfirmDeleteOpen(true)}
+          className="admin-btn admin-btn-danger text-xs !py-2 !px-3 gap-1.5"
+        >
+          <Trash2 className="h-4 w-4" />
+          Delete product
+        </button>
       </div>
 
       {variantProducts.length > 1 && (
@@ -169,6 +199,17 @@ export default function EditProductPage() {
         initial={input || emptyProductInput()}
         productId={id}
         returnTo={returnTo}
+      />
+
+      <ConfirmDialog
+        open={confirmDeleteOpen}
+        title={`Delete "${input.name || input.title || "product"}"?`}
+        description="This product will be removed from storefront and standard admin lists. It will be stored in the Recycle Bin for 3 days where you can restore it anytime."
+        confirmLabel="Delete Product"
+        danger
+        loading={pendingDelete}
+        onCancel={() => setConfirmDeleteOpen(false)}
+        onConfirm={handleDelete}
       />
     </div>
   );

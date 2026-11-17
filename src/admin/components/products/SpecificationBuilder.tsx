@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import type { Specification } from "@/db/actions";
 import { Select, SelectOption } from "@/components/ui/select";
+import ConfirmDialog from "@/admin/components/ui/ConfirmDialog";
 
 const MATERIAL_PRESETS = [
   "Stainless steel",
@@ -391,6 +392,7 @@ export default function SpecificationBuilder({
     const recognizedTitles = ["case", "dial & hands", "movement & functions", "strap", "style", "general"];
     return value.filter(sec => !recognizedTitles.includes((sec.title || "").toLowerCase().trim()));
   });
+  const [deleteSectionIdx, setDeleteSectionIdx] = useState<number | null>(null);
 
   const isUpdatingFromProps = useRef(false);
 
@@ -652,11 +654,7 @@ export default function SpecificationBuilder({
                     <button
                       type="button"
                       className="text-red-500 hover:text-red-700 transition-colors p-0.5 rounded hover:bg-red-50"
-                      onClick={() => {
-                        const nextCustom = customSections.filter((_, idx) => idx !== i);
-                        setCustomSections(nextCustom);
-                        onChange(compileSpecs(specs, nextCustom));
-                      }}
+                      onClick={() => setDeleteSectionIdx(i)}
                       title="Delete section"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
@@ -668,6 +666,27 @@ export default function SpecificationBuilder({
           </div>
         </div>
       )}
+
+      <ConfirmDialog
+        open={deleteSectionIdx !== null}
+        title="Delete specification section?"
+        description={
+          deleteSectionIdx !== null && customSections[deleteSectionIdx]
+            ? `Are you sure you want to remove the "${customSections[deleteSectionIdx].title}" section?`
+            : "Are you sure you want to remove this specification section?"
+        }
+        confirmLabel="Delete Section"
+        danger
+        onCancel={() => setDeleteSectionIdx(null)}
+        onConfirm={() => {
+          if (deleteSectionIdx !== null) {
+            const nextCustom = customSections.filter((_, idx) => idx !== deleteSectionIdx);
+            setCustomSections(nextCustom);
+            onChange(compileSpecs(specs, nextCustom));
+            setDeleteSectionIdx(null);
+          }
+        }}
+      />
     </div>
   );
 }

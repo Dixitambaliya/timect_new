@@ -37,6 +37,7 @@ import { slugify } from "@/admin/lib/slug";
 import MediaPicker from "@/admin/components/media/MediaPicker";
 import AdminSelect from "@/admin/components/ui/AdminSelect";
 import AdminModal from "@/admin/components/ui/AdminModal";
+import ConfirmDialog from "@/admin/components/ui/ConfirmDialog";
 import { displayPrice } from "@/lib/price";
 
 type Tab = "collections" | "homepage" | "filters";
@@ -82,6 +83,13 @@ export default function CollectionsPage() {
   const [pickerIdx, setPickerIdx] = useState<number | null>(null);
   const [newFilterKeys, setNewFilterKeys] = useState<Set<string>>(new Set());
 
+  // Confirmations
+  const [removeItemTarget, setRemoveItemTarget] = useState<CollectionProductItem | null>(null);
+  const [removeCardIdx, setRemoveCardIdx] = useState<number | null>(null);
+  const [removeFilterKey, setRemoveFilterKey] = useState<string | null>(null);
+  const [confirmSaveCardsOpen, setConfirmSaveCardsOpen] = useState(false);
+  const [confirmSaveFiltersOpen, setConfirmSaveFiltersOpen] = useState(false);
+
   const load = useCallback(async () => {
     setLoading(true);
     try {
@@ -102,7 +110,8 @@ export default function CollectionsPage() {
     void load();
   }, [load]);
 
-  const saveCards = () => {
+  const executeSaveCards = () => {
+    setConfirmSaveCardsOpen(false);
     startTransition(async () => {
       const res = await adminSaveShopByCategory(cards);
       if (!res.ok) error(res.error);
@@ -110,7 +119,8 @@ export default function CollectionsPage() {
     });
   };
 
-  const saveFilters = () => {
+  const executeSaveFilters = () => {
+    setConfirmSaveFiltersOpen(false);
     startTransition(async () => {
       const res = await adminSaveCatalogFilters(filters);
       if (!res.ok) error(res.error);
@@ -629,7 +639,7 @@ export default function CollectionsPage() {
                     type="button"
                     title="Remove from collection"
                     className="admin-btn text-xs text-red-500 hover:bg-red-50 hover:text-red-600 !py-1 !px-2 shrink-0"
-                    onClick={() => handleRemoveItem(p.id)}
+                    onClick={() => setRemoveItemTarget(p)}
                   >
                     Remove
                   </button>
@@ -774,7 +784,7 @@ export default function CollectionsPage() {
               type="button"
               className="admin-btn admin-btn-primary"
               disabled={pending}
-              onClick={saveCards}
+              onClick={() => setConfirmSaveCardsOpen(true)}
             >
               <Save className="h-4 w-4" />
               Save cards
@@ -842,10 +852,9 @@ export default function CollectionsPage() {
                 </div>
                 <button
                   type="button"
+                  title="Remove card"
                   className="admin-btn admin-btn-danger self-end px-2"
-                  onClick={() =>
-                    setCards((prev) => prev.filter((_, i) => i !== idx))
-                  }
+                  onClick={() => setRemoveCardIdx(idx)}
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>
@@ -895,7 +904,7 @@ export default function CollectionsPage() {
               type="button"
               className="admin-btn admin-btn-primary"
               disabled={pending}
-              onClick={saveFilters}
+              onClick={() => setConfirmSaveFiltersOpen(true)}
             >
               <Save className="h-4 w-4" />
               Save filters
@@ -935,13 +944,7 @@ export default function CollectionsPage() {
                     <button
                       type="button"
                       className="admin-btn admin-btn-danger"
-                      onClick={() => {
-                        setFilters((prev) => {
-                          const next = { ...prev };
-                          delete next[key];
-                          return next;
-                        });
-                      }}
+                      onClick={() => setRemoveFilterKey(key)}
                     >
                       <Trash2 className="h-4 w-4" />
                       Remove
@@ -993,6 +996,87 @@ export default function CollectionsPage() {
           </p>
         </div>
       )}
+
+      {/* Confirm Remove Watch from Collection */}
+      <ConfirmDialog
+        open={removeItemTarget !== null}
+        title="Remove watch from collection?"
+        description={
+          removeItemTarget
+            ? `Are you sure you want to remove "${removeItemTarget.name}" from "${activeCollection}"? The watch itself will not be deleted, but it will no longer belong to this collection.`
+            : ""
+        }
+        confirmLabel="Remove from Collection"
+        danger
+        loading={pending}
+        onCancel={() => setRemoveItemTarget(null)}
+        onConfirm={async () => {
+          if (!removeItemTarget) return;
+          const targetId = removeItemTarget.id;
+          setRemoveItemTarget(null);
+          await handleRemoveItem(targetId);
+        }}
+      />
+
+      {/* Confirm Remove Category Card */}
+      <ConfirmDialog
+        open={removeCardIdx !== null}
+        title="Remove category card?"
+        description="Are you sure you want to remove this category card from the homepage category grid? You will need to click 'Save cards' to persist your changes."
+        confirmLabel="Remove Card"
+        danger
+        onCancel={() => setRemoveCardIdx(null)}
+        onConfirm={() => {
+          if (removeCardIdx !== null) {
+            setCards((prev) => prev.filter((_, i) => i !== removeCardIdx));
+            setRemoveCardIdx(null);
+          }
+        }}
+      />
+
+      {/* Confirm Remove Filter */}
+      <ConfirmDialog
+        open={removeFilterKey !== null}
+        title="Remove catalog filter?"
+        description="Are you sure you want to remove this filter? You will need to click 'Save filters' to persist your changes."
+        confirmLabel="Remove Filter"
+        danger
+        onCancel={() => setRemoveFilterKey(null)}
+        onConfirm={() => {
+          if (removeFilterKey !== null) {
+            setFilters((prev) => {
+              const next = { ...prev };
+              delete next[removeFilterKey];
+              return next;
+            });
+            setRemoveFilterKey(null);
+          }
+        }}
+      />
+
+      {/* Confirm Save Homepage Category Cards */}
+      <ConfirmDialog
+        open={confirmSaveCardsOpen}
+        title="Save homepage category cards?"
+        description="This will update the category cards shown on the storefront homepage."
+        confirmLabel="Save Cards"
+        icon={<Save className="h-5 w-5" />}
+        loading={pending}
+        onCancel={() => setConfirmSaveCardsOpen(false)}
+        onConfirm={executeSaveCards}
+      />
+
+      {/* Confirm Save Catalog Filters */}
+      <ConfirmDialog
+        open={confirmSaveFiltersOpen}
+        title="Save catalog filters?"
+        description="This will save your custom catalog filters to the database."
+        confirmLabel="Save Filters"
+        icon={<Save className="h-5 w-5" />}
+        loading={pending}
+        onCancel={() => setConfirmSaveFiltersOpen(false)}
+        onConfirm={executeSaveFilters}
+      />
     </div>
   );
 }

@@ -1,6 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
+import ConfirmDialog from "@/admin/components/ui/ConfirmDialog";
 
 const PRESETS = ["36 mm", "38 mm", "39 mm", "40 mm", "41 mm", "42 mm", "44 mm"];
 
@@ -11,13 +13,21 @@ export default function SizeEditor({
   sizes: string[];
   onChange: (sizes: string[]) => void;
 }) {
+  const [confirmDeleteIdx, setConfirmDeleteIdx] = useState<number | null>(null);
+
   const add = (value = "") => onChange([...sizes, value]);
   const update = (idx: number, value: string) => {
     const next = [...sizes];
     next[idx] = value;
     onChange(next);
   };
-  const remove = (idx: number) => onChange(sizes.filter((_, i) => i !== idx));
+  const remove = (idx: number) => {
+    if (sizes[idx] && sizes[idx].trim()) {
+      setConfirmDeleteIdx(idx);
+    } else {
+      onChange(sizes.filter((_, i) => i !== idx));
+    }
+  };
 
   return (
     <div className="space-y-4">
@@ -76,6 +86,25 @@ export default function SizeEditor({
           ))}
         </div>
       )}
+
+      <ConfirmDialog
+        open={confirmDeleteIdx !== null}
+        title="Remove size option?"
+        description={
+          confirmDeleteIdx !== null && sizes[confirmDeleteIdx]
+            ? `Are you sure you want to remove the "${sizes[confirmDeleteIdx]}" size option?`
+            : "Are you sure you want to remove this size option?"
+        }
+        confirmLabel="Remove Size"
+        danger
+        onCancel={() => setConfirmDeleteIdx(null)}
+        onConfirm={() => {
+          if (confirmDeleteIdx !== null) {
+            onChange(sizes.filter((_, i) => i !== confirmDeleteIdx));
+            setConfirmDeleteIdx(null);
+          }
+        }}
+      />
     </div>
   );
 }

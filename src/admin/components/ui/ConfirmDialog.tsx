@@ -11,6 +11,7 @@ type ConfirmDialogProps = {
   confirmLabel?: string;
   cancelLabel?: string;
   danger?: boolean;
+  icon?: React.ReactNode;
   loading?: boolean;
   onConfirm: () => void;
   onCancel: () => void;
@@ -27,6 +28,7 @@ export default function ConfirmDialog({
   confirmLabel = "Confirm",
   cancelLabel = "Cancel",
   danger,
+  icon,
   loading,
   onConfirm,
   onCancel,
@@ -74,11 +76,15 @@ export default function ConfirmDialog({
         aria-labelledby="admin-confirm-title"
         className="relative z-10 w-full max-w-md animate-rise-in rounded-fuse bg-[var(--admin-surface)] p-6 shadow-[var(--admin-shadow-lg)] md:p-8"
       >
-        {danger && (
+        {danger ? (
           <span className="mb-5 flex h-12 w-12 items-center justify-center rounded-fuse-md bg-[var(--admin-danger-soft)] text-[var(--admin-danger)]">
             <AlertTriangle className="h-5 w-5" />
           </span>
-        )}
+        ) : icon ? (
+          <span className="mb-5 flex h-12 w-12 items-center justify-center rounded-fuse-md bg-[var(--admin-accent-soft)] text-[var(--admin-heading)]">
+            {icon}
+          </span>
+        ) : null}
         <h3 id="admin-confirm-title" className="text-[20px] font-bold text-[var(--admin-heading)]">
           {title}
         </h3>

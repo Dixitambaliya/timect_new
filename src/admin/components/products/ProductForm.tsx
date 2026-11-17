@@ -18,6 +18,7 @@ import {
   adminUpdateProduct,
 } from "@/admin/actions/products";
 import { useToast } from "@/admin/hooks/useToast";
+import ConfirmDialog from "@/admin/components/ui/ConfirmDialog";
 import ImageUploader from "./ImageUploader";
 import VariantEditor from "./VariantEditor";
 import SizeEditor from "./SizeEditor";
@@ -137,7 +138,9 @@ export default function ProductForm({
     setStep((x) => Math.min(7, x + 1));
   };
 
-  const save = () => {
+  const [confirmSaveOpen, setConfirmSaveOpen] = useState(false);
+
+  const requestSave = () => {
     const err = validateStep(1);
     if (err) {
       error(err);
@@ -150,7 +153,11 @@ export default function ProductForm({
       setStep(4);
       return;
     }
+    setConfirmSaveOpen(true);
+  };
 
+  const executeSave = () => {
+    setConfirmSaveOpen(false);
     const payload: ProductInput = {
       ...data,
       image: data.image || data.images?.[0] || "",
@@ -536,7 +543,7 @@ export default function ProductForm({
             type="button"
             className="admin-btn admin-btn-secondary"
             disabled={pending}
-            onClick={save}
+            onClick={requestSave}
           >
             {pending ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -559,7 +566,7 @@ export default function ProductForm({
               type="button"
               className="admin-btn admin-btn-primary"
               disabled={pending}
-              onClick={save}
+              onClick={requestSave}
             >
               {pending ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -571,6 +578,35 @@ export default function ProductForm({
           )}
         </div>
       </div>
+
+      <ConfirmDialog
+        open={confirmSaveOpen}
+        title={
+          productId
+            ? `Save changes to "${data.name || "Product"}"?`
+            : data.status === "draft"
+              ? `Save "${data.name || "Product"}" as draft?`
+              : `Publish "${data.name || "Product"}" to storefront?`
+        }
+        description={
+          productId
+            ? "Your changes will be saved to the database. A rollback snapshot is saved in the Recycle Bin for 3 days to prevent accidental loss."
+            : data.status === "draft"
+              ? "The product will be saved as an internal draft and won't appear on the public storefront."
+              : "The product will become immediately visible to customers across the storefront."
+        }
+        confirmLabel={
+          productId
+            ? "Save Changes"
+            : data.status === "draft"
+              ? "Save Draft"
+              : "Publish Product"
+        }
+        icon={<Save className="h-5 w-5" />}
+        loading={pending}
+        onCancel={() => setConfirmSaveOpen(false)}
+        onConfirm={executeSave}
+      />
     </div>
   );
 }

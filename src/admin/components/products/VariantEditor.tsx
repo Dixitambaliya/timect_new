@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { GripVertical, Plus, Trash2, ImagePlus, ChevronDown, Search, X } from "lucide-react";
 import type { Variant } from "@/db/actions";
 import MediaPicker from "@/admin/components/media/MediaPicker";
+import ConfirmDialog from "@/admin/components/ui/ConfirmDialog";
 import { adminGetAllProductsQuick } from "@/admin/actions/products";
 
 interface ProductOption {
@@ -26,6 +27,7 @@ export default function VariantEditor({
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [products, setProducts] = useState<ProductOption[]>([]);
   const [loading, setLoading] = useState(false);
+  const [confirmDeleteIdx, setConfirmDeleteIdx] = useState<number | null>(null);
 
   useEffect(() => {
     async function load() {
@@ -187,7 +189,7 @@ export default function VariantEditor({
               <button
                 type="button"
                 className="admin-btn admin-btn-danger px-2"
-                onClick={() => remove(idx)}
+                onClick={() => setConfirmDeleteIdx(idx)}
                 aria-label="Delete variant"
               >
                 <Trash2 className="h-4 w-4" />
@@ -203,6 +205,25 @@ export default function VariantEditor({
         onSelect={(url) => {
           if (pickerFor != null) update(pickerFor, { image: url });
           setPickerFor(null);
+        }}
+      />
+
+      <ConfirmDialog
+        open={confirmDeleteIdx !== null}
+        title="Remove variant link?"
+        description={
+          confirmDeleteIdx !== null && variants[confirmDeleteIdx]?.name
+            ? `Are you sure you want to remove the variant "${variants[confirmDeleteIdx].name}" from this watch?`
+            : "Are you sure you want to remove this variant option?"
+        }
+        confirmLabel="Remove Variant"
+        danger
+        onCancel={() => setConfirmDeleteIdx(null)}
+        onConfirm={() => {
+          if (confirmDeleteIdx !== null) {
+            remove(confirmDeleteIdx);
+            setConfirmDeleteIdx(null);
+          }
         }}
       />
     </div>

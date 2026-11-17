@@ -11,6 +11,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { PageHeader } from "@/admin/components/layout/Breadcrumbs";
+import ConfirmDialog from "@/admin/components/ui/ConfirmDialog";
 import {
   adminGetWhatsAppSettings,
   adminSaveWhatsAppSettings,
@@ -43,6 +44,7 @@ export default function WhatsAppAdminPage() {
   const [data, setData] = useState<WhatsAppButtonSettings | null>(null);
   const [loading, setLoading] = useState(true);
   const [isSaving, startTransition] = useTransition();
+  const [confirmSaveOpen, setConfirmSaveOpen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -68,8 +70,9 @@ export default function WhatsAppAdminPage() {
     setData((prev) => (prev ? { ...prev, ...partial } : { ...DEFAULT_STOREFRONT.whatsappButton!, ...partial }));
   };
 
-  const handleSave = () => {
+  const executeSave = () => {
     if (!data) return;
+    setConfirmSaveOpen(false);
     startTransition(async () => {
       const res = await adminSaveWhatsAppSettings(data);
       if (res.ok) {
@@ -121,7 +124,7 @@ export default function WhatsAppAdminPage() {
           <button
             type="button"
             className="admin-btn admin-btn-primary"
-            onClick={handleSave}
+            onClick={() => setConfirmSaveOpen(true)}
             disabled={isSaving}
           >
             {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
@@ -349,6 +352,17 @@ export default function WhatsAppAdminPage() {
           </div>
         </div>
       </div>
+
+      <ConfirmDialog
+        open={confirmSaveOpen}
+        title="Save WhatsApp settings?"
+        description="This will update the WhatsApp concierge phone number, button labels, and message template live on the storefront."
+        confirmLabel="Save Settings"
+        icon={<Save className="h-5 w-5" />}
+        loading={isSaving}
+        onCancel={() => setConfirmSaveOpen(false)}
+        onConfirm={executeSave}
+      />
     </div>
   );
 }

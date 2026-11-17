@@ -5,6 +5,7 @@ import Link from "@/admin/lib/navigation";
 import { ArrowDown, ArrowUp, ExternalLink, Loader2, MessageCircle, Plus, Save, Trash2 } from "lucide-react";
 import { PageHeader } from "@/admin/components/layout/Breadcrumbs";
 import ImageField from "@/admin/components/ui/ImageField";
+import ConfirmDialog from "@/admin/components/ui/ConfirmDialog";
 import { adminGetStorefront, adminSaveStorefront } from "@/admin/actions/storefront";
 import { useToast } from "@/admin/hooks/useToast";
 import type { HeroSlide, PromoBanner, StorefrontSettings } from "@/data/storefront";
@@ -101,6 +102,12 @@ export default function StorefrontPage() {
   const [tab, setTab] = useState<Tab>("hero");
   const [dirty, setDirty] = useState(false);
   const [pending, startTransition] = useTransition();
+  const [confirmSaveOpen, setConfirmSaveOpen] = useState(false);
+  const [itemToRemove, setItemToRemove] = useState<{
+    type: "slide" | "banner";
+    index: number;
+    title: string;
+  } | null>(null);
 
   useEffect(() => {
     adminGetStorefront().then(setData);
@@ -130,14 +137,16 @@ export default function StorefrontPage() {
   const setBanner = (i: number, b: Partial<PromoBanner>) =>
     patch({ banners: data.banners.map((x, j) => (j === i ? { ...x, ...b } : x)) });
 
-  const save = () =>
+  const executeSave = () => {
+    setConfirmSaveOpen(false);
     startTransition(async () => {
       const res = await adminSaveStorefront(data);
       if (res.ok) {
-        success("Storefront saved -changes are live");
+        success("Storefront saved — changes are live");
         setDirty(false);
       } else error(res.error);
     });
+  };
 
   return (
     <div>
@@ -151,7 +160,7 @@ export default function StorefrontPage() {
               <ExternalLink className="h-4 w-4" />
               Preview
             </a>
-            <button type="button" className="admin-btn admin-btn-primary" onClick={save} disabled={pending || !dirty}>
+            <button type="button" className="admin-btn admin-btn-primary" onClick={() => setConfirmSaveOpen(true)} disabled={pending || !dirty}>
               {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
               {dirty ? "Save changes" : "Saved"}
             </button>
@@ -180,7 +189,7 @@ export default function StorefrontPage() {
                   index={i}
                   count={data.heroSlides.length}
                   onMove={(to) => patch({ heroSlides: move(data.heroSlides, i, to) })}
-                  onRemove={() => patch({ heroSlides: data.heroSlides.filter((_, j) => j !== i) })}
+                  onRemove={() => setItemToRemove({ type: "slide", index: i, title: s.title || `Slide ${i + 1}` })}
                 />
               </div>
               <div className="grid gap-5 lg:grid-cols-[320px_1fr]">
@@ -277,7 +286,7 @@ export default function StorefrontPage() {
                   index={i}
                   count={data.banners.length}
                   onMove={(to) => patch({ banners: move(data.banners, i, to) })}
-                  onRemove={() => patch({ banners: data.banners.filter((_, j) => j !== i) })}
+                  onRemove={() => setItemToRemove({ type: "banner", index: i, title: b.title || `Banner ${i + 1}` })}
                 />
               </div>
               <div className="grid gap-5 lg:grid-cols-[320px_1fr]">
@@ -411,6 +420,41 @@ export default function StorefrontPage() {
           </div>
         </div>
       )}
+
+      {/* Confirm Save Storefront */}
+      <ConfirmDialog
+        open={confirmSaveOpen}
+        title="Save storefront changes?"
+        description="Your changes will be saved to the database and will go live immediately on the storefront homepage and layout."
+        confirmLabel="Save Changes"
+        icon={<Save className="h-5 w-5" />}
+        loading={pending}
+        onCancel={() => setConfirmSaveOpen(false)}
+        onConfirm={executeSave}
+      />
+
+      {/* Confirm Remove Slide or Banner */}
+      <ConfirmDialog
+        open={itemToRemove !== null}
+        title={itemToRemove?.type === "slide" ? `Remove ${itemToRemove?.title}?` : `Remove ${itemToRemove?.title}?`}
+        description={
+          itemToRemove?.type === "slide"
+            ? "Are you sure you want to remove this hero slide from the homepage carousel? You will need to click 'Save changes' to publish the removal."
+            : "Are you sure you want to remove this promotional banner from the storefront? You will need to click 'Save changes' to publish the removal."
+        }
+        confirmLabel="Remove"
+        danger
+        onCancel={() => setItemToRemove(null)}
+        onConfirm={() => {
+          if (!itemToRemove) return;
+          if (itemToRemove.type === "slide") {
+            patch({ heroSlides: data.heroSlides.filter((_, j) => j !== itemToRemove.index) });
+          } else {
+            patch({ banners: data.banners.filter((_, j) => j !== itemToRemove.index) });
+          }
+          setItemToRemove(null);
+        }}
+      />
     </div>
   );
 }

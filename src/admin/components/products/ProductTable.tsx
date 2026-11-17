@@ -714,7 +714,7 @@ export default function ProductTable({
         description={
           confirm?.type === "unlink-variants"
             ? "The selected watches will become independent products. Their product data and catalog entries will not be deleted."
-            : "This cannot be undone. The product will be removed from the catalog."
+            : "The deleted product(s) will be removed from storefront and standard admin lists, and stored in the Recycle Bin for 3 days where you can restore them."
         }
         confirmLabel={confirm?.type === "unlink-variants" ? "Unlink" : "Delete"}
         danger={confirm?.type !== "unlink-variants"}
