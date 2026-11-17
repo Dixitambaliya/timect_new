@@ -7,7 +7,7 @@ the existing **Neon PostgreSQL** catalog. No Fuse demo content is included -
 every product, category, gift and page comes from Timect data.
 
 ```bash
-npm install
+npm install 
 npm run dev               # storefront http://localhost:3000, admin /admin
 npm run build && npm start
 
@@ -49,4 +49,4 @@ and roles) · Settings. Light/dark theme, JWT session guarded by `src/proxy.ts`.
 * `admin_users`, `media_library`, `audit_logs`.
 
 `src/db/seed.ts` **drops and recreates** `products` from `src/data/products.json`
--don't run it against the live database unless you intend to reset the catalog.
+<br>-don't run it against the live database unless you intend to reset the catalog.

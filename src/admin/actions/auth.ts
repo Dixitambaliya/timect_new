@@ -1,4 +1,6 @@
 "use server";
+import { adminServerPath } from "@/admin/lib/server-routing";
+
 
 import { redirect } from "next/navigation";
 import { sql } from "@/db/neon";
@@ -110,7 +112,12 @@ export async function loginAdmin(
     };
   }
 
-  redirect("/admin/dashboard");
+  const requested = String(formData.get("next") || "");
+  const subdomain = (await adminServerPath("/admin")) === "/";
+  const safe = requested.startsWith("/") && !requested.startsWith("//") &&
+    !/[\\\r\n]/.test(requested) && (subdomain || /^\/admin(?:\/|$|\?)/.test(requested));
+  const target = safe ? requested : "/admin/dashboard";
+  redirect(await adminServerPath(target));
 }
 
 export async function logoutAdmin(): Promise<void> {
@@ -126,7 +133,7 @@ export async function logoutAdmin(): Promise<void> {
     /* ignore */
   }
   await clearAdminSessionCookie();
-  redirect("/admin/login");
+  redirect(await adminServerPath("/admin/login"));
 }
 
 export async function getCurrentAdmin(): Promise<AdminSession | null> {

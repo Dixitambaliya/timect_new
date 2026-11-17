@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import Link from "@/admin/lib/navigation";
+import { usePathname } from "@/admin/lib/navigation";
 import {
   ExternalLink,
   Gift,
@@ -102,7 +102,7 @@ export default function Sidebar({
       )}
 
       <aside
-        className={`admin-sidebar-panel fixed inset-y-2 left-2 z-50 flex w-[280px] flex-col rounded-fuse shadow-sm transition-transform duration-300 ease-fuse-out lg:sticky lg:top-3 lg:h-[calc(100vh-24px)] lg:translate-x-0 ${
+        className={`admin-sidebar-panel fixed top-2 left-2 z-50 flex w-[280px] flex-col rounded-fuse shadow-sm transition-transform duration-300 ease-fuse-out lg:sticky lg:top-3 lg:[--sidebar-inset:0.75rem] lg:translate-x-0 ${
           open ? "translate-x-0 shadow-[0_20px_60px_rgba(0,0,0,.15)]" : "-translate-x-[calc(100%+24px)] max-lg:pointer-events-none"
         }`}
       >
@@ -127,13 +127,13 @@ export default function Sidebar({
         </div>
 
         {/* Navigation list */}
-        <nav className="admin-sidebar-nav flex-1 space-y-3 2xl:space-y-4 overflow-y-auto px-3.5 py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <nav className="admin-sidebar-nav">
           {GROUPS.map((group) => (
             <div key={group.title}>
-              <p className="px-3 pb-1.5 pt-1 text-[11.5px] font-bold uppercase tracking-[0.14em] text-[var(--admin-muted)]">
+              <p className="admin-sidebar-group-title px-3 font-bold uppercase tracking-[0.14em] text-[var(--admin-muted)]">
                 {group.title}
               </p>
-              <ul className="space-y-1">
+              <ul className="admin-sidebar-items">
                 {group.items.map((item) => {
                   const isChildActive = item.children?.some((c) => pathname === c.href);
                   const isParentActive =
@@ -143,12 +143,12 @@ export default function Sidebar({
                   const Icon = item.icon;
                   const count = "badge" in item && item.badge === "inbox" ? unread : 0;
                   return (
-                    <li key={item.href} className="space-y-1">
+                    <li key={item.href} className="admin-sidebar-item">
                       <Link
                         href={item.href}
                         onClick={onClose}
                         style={{ gap: "0.5rem" }}
-                        className={`group flex items-center gap-[0.5rem] rounded-fuse-md border px-3.5 py-2 text-[14.5px] 2xl:py-2.5 2xl:text-[15px] transition-colors duration-200 ${
+                        className={`admin-sidebar-link group flex items-center gap-[0.5rem] rounded-fuse-md border px-3.5 transition-colors duration-200 ${
                           isParentActive && !isChildActive
                             ? "border-[var(--admin-accent-border)] bg-[var(--admin-accent-soft)] font-semibold text-[var(--admin-heading)]"
                             : active
@@ -156,7 +156,7 @@ export default function Sidebar({
                               : "border-transparent font-medium text-[var(--admin-muted)] hover:bg-[var(--admin-surface)] hover:text-[var(--admin-ink)]"
                         }`}
                       >
-                        <Icon className="h-5 w-5 shrink-0" strokeWidth={1.85} />
+                        <Icon className="admin-sidebar-icon shrink-0" strokeWidth={1.85} />
                         <span className="flex-1 truncate">{item.label}</span>
                         {count > 0 && (
                           <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--admin-accent)] px-1.5 text-[11px] font-bold text-[var(--admin-surface)]">
@@ -165,7 +165,7 @@ export default function Sidebar({
                         )}
                       </Link>
                       {item.children && (
-                        <ul className="ms-4 space-y-1 border-s border-[var(--admin-line)] ps-3.5 pt-0.5 pb-0.5">
+                        <ul className="admin-sidebar-children ms-4 border-s border-[var(--admin-line)] ps-3.5">
                           {item.children.map((child) => {
                             const childActive = pathname === child.href;
                             return (
@@ -174,7 +174,7 @@ export default function Sidebar({
                                   href={child.href}
                                   onClick={onClose}
                                   style={{ gap: "0.5rem" }}
-                                  className={`flex items-center gap-[0.5rem] rounded-fuse-sm px-3 py-1.5 text-[13px] 2xl:text-[13.5px] transition ${
+                                  className={`admin-sidebar-child-link flex items-center gap-[0.5rem] rounded-fuse-sm px-3 transition ${
                                     childActive
                                       ? "bg-[var(--admin-accent-soft)] font-semibold text-[var(--admin-heading)]"
                                       : "font-medium text-[var(--admin-muted)] hover:bg-[var(--admin-surface)] hover:text-[var(--admin-ink)]"

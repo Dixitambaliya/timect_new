@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { useRouter } from "@/admin/lib/navigation";
+import Link from "@/admin/lib/navigation";
 import {
   ArrowLeft,
   Save,

@@ -1,8 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { absoluteUrl } from "@/lib/seo/site-config";
+import Link from "@/admin/lib/navigation";
+import { usePathname, useRouter } from "@/admin/lib/navigation";
 import {
   Copy,
   ExternalLink,
@@ -11,10 +12,8 @@ import {
   MoreHorizontal,
   Pencil,
   Plus,
-  Search,
   Trash2,
   Unlink,
-  X,
 } from "lucide-react";
 import type { Product } from "@/db/actions";
 import {
@@ -36,6 +35,7 @@ import Pagination from "@/admin/components/ui/Pagination";
 import { TableSkeleton } from "@/admin/components/ui/Skeleton";
 import { GENDER_OPTIONS } from "@/admin/lib/constants";
 import ProductImportExport from "./ProductImportExport";
+import styles from "./ProductTable.module.css";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectOption } from "@/components/ui/select";
 
@@ -57,7 +57,7 @@ export default function ProductTable({
   const { success, error } = useToast();
   const router = useRouter();
   const pathname = usePathname();
-  const { search, setSearch, clearSearch } = useAdminSearch();
+  const { search, clearSearch } = useAdminSearch();
   const [filters, setFilters] = useState<ProductListFilters>({
     search: initialSearch || search,
     flag: initialFlag || "all",
@@ -297,30 +297,11 @@ export default function ProductTable({
   }, [pathname, productListUrl, router]);
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="relative min-w-[200px] flex-1 sm:w-64">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--admin-muted)]" />
-            <input
-              type="text"
-              placeholder="Search products…"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="admin-input pl-9 pr-8"
-            />
-            {search ? (
-              <button
-                type="button"
-                onClick={clearSearch}
-                className="absolute right-2 top-1/2 z-[1] flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-fuse-sm text-[var(--admin-muted)] hover:bg-[var(--admin-surface)] hover:text-[var(--admin-ink)]"
-                aria-label="Clear search"
-              >
-                <X className="h-3.5 w-3.5" />
-              </button>
-            ) : null}
-          </div>
+    <div className={`${styles.root} space-y-4`}>
+      <div className={`${styles.toolbar} flex flex-wrap items-center justify-between gap-3`}>
+        <div className={`${styles.filters} flex flex-wrap items-center gap-2`}>
           <Select
+            closeOnTriggerClick
             className="admin-input w-auto"
             value={filters.status || "all"}
             onChange={(e) =>
@@ -336,6 +317,7 @@ export default function ProductTable({
             <SelectOption value="draft">Drafts</SelectOption>
           </Select>
           <Select
+            closeOnTriggerClick
             className="admin-input w-auto"
             value={filters.flag || "all"}
             onChange={(e) =>
@@ -353,6 +335,7 @@ export default function ProductTable({
             <SelectOption value="related">Related</SelectOption>
           </Select>
           <Select
+            closeOnTriggerClick
             className="admin-input w-auto"
             value={filters.gender || ""}
             onChange={(e) =>
@@ -371,6 +354,7 @@ export default function ProductTable({
             ))}
           </Select>
           <Select
+            closeOnTriggerClick
             className="admin-input w-auto"
             value={filters.sortBy || "newest"}
             onChange={(e) =>
@@ -388,7 +372,7 @@ export default function ProductTable({
             <SelectOption value="price-desc">Price ↓</SelectOption>
           </Select>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className={`${styles.actions} flex flex-wrap gap-2`}>
           <ProductImportExport onImported={() => void load()} />
           <Link href="/admin/products/new" className="admin-btn admin-btn-primary">
             <Plus className="h-4 w-4" />
@@ -476,7 +460,7 @@ export default function ProductTable({
         </div>
       )}
 
-      <div className="admin-card overflow-hidden">
+      <div className={`${styles.listCard} admin-card`}>
         {loading ? (
           <TableSkeleton />
         ) : products.length === 0 ? (
@@ -523,8 +507,15 @@ export default function ProductTable({
             }
           />
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[720px] text-left text-sm">
+          <div>
+            <div className={styles.mobileSelection}>
+              <label className="flex items-center gap-2 text-xs text-[var(--admin-muted)]">
+                <Checkbox checked={allCurrentPageSelected} onChange={toggleAll} />
+                Select all on this page
+              </label>
+              <span className="text-xs text-[var(--admin-muted)]">{total} products</span>
+            </div>
+            <table role="table" className={`${styles.table} w-full text-left text-sm`}>
               <thead className="border-b border-[var(--admin-line)] bg-[var(--admin-bg)] text-xs uppercase tracking-wider text-[var(--admin-muted)]">
                 <tr>
                   <th className="px-4 py-3">
@@ -637,7 +628,7 @@ export default function ProductTable({
                           </Link>
                           {p.status === "published" && (
                             <a
-                              href={`/product/${p.slug}`}
+                              href={absoluteUrl(`/product/${p.slug}`)}
                               target="_blank"
                               rel="noreferrer"
                               className="admin-btn admin-btn-ghost px-2"

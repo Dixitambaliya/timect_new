@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/admin/lib/navigation";
 import { ArrowRight, Gift, Inbox, Layers, Package, Palette, Plus, Sparkles, Star, Upload } from "lucide-react";
 import { adminGetDashboardStats } from "@/admin/actions/products";
 import { adminListMessages } from "@/admin/actions/inbox";

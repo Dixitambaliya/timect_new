@@ -1,3 +1,6 @@
+import { headers } from "next/headers";
+import { isAdminHost } from "@/admin/lib/routing";
+import { AdminNavigationProvider } from "@/admin/lib/navigation";
 import type { Metadata } from "next";
 import "@/admin/styles/admin.css";
 
@@ -11,10 +14,11 @@ export const metadata: Metadata = {
  * Admin root layout -isolated from storefront chrome.
  * Does not render Header/Footer/Preloader.
  */
-export default function AdminRootLayout({
+export default async function AdminRootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return children;
+  const subdomain = isAdminHost((await headers()).get("host") || "");
+  return <AdminNavigationProvider subdomain={subdomain}>{children}</AdminNavigationProvider>;
 }

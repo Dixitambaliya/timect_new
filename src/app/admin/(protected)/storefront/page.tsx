@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
-import Link from "next/link";
+import Link from "@/admin/lib/navigation";
 import { ArrowDown, ArrowUp, ExternalLink, Loader2, MessageCircle, Plus, Save, Trash2 } from "lucide-react";
 import { PageHeader } from "@/admin/components/layout/Breadcrumbs";
 import ImageField from "@/admin/components/ui/ImageField";
