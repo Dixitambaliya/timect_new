@@ -624,7 +624,7 @@ export default function ProductTable({
                         </div>
                       </td>
                       <td className="px-4 py-3 text-[var(--admin-muted)]">
-                        {p.gender || "—"}
+                        {p.gender || "-"}
                       </td>
                       <td className="px-4 py-3">
                         <div className="relative flex items-center justify-end gap-1">

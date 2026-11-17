@@ -65,7 +65,7 @@ function generateWatchEditorialArticle(topic: string, focusKeyword?: string, cat
 
   <h2 id="direct-answer-overview" class="text-2xl font-serif font-bold text-ink mt-8 mb-4">Direct Answer & Fundamental Principles</h2>
   <p class="mb-4 text-ink/80 leading-relaxed">
-    When evaluating <strong>${keyword}</strong>, seasoned collectors prioritize three fundamental criteria: mechanical architecture, structural resilience, and chronometric fidelity. In modern watchmaking, every component—from the hairspring alloy to the hand-beveled bridges—contributes to an enduring timekeeping instrument.
+    When evaluating <strong>${keyword}</strong>, seasoned collectors prioritize three fundamental criteria: mechanical architecture, structural resilience, and chronometric fidelity. In modern watchmaking, every component-from the hairspring alloy to the hand-beveled bridges-contributes to an enduring timekeeping instrument.
   </p>
 
   <div class="my-8 rounded-fuse bg-bg/80 border border-line p-6">

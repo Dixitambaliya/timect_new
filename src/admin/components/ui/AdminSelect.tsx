@@ -34,7 +34,7 @@ export default function AdminSelect({
       {options.map((option) => (
         <SelectOption key={option.value} value={option.value}>
           {option.description
-            ? `${option.label} — ${option.description}`
+            ? `${option.label} - ${option.description}`
             : option.label}
         </SelectOption>
       ))}

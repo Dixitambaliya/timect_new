@@ -10,7 +10,7 @@ import { absoluteUrl } from "@/lib/seo/site-config";
 import { SITE_CONFIG } from "@/lib/seo/site-config";
 import { JsonLd, type JsonLdValue } from "@/lib/seo/structured-data";
 import { Breadcrumbs } from "@/components/fuse/buttons";
-import { Clock, Calendar, ChevronDown, HelpCircle, Sparkles } from "lucide-react";
+import { Calendar, ChevronDown, HelpCircle, Sparkles } from "lucide-react";
 
 interface BlogPostPageProps {
   params: Promise<{ slug: string }>;
@@ -166,10 +166,6 @@ export default async function BlogPostDetailPage({ params }: BlogPostPageProps) 
         <div className="mx-auto max-w-[820px] text-left">
           <div className="inline-flex items-center gap-2 rounded-fuse-sm bg-bg border border-line px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-muted">
             <span>{post.category?.name || "Blog"}</span>
-            <span>•</span>
-            <span className="flex items-center gap-1">
-              <Clock className="h-3 w-3" /> {post.reading_time_minutes} min read
-            </span>
           </div>
 
           <h1 className="fuse-h2 mt-4 font-bold text-heading text-left">

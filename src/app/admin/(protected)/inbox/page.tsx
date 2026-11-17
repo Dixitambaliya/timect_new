@@ -209,7 +209,7 @@ function MessageDetail({
         </div>
         <div>
           <dt className="text-[12px] text-[var(--admin-muted)]">Phone</dt>
-          <dd className="font-semibold">{m.phone ? <a href={`tel:${m.phone}`}>{m.phone}</a> : "—"}</dd>
+          <dd className="font-semibold">{m.phone ? <a href={`tel:${m.phone}`}>{m.phone}</a> : "-"}</dd>
         </div>
       </dl>
 

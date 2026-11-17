@@ -212,7 +212,7 @@ export async function seedBlogDatabase() {
         <h2 id="understanding-automatic-movements" class="text-2xl font-serif font-bold text-ink mt-8 mb-4">1. Understanding the Self-Winding Caliber</h2>
         <p class="mb-4 text-ink/80 leading-relaxed">Unlike quartz timepieces powered by silver-oxide batteries, an automatic watch harnesses kinetic energy from natural wrist movements. A weighted semicircular rotor swings freely, winding the mainspring coiled tightly within the barrel. Look for a movement that beats at 21,600 or 28,800 vibrations per hour (vph), providing a smooth sweeping seconds hand and reliable chronometry.</p>
         <h2 id="dimensions-and-ergonomics" class="text-2xl font-serif font-bold text-ink mt-8 mb-4">2. Case Dimensions & Lug-to-Lug Distance</h2>
-        <p class="mb-4 text-ink/80 leading-relaxed">Case diameter only tells half the story. The lug-to-lug distance—the vertical measurement from top horn to bottom horn—dictates whether a watch will overhang your wrist. A 40mm watch with 47mm lug-to-lug wears comfortably on almost all wrist circumferences between 6.25 and 7.5 inches.</p>
+        <p class="mb-4 text-ink/80 leading-relaxed">Case diameter only tells half the story. The lug-to-lug distance-the vertical measurement from top horn to bottom horn-dictates whether a watch will overhang your wrist. A 40mm watch with 47mm lug-to-lug wears comfortably on almost all wrist circumferences between 6.25 and 7.5 inches.</p>
         <div class="my-8 rounded-fuse bg-bg/80 border border-line p-6">
           <h3 class="text-sm font-semibold uppercase tracking-wider text-muted mb-3">Key Takeaways for First-Time Buyers</h3>
           <ul class="list-disc pl-5 space-y-2 text-ink/80 text-sm">
@@ -222,7 +222,7 @@ export async function seedBlogDatabase() {
           </ul>
         </div>
         <h2 id="maintenance-and-ownership" class="text-2xl font-serif font-bold text-ink mt-8 mb-4">3. Long-Term Ownership and Servicing</h2>
-        <p class="mb-4 text-ink/80 leading-relaxed">A well-engineered mechanical watch does not become obsolete. With preventative service intervals every 4 to 6 years—refreshing synthetic lubricants and water gaskets—an automatic timepiece will outlive digital smartwatches by generations.</p>
+        <p class="mb-4 text-ink/80 leading-relaxed">A well-engineered mechanical watch does not become obsolete. With preventative service intervals every 4 to 6 years-refreshing synthetic lubricants and water gaskets-an automatic timepiece will outlive digital smartwatches by generations.</p>
       `,
       faqs: [
         { question: "How often does an automatic watch need winding?", answer: "If worn daily for 8-10 hours, wrist motion keeps it fully wound. If left untouched past its power reserve (typically 38 to 48 hours), gently wind the crown 20 to 30 turns to kickstart the balance wheel." },
@@ -243,7 +243,7 @@ export async function seedBlogDatabase() {
       excerpt: "While quartz delivers pinpoint electronic accuracy, automatic horology offers a living mechanical pulse. We analyze their mechanisms, maintenance, lifespan, and collector appeal.",
       html: `
         <p class="lead font-serif text-xl italic text-ink/90 leading-relaxed border-l-2 border-primary/40 pl-5 mb-8">
-          The difference between automatic and quartz watches is not merely battery versus spring—it is an ideological divide between micro-mechanical soul and electronic quartz oscillation.
+          The difference between automatic and quartz watches is not merely battery versus spring-it is an ideological divide between micro-mechanical soul and electronic quartz oscillation.
         </p>
         <h2 id="how-they-differ" class="text-2xl font-serif font-bold text-ink mt-8 mb-4">Direct Comparison: Mechanics vs Electronics</h2>
         <p class="mb-4 text-ink/80 leading-relaxed">A quartz watch utilizes a synthetic quartz crystal tuning fork vibrating at 32,768 Hz when stimulated by electrical voltage. A stepping motor translates this into a distinct once-per-second jump. In contrast, an automatic watch uses a coiled mainspring releasing tension through an escapement and balance wheel, producing between 6 and 8 micro-beats every single second.</p>
@@ -285,7 +285,7 @@ export async function seedBlogDatabase() {
       excerpt: "When investing in a quality watch, the crystal protects the dial's beauty. We compare sapphire crystal, mineral glass, and acrylic plexiglass across hardness, optics, and impact resistance.",
       html: `
         <p class="lead font-serif text-xl italic text-ink/90 leading-relaxed border-l-2 border-primary/40 pl-5 mb-8">
-          Synthetic sapphire crystal is rated at 9 on the Mohs hardness scale—meaning only diamond or silicon carbide can scratch its surface during typical daily life.
+          Synthetic sapphire crystal is rated at 9 on the Mohs hardness scale-meaning only diamond or silicon carbide can scratch its surface during typical daily life.
         </p>
         <h2 id="crystal-hardness" class="text-2xl font-serif font-bold text-ink mt-8 mb-4">The Science of Synthetic Corundum</h2>
         <p class="mb-4 text-ink/80 leading-relaxed">Produced via the Verneuil process by crystallizing aluminum oxide at temperatures exceeding 2,000°C, sapphire crystals offer crystalline clarity and impenetrable scratch resistance. In contrast, mineral glass is heat-tempered silicate glass. While cost-effective, mineral glass inevitably accumulates visible swirls from contact with desks, keys, and doorframes.</p>
@@ -436,7 +436,7 @@ export async function seedBlogDatabase() {
       excerpt: "Avoid costly service bills with these fundamental horological care rules. Learn the danger zone for date-setting and how to store your timepieces properly.",
       html: `
         <p class="lead font-serif text-xl italic text-ink/90 leading-relaxed border-l-2 border-primary/40 pl-5 mb-8">
-          A fine mechanical watch is engineered to last for generations, but simple daily mistakes—like changing the date at midnight—can cause avoidable mechanical damage.
+          A fine mechanical watch is engineered to last for generations, but simple daily mistakes-like changing the date at midnight-can cause avoidable mechanical damage.
         </p>
         <h2 id="the-midnight-danger-zone" class="text-2xl font-serif font-bold text-ink mt-8 mb-4">1. The 9 PM to 3 AM Date-Setting Rule</h2>
         <p class="mb-4 text-ink/80 leading-relaxed">During late evening hours, the movement's date change wheel actively engages the teeth of the date disc. Using the crown's quickset date during this window can shear the delicate gear teeth. Always advance the hands to 6:30 before adjusting the calendar.</p>
@@ -571,7 +571,7 @@ export async function seedBlogDatabase() {
       isTrending: true,
       readTime: 6,
       focusKeyword: "microbrand watches",
-      directAnswer: "Microbrands are independent boutique watch companies founded by enthusiasts that produce limited production runs directly to consumers. By eliminating distributor margins and luxury boutique overhead, microbrands deliver premium specifications—such as sapphire crystals, ceramic inserts, and regulated movements—at exceptional value.",
+      directAnswer: "Microbrands are independent boutique watch companies founded by enthusiasts that produce limited production runs directly to consumers. By eliminating distributor margins and luxury boutique overhead, microbrands deliver premium specifications-such as sapphire crystals, ceramic inserts, and regulated movements-at exceptional value.",
       excerpt: "Direct-to-consumer models and horological passion have catalyzed a vibrant renaissance of inventive watch design.",
       html: `<p class="lead font-serif text-xl italic text-ink/90 leading-relaxed border-l-2 border-primary/40 pl-5 mb-8">Microbrands have democratized luxury specifications that previously were reserved for four-figure luxury timepieces.</p>`,
       faqs: [{ question: "Are microbrand watches reliable?", answer: "Yes, most microbrands rely on workhorse calibers from Miyota, Seiko, or Sellita that can be serviced affordably by any independent watchmaker worldwide." }],
@@ -604,7 +604,7 @@ export async function seedBlogDatabase() {
       directAnswer: "A curated three-watch collection consists of: 1) A rugged Sports/Diver watch for water activities and weekend wear; 2) A versatile 'GADA' (Go Anywhere, Do Anything) everyday steel watch on a bracelet; and 3) An understated dress watch on leather for formal occasions and celebrations.",
       excerpt: "Why owning fewer, higher-quality timepieces often brings greater collector satisfaction than accumulating dozens of impulse purchases.",
       html: `<p class="lead font-serif text-xl italic text-ink/90 leading-relaxed border-l-2 border-primary/40 pl-5 mb-8">The three-watch framework is the gold standard of thoughtful horological curatorship.</p>`,
-      faqs: [{ question: "What does GADA stand for?", answer: "'Go Anywhere, Do Anything'—a watch featuring clean styling, 100m water resistance, and a metal bracelet that looks equally sharp with a t-shirt or tailored blazer." }],
+      faqs: [{ question: "What does GADA stand for?", answer: "'Go Anywhere, Do Anything'-a watch featuring clean styling, 100m water resistance, and a metal bracelet that looks equally sharp with a t-shirt or tailored blazer." }],
     },
     {
       title: "Demystifying Power Reserve: How Mainspring Energy is Stored and Delivered",
@@ -738,7 +738,7 @@ export async function seedBlogDatabase() {
       readTime: 6,
       focusKeyword: "watch gifting guide",
       directAnswer: "When gifting a watch, prioritize timeless versatile aesthetics over polarizing fashion trends. A classic 38mm-40mm stainless steel timepiece with clean dial batons, 50m+ water resistance, and an engraved caseback creates an enduring personal heirloom.",
-      excerpt: "A fine timepiece is the ultimate milestone gift—marking weddings, graduations, corporate achievements, and personal triumphs.",
+      excerpt: "A fine timepiece is the ultimate milestone gift-marking weddings, graduations, corporate achievements, and personal triumphs.",
       html: `<p class="lead font-serif text-xl italic text-ink/90 leading-relaxed border-l-2 border-primary/40 pl-5 mb-8">A watch gift is unique: it sits directly on the recipient's skin every day, serving as an enduring reminder of your bond.</p>`,
       faqs: [{ question: "Should I engrave a gift watch?", answer: "Yes, an understated monogram or milestone date on the caseback personalizes the timepiece forever." }],
     },

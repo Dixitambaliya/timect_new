@@ -60,7 +60,7 @@ export default function SettingsPage() {
               {user?.fullName || "…"} · {user?.email || "…"}
             </p>
             <p className="text-[11px] uppercase tracking-wider text-[var(--admin-muted)]">
-              Role: {user?.role?.replace("_", " ") || "—"}
+              Role: {user?.role?.replace("_", " ") || "-"}
             </p>
           </div>
         </div>

@@ -33,7 +33,7 @@ function SpecContent({ spec }: { spec: Specification }) {
     <dl className="grid grid-cols-[minmax(110px,40%)_1fr] gap-x-4 gap-y-3 text-[16px]">
       {rows.map((r, i) => (
         <div key={`${r.label}-${i}`} className="contents">
-          <dt className="text-muted">{r.label || "—"}</dt>
+          <dt className="text-muted">{r.label || "-"}</dt>
           <dd className="font-medium">{r.value}</dd>
         </div>
       ))}

@@ -210,7 +210,7 @@ function ImportDialog({
                       <tr key={r.row} className="border-t border-[var(--admin-line)] align-top">
                         <td className="px-3 py-2 text-[var(--admin-muted)]">{r.row}</td>
                         <td className="px-3 py-2">
-                          <div className="font-medium">{r.name || "—"}</div>
+                          <div className="font-medium">{r.name || "-"}</div>
                           {r.handle && <div className="font-mono text-[11px] text-[var(--admin-muted)]">{r.handle}</div>}
                           {r.message && (
                             <div className={r.action === "error" ? "text-[var(--admin-danger)]" : "text-[var(--admin-muted)]"}>

@@ -47,7 +47,7 @@ export default function ProductPreview({ data }: { data: ProductInput }) {
             {(data.subtitle || data.description) && <p className="mt-2 text-[14px] text-[#5a5a5a]">{data.subtitle || data.description}</p>}
             {data.code && <p className="mt-1 text-[13px] text-[#5a5a5a]">Ref. {data.code}</p>}
             <div className="mt-4 border-t border-[#d4d4d4] pt-4">
-              <p className="text-[22px] font-semibold">{data.price || "—"}</p>
+              <p className="text-[22px] font-semibold">{data.price || "-"}</p>
               <p className="mt-0.5 text-[12px] text-[#5a5a5a]">{data.priceSubtext || "Recommended Retail Price"}</p>
             </div>
           </div>
@@ -106,7 +106,7 @@ export default function ProductPreview({ data }: { data: ProductInput }) {
                         <dl className="grid grid-cols-[40%_1fr] gap-x-3 gap-y-1.5">
                           {rows.map((r, j) => (
                             <div key={j} className="contents">
-                              <dt className="text-[#5a5a5a]">{r.label || "—"}</dt>
+                              <dt className="text-[#5a5a5a]">{r.label || "-"}</dt>
                               <dd className="font-medium">{r.value}</dd>
                             </div>
                           ))}

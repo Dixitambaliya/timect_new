@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import ConfirmDialog from "@/admin/components/ui/ConfirmDialog";
 import {
   Plus,
   Search,
@@ -36,6 +37,8 @@ export default function AdminBlogPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [pagination, setPagination] = useState({ page: 1, total: 0, totalPages: 1 });
+  const [postToDelete, setPostToDelete] = useState<BlogPostItem | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const fetchPosts = async (page = 1, currentSearch = search, currentStatus = statusFilter) => {
     setLoading(true);
@@ -68,15 +71,20 @@ export default function AdminBlogPage() {
     fetchPosts(1, search, statusFilter);
   };
 
-  const handleDelete = async (id: number) => {
-    if (!confirm("Are you sure you want to delete this editorial article?")) return;
+  const handleDelete = async () => {
+    if (!postToDelete) return;
+
+    setDeleting(true);
     try {
-      const res = await fetch(`/api/blog/posts/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/blog/posts/${postToDelete.id}`, { method: "DELETE" });
       if (res.ok) {
-        fetchPosts(pagination.page, search, statusFilter);
+        setPostToDelete(null);
+        await fetchPosts(pagination.page, search, statusFilter);
       }
     } catch (err) {
       console.error(err);
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -258,7 +266,7 @@ export default function AdminBlogPage() {
                         </Link>
                         <button
                           type="button"
-                          onClick={() => handleDelete(post.id)}
+                          onClick={() => setPostToDelete(post)}
                           className="rounded p-1 text-[var(--admin-muted)] transition hover:bg-[var(--admin-danger-soft)] hover:text-[var(--admin-danger)]"
                           title="Delete Post"
                         >
@@ -298,6 +306,21 @@ export default function AdminBlogPage() {
           </div>
         )}
       </div>
+
+      <ConfirmDialog
+        open={!!postToDelete}
+        title="Delete article?"
+        description={
+          postToDelete
+            ? `“${postToDelete.title}” will be permanently deleted. This action cannot be undone.`
+            : undefined
+        }
+        confirmLabel="Delete article"
+        danger
+        loading={deleting}
+        onCancel={() => setPostToDelete(null)}
+        onConfirm={handleDelete}
+      />
     </div>
   );
 }

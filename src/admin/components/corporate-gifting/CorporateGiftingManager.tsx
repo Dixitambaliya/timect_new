@@ -334,15 +334,15 @@ export default function CorporateGiftingManager({ initialItems }: Props) {
                       </div>
                     </td>
                     <td className="whitespace-nowrap px-4 py-3">{item.price}</td>
-                    <td className="px-4 py-3 text-[var(--admin-muted)]">{item.collection || "—"}</td>
-                    <td className="px-4 py-3 text-[var(--admin-muted)]">{item.gender || "—"}</td>
+                    <td className="px-4 py-3 text-[var(--admin-muted)]">{item.collection || "-"}</td>
+                    <td className="px-4 py-3 text-[var(--admin-muted)]">{item.gender || "-"}</td>
                     <td className="px-4 py-3">
                       {item.accentColor ? (
                         <span className="inline-flex items-center gap-2 font-mono text-xs text-[var(--admin-muted)]">
                           <span className="h-4 w-4 rounded-full border border-black/20" style={{ backgroundColor: item.accentColor }} />
                           {item.accentColor}
                         </span>
-                      ) : "—"}
+                      ) : "-"}
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-end gap-1">

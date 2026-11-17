@@ -3,13 +3,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { createPortal } from "react-dom";
 import { cx } from "@/lib/cx";
 import { useScrolledPast } from "@/components/fuse/hooks";
-import { ChevronDown, MenuIcon, SearchIcon, Mail, ArrowRight } from "@/components/fuse/icons";
-import { catalogThumbUrl } from "@/lib/catalog-image";
+import { MenuIcon, SearchIcon, Mail, ArrowRight } from "@/components/fuse/icons";
 import Logo from "./Logo";
-import { MAIN_NAV, SHOP_LINKS, watchesFilterHref } from "./navigation";
 import { useSite } from "./SiteProvider";
 
 /** Square header icon button: glass over imagery, light tile on a solid header. */
@@ -49,77 +46,12 @@ function HeaderIcon({
   );
 }
 
-/** Desktop mega menu for "Watches": quick links + live shop-by-category cards. */
-function MegaMenu({ open, onEnter, onLeave, onNavigate }: {
-  open: boolean;
-  onEnter: () => void;
-  onLeave: () => void;
-  onNavigate: () => void;
-}) {
-  const { categories } = useSite();
-  if (!open) return null;
-  return (
-    <div
-      className="absolute inset-x-0 top-[calc(100%+8px)] z-50 animate-dropdown-in"
-      onMouseEnter={onEnter}
-      onMouseLeave={onLeave}
-    >
-      <div className="grid grid-cols-[260px_1fr] gap-3 rounded-fuse bg-white p-3 shadow-[0_24px_60px_rgba(0,0,0,.12)]">
-        <div className="rounded-fuse-md bg-bg p-6">
-          <p className="mb-4 text-[14px] font-semibold uppercase tracking-wide text-muted">Shop</p>
-          <ul className="flex flex-col gap-3">
-            {SHOP_LINKS.map((l) => (
-              <li key={l.href}>
-                <Link href={l.href} onClick={onNavigate} className="link-hover text-[18px] font-semibold text-heading">
-                  {l.title}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <ul className="grid grid-cols-3 gap-2 xl:grid-cols-6">
-          {categories.map((c) => (
-            <li key={c.slug}>
-              <Link
-                href={watchesFilterHref(c.slug)}
-                onClick={onNavigate}
-                className="hover-lift group/m flex h-full flex-col rounded-fuse-md bg-bg p-2"
-              >
-                <span className="relative block aspect-[4/5] overflow-hidden rounded-fuse-sm bg-placeholder">
-                  {c.image && (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={catalogThumbUrl(c.image, 360)}
-                      alt={`${c.label} watches by Timect`}
-                      loading="lazy"
-                      className="img-fill transition-transform duration-700 group-hover/m:scale-110"
-                    />
-                  )}
-                </span>
-                <span className="flex items-center justify-between gap-2 px-2 pb-1 pt-3 text-[15px] font-semibold capitalize">
-                  {c.label.toLowerCase()}
-                  <ArrowRight className="h-4 w-4 shrink-0 transition-transform duration-400 group-hover/m:translate-x-1" />
-                </span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
-  );
-}
-
 export default function Header() {
   const pathname = usePathname();
   const transparent = pathname === "/";
   const { openPanel } = useSite();
-  const [mega, setMega] = useState(false);
-  const closeTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const headerRef = useRef<HTMLElement>(null);
   const [headerH, setHeaderH] = useState(160);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => setMounted(true), []);
 
   useEffect(() => {
     const el = headerRef.current;
@@ -129,25 +61,9 @@ export default function Header() {
     return () => ro.disconnect();
   }, []);
 
-  useEffect(() => setMega(false), [pathname]);
-
   const stacked = useScrolledPast(headerH + 40);
   const light = transparent;
   const iconVariant = light ? "glass" : "solid";
-
-  const openMega = () => {
-    clearTimeout(closeTimer.current);
-    setMega(true);
-  };
-  const scheduleClose = () => {
-    clearTimeout(closeTimer.current);
-    closeTimer.current = setTimeout(() => setMega(false), 180);
-  };
-
-  const isActive = (href: string) => {
-    const base = href.split("?")[0];
-    return base !== "/" && pathname.startsWith(base) && !href.includes("?");
-  };
 
   return (
     <>
@@ -159,7 +75,6 @@ export default function Header() {
           transparent ? "absolute inset-x-1 top-[var(--announcement-h)] md:inset-x-3" : "relative mx-1 md:mx-3",
           stacked && "pointer-events-none opacity-0",
         )}
-        onMouseLeave={scheduleClose}
       >
         <div
           className={cx(
@@ -169,44 +84,11 @@ export default function Header() {
         >
           <div className="flex items-center gap-3 xl:gap-10">
             <HeaderIcon variant={iconVariant} aria-label="Open menu" onClick={() => openPanel("menu")}>
-              <MenuIcon />
+              <MenuIcon className="h-8 w-8" />
             </HeaderIcon>
             <Link href="/" aria-label="Timect home" className="block shrink-0">
               <Logo />
             </Link>
-
-            <nav className="hidden items-center gap-1 xl:flex" aria-label="Main">
-              {MAIN_NAV.map((item) =>
-                item.mega ? (
-                  <div key={item.href} onMouseEnter={openMega} onFocus={openMega}>
-                    <Link
-                      href={item.href}
-                      aria-expanded={mega}
-                      className={cx(
-                        "flex items-center gap-1.5 rounded-[10px] px-4 py-2 font-semibold transition-[background-color,color] duration-400",
-                        mega ? "bg-[#f0f2f4eb] text-ink" : light ? "text-ink hover:bg-white/30" : "text-ink hover:bg-bg",
-                      )}
-                    >
-                      {item.title}
-                      <ChevronDown className={cx("h-5 w-5 transition-transform duration-400", mega && "rotate-180")} />
-                    </Link>
-                  </div>
-                ) : (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onMouseEnter={scheduleClose}
-                    className={cx(
-                      "rounded-[10px] px-4 py-2 font-semibold transition-[background-color,color] duration-400",
-                      light ? "text-ink hover:bg-white/30" : "text-ink hover:bg-bg",
-                      !light && isActive(item.href) && "bg-bg",
-                    )}
-                  >
-                    {item.title}
-                  </Link>
-                ),
-              )}
-            </nav>
           </div>
 
           <div className="flex items-center gap-2 md:gap-3">
@@ -219,29 +101,7 @@ export default function Header() {
             </HeaderIcon>
           </div>
         </div>
-
-        <div className="relative mx-auto hidden max-w-site xl:block">
-          <MegaMenu
-            open={mega}
-            onEnter={() => clearTimeout(closeTimer.current)}
-            onLeave={scheduleClose}
-            onNavigate={() => setMega(false)}
-          />
-        </div>
       </header>
-
-      {/* Blurred scrim while the mega menu is open */}
-      {mounted &&
-        createPortal(
-          <div
-            aria-hidden
-            className={cx(
-              "pointer-events-none fixed inset-0 z-40 bg-[#2323230d] transition-[opacity,backdrop-filter] duration-400",
-              mega ? "opacity-100 backdrop-blur-[12px]" : "opacity-0 backdrop-blur-0",
-            )}
-          />,
-          document.body,
-        )}
 
       {/* Stacked sticky header -compact dark glass pill */}
       <div
@@ -253,7 +113,7 @@ export default function Header() {
       >
         <div className="glass-dark flex items-center gap-3 rounded-fuse !bg-[#232323cc] p-2 shadow-[0_12px_40px_rgba(0,0,0,.18)]">
           <HeaderIcon variant="dark" aria-label="Open menu" tabIndex={stacked ? 0 : -1} onClick={() => openPanel("menu")}>
-            <MenuIcon />
+            <MenuIcon className="h-8 w-8" />
           </HeaderIcon>
           <Link href="/" aria-label="Timect home" tabIndex={stacked ? 0 : -1} className="flex-1 md:ms-2">
             <Logo light compact />

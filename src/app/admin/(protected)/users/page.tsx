@@ -30,7 +30,7 @@ const ROLE_HELP: Record<AdminRole, string> = {
 function formatDate(iso?: string) {
   if (!iso) return "Never";
   const d = new Date(iso);
-  return Number.isNaN(d.getTime()) ? "—" : d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+  return Number.isNaN(d.getTime()) ? "-" : d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
 }
 
 export default function UsersPage() {

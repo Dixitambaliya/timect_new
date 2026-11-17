@@ -3,7 +3,7 @@
 The Timect storefront and admin panel, rebuilt on the **Fuse** design system
 (Fuse tokens, glass surfaces, 16px radii, Archivo/Chivo type, Fuse buttons,
 drawers, modals and entrance animations) on **Next.js 16 (App Router)** with
-the existing **Neon PostgreSQL** catalog. No Fuse demo content is included —
+the existing **Neon PostgreSQL** catalog. No Fuse demo content is included -
 every product, category, gift and page comes from Timect data.
 
 ```bash

@@ -125,8 +125,8 @@ async function sendContactEmails(
   const rows: [string, string][] = [
     ["Name", v.name],
     ["Email", v.email],
-    ["Phone", v.phone || "—"],
-    ["Subject", v.subject || "—"],
+    ["Phone", v.phone || "-"],
+    ["Subject", v.subject || "-"],
     ...(productSlug ? [["Product", siteUrl ? `${siteUrl}/product/${productSlug}` : productSlug] as [string, string]] : []),
   ];
   const adminLink = siteUrl ? `${siteUrl}/admin/inbox?open=${id}` : "";

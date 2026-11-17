@@ -5,6 +5,10 @@ import { isValidPublicSlug } from "@/lib/seo/seo-validation";
 import { getCatalogFilters } from "@/db/content";
 import { FIXED_CATALOG_LANDINGS } from "@/lib/seo/catalog-pages";
 
+// Always rebuild the XML from the current database so newly published blog
+// posts appear without waiting for a deployment or a cached sitemap refresh.
+export const dynamic = "force-dynamic";
+
 const staticRoutes: MetadataRoute.Sitemap = [
   { url: absoluteUrl("/"), changeFrequency: "weekly", priority: 1 },
   { url: absoluteUrl("/watches"), changeFrequency: "weekly", priority: 0.9 },
@@ -45,28 +49,36 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
     // Fetch published blog posts
     const blogRows = await sql`
-      SELECT slug, updated_at FROM blog_posts 
-      WHERE status = 'published' AND slug IS NOT NULL
-      ORDER BY published_at DESC
+      SELECT p.slug, p.updated_at
+      FROM blog_posts p
+      LEFT JOIN blog_post_seo seo ON seo.blog_post_id = p.id
+      WHERE p.status = 'published'
+        AND p.slug IS NOT NULL
+        AND COALESCE(seo.robots_index, TRUE) = TRUE
+      ORDER BY p.published_at DESC
     `;
-    const blogPosts: MetadataRoute.Sitemap = blogRows.map((b) => ({
-      url: absoluteUrl(`/blog/${b.slug}`),
-      lastModified: b.updated_at ? new Date(b.updated_at) : new Date(),
-      changeFrequency: "weekly" as const,
-      priority: 0.8,
-    }));
+    const blogPosts: MetadataRoute.Sitemap = blogRows
+      .filter((post) => isValidPublicSlug(post.slug))
+      .map((post) => ({
+        url: absoluteUrl(`/blog/${post.slug}`),
+        lastModified: post.updated_at ? new Date(post.updated_at) : new Date(),
+        changeFrequency: "weekly" as const,
+        priority: 0.8,
+      }));
 
     // Fetch blog categories
     const catRows = await sql`SELECT slug FROM blog_categories`;
-    const blogCategories: MetadataRoute.Sitemap = catRows.map((c) => ({
-      url: absoluteUrl(`/blog/category/${c.slug}`),
-      changeFrequency: "weekly" as const,
-      priority: 0.7,
-    }));
+    const blogCategories: MetadataRoute.Sitemap = catRows
+      .filter((category) => isValidPublicSlug(category.slug))
+      .map((category) => ({
+        url: absoluteUrl(`/blog/category/${category.slug}`),
+        changeFrequency: "weekly" as const,
+        priority: 0.7,
+      }));
 
     return [...staticRoutes, ...catalogLandings, ...products, ...blogPosts, ...blogCategories];
   } catch (error) {
-    console.error("Unable to build product sitemap:", error);
+    console.error("Unable to build sitemap:", error);
     return staticRoutes;
   }
 }
