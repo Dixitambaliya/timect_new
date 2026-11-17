@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
-import Link from "next/link";
+
+import Link from "@/admin/lib/navigation";
 import { Loader2 } from "lucide-react";
 import Breadcrumbs from "@/admin/components/layout/Breadcrumbs";
 import ProductForm from "@/admin/components/products/ProductForm";

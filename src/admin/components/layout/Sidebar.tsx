@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import Link from "@/admin/lib/navigation";
+import { usePathname } from "@/admin/lib/navigation";
 import {
   ExternalLink,
   Gift,

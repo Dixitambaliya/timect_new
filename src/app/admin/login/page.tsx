@@ -1,5 +1,6 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import { useState, useActionState } from "react";
 import { Eye, EyeOff, Loader2, Lock } from "lucide-react";
 import { loginAdmin, type LoginResult } from "@/admin/actions/auth";
@@ -10,6 +11,7 @@ const HERO =
   "https://res.cloudinary.com/dphscxzb4/image/upload/v1794738506/timect/admin/general/lkjubswku6x0ybptntps.png";
 
 export default function AdminLoginPage() {
+  const searchParams = useSearchParams();
   const [state, formAction, pending] = useActionState(loginAdmin, initial);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -54,6 +56,7 @@ export default function AdminLoginPage() {
           <p className="mt-2 text-[15px] text-[var(--admin-muted)]">Secure access for authorized staff only.</p>
 
           <form action={formAction} className="mt-8 space-y-5">
+            <input type="hidden" name="next" value={searchParams.get("next") || ""} />
             <div>
               <label className="admin-label" htmlFor="email">
                 Email

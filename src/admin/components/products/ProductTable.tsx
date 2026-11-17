@@ -1,8 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { absoluteUrl } from "@/lib/seo/site-config";
+import Link from "@/admin/lib/navigation";
+import { usePathname, useRouter } from "@/admin/lib/navigation";
 import {
   Copy,
   ExternalLink,
@@ -649,7 +650,7 @@ export default function ProductTable({
                           </Link>
                           {p.status === "published" && (
                             <a
-                              href={`/product/${p.slug}`}
+                              href={absoluteUrl(`/product/${p.slug}`)}
                               target="_blank"
                               rel="noreferrer"
                               className="admin-btn admin-btn-ghost px-2"

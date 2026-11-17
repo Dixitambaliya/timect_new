@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import Link from "@/admin/lib/navigation";
 import { Activity, ArrowRight, Laptop, Smartphone, Users } from "lucide-react";
 import type { LiveVisitorStats } from "@/db/tracking-actions";
 

@@ -1,5 +1,7 @@
+import { adminServerPath } from "@/admin/lib/server-routing";
 import { redirect } from "next/navigation";
 
-export default function AdminIndexPage() {
-  redirect("/admin/dashboard");
+
+export default async function AdminIndexPage() {
+  redirect(await adminServerPath("/admin/dashboard"));
 }

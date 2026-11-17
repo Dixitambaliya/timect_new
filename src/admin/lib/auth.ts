@@ -2,6 +2,7 @@ import { SignJWT, jwtVerify, type JWTPayload } from "jose";
 import bcrypt from "bcryptjs";
 import {
   ADMIN_COOKIE,
+  ADMIN_ROLES,
   ADMIN_MAX_INACTIVITY_SECONDS,
   ADMIN_REMEMBER_ME_SECONDS,
   ADMIN_SESSION_SECONDS,
@@ -21,8 +22,8 @@ function getJwtSecret(): Uint8Array {
   const secret =
     process.env.ADMIN_JWT_SECRET ||
     process.env.JWT_SECRET ||
-    // Dev fallback -set ADMIN_JWT_SECRET in production
-    "timect-dev-admin-jwt-secret-change-me";
+    (process.env.NODE_ENV !== "production" ? "timect-dev-admin-jwt-secret-change-me" : "");
+  if (!secret) throw new Error("ADMIN_JWT_SECRET must be configured in production");
   return new TextEncoder().encode(secret);
 }
 
@@ -71,7 +72,7 @@ export async function verifyAdminToken(
 ): Promise<AdminSessionPayload | null> {
   try {
     const { payload } = await jwtVerify(token, getJwtSecret());
-    if (!payload.sub || !payload.email || !payload.role) return null;
+    if (!payload.sub || !payload.email || !ADMIN_ROLES.some(({ value }) => value === payload.role)) return null;
 
     // Inactivity check: if token was issued more than 90 days ago, invalidate it
     const now = Math.floor(Date.now() / 1000);

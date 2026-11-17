@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/admin/lib/navigation";
 
 export type Crumb = { label: string; href?: string };
 
