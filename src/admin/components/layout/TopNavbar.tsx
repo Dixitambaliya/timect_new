@@ -7,7 +7,7 @@ import type { AdminSession } from "@/admin/lib/session";
 import ConfirmDialog from "@/admin/components/ui/ConfirmDialog";
 
 const iconBtn =
-  "flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-fuse-md border border-[var(--admin-line-strong)] bg-[var(--admin-surface-2)] text-[var(--admin-ink)] transition-colors duration-400 hover:border-[#8c8c8c] hover:bg-[var(--admin-surface)]";
+  "flex h-9 w-9 shrink-0 sm:h-11 sm:w-11 items-center justify-center rounded-fuse-md border border-[var(--admin-line-strong)] bg-[var(--admin-surface-2)] text-[var(--admin-ink)] transition-colors duration-400 hover:border-[#8c8c8c] hover:bg-[var(--admin-surface)]";
 
 export default function TopNavbar({
   user,
@@ -49,7 +49,7 @@ export default function TopNavbar({
         <form
           role="search"
           onSubmit={handleSubmit}
-          className="relative hidden min-w-0 flex-1 md:block md:max-w-lg"
+          className="relative min-w-0 flex-1 md:max-w-lg"
         >
           <Search className="pointer-events-none absolute left-4 top-1/2 z-[1] h-4 w-4 -translate-y-1/2 text-[var(--admin-muted)]" aria-hidden />
           <input
@@ -72,7 +72,7 @@ export default function TopNavbar({
             }}
             placeholder={searchPlaceholder}
             aria-label={searchPlaceholder}
-            className="admin-input w-full !border-transparent !bg-[var(--admin-bg)]"
+            className="admin-input h-9 w-full min-w-0 !border-transparent !bg-[var(--admin-bg)] !text-base sm:h-11 sm:!text-sm"
             style={{ paddingLeft: "2.6rem", paddingRight: "2.6rem" }}
           />
           {searchValue ? (
@@ -88,7 +88,7 @@ export default function TopNavbar({
         </form>
       )}
 
-      <div className="ml-auto flex items-center gap-2">
+      <div className="ml-auto flex shrink-0 items-center gap-2">
         <button type="button" className={iconBtn} onClick={onToggleDark} aria-label="Toggle dark mode" title="Toggle theme">
           {dark ? <Sun className="h-4 w-4 sm:h-[18px] sm:w-[18px]" /> : <Moon className="h-4 w-4 sm:h-[18px] sm:w-[18px]" />}
         </button>

@@ -12,10 +12,8 @@ import {
   MoreHorizontal,
   Pencil,
   Plus,
-  Search,
   Trash2,
   Unlink,
-  X,
 } from "lucide-react";
 import type { Product } from "@/db/actions";
 import {
@@ -59,7 +57,7 @@ export default function ProductTable({
   const { success, error } = useToast();
   const router = useRouter();
   const pathname = usePathname();
-  const { search, setSearch, clearSearch } = useAdminSearch();
+  const { search, clearSearch } = useAdminSearch();
   const [filters, setFilters] = useState<ProductListFilters>({
     search: initialSearch || search,
     flag: initialFlag || "all",
@@ -302,26 +300,6 @@ export default function ProductTable({
     <div className={`${styles.root} space-y-4`}>
       <div className={`${styles.toolbar} flex flex-wrap items-center justify-between gap-3`}>
         <div className={`${styles.filters} flex flex-wrap items-center gap-2`}>
-          <div className={`${styles.search} relative min-w-[200px] flex-1 sm:w-64`}>
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--admin-muted)]" />
-            <input
-              type="text"
-              placeholder="Search products…"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="admin-input pl-9 pr-8"
-            />
-            {search ? (
-              <button
-                type="button"
-                onClick={clearSearch}
-                className="absolute right-2 top-1/2 z-[1] flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-fuse-sm text-[var(--admin-muted)] hover:bg-[var(--admin-surface)] hover:text-[var(--admin-ink)]"
-                aria-label="Clear search"
-              >
-                <X className="h-3.5 w-3.5" />
-              </button>
-            ) : null}
-          </div>
           <Select
             closeOnTriggerClick
             className="admin-input w-auto"
