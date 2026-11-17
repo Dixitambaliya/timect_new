@@ -22,6 +22,7 @@ function HeaderIcon({
   className?: string;
   href?: string;
   onClick?: () => void;
+  onMouseEnter?: () => void;
   tabIndex?: number;
   "aria-label": string;
 }) {
@@ -83,8 +84,13 @@ export default function Header() {
           )}
         >
           <div className="flex items-center gap-3 xl:gap-10">
-            <HeaderIcon variant={iconVariant} aria-label="Open menu" onClick={() => openPanel("menu")}>
-              <MenuIcon className="h-8 w-8" />
+            <HeaderIcon
+              variant={iconVariant}
+              aria-label="Open menu"
+              onClick={() => openPanel("menu")}
+              onMouseEnter={() => openPanel("menu")}
+            >
+              <MenuIcon className="h-10 w-10" />
             </HeaderIcon>
             <Link href="/" aria-label="Timect home" className="block shrink-0">
               <Logo />
@@ -112,8 +118,14 @@ export default function Header() {
         aria-hidden={!stacked}
       >
         <div className="glass-dark flex items-center gap-3 rounded-fuse !bg-[#232323cc] p-2 shadow-[0_12px_40px_rgba(0,0,0,.18)]">
-          <HeaderIcon variant="dark" aria-label="Open menu" tabIndex={stacked ? 0 : -1} onClick={() => openPanel("menu")}>
-            <MenuIcon className="h-8 w-8" />
+          <HeaderIcon
+            variant="dark"
+            aria-label="Open menu"
+            tabIndex={stacked ? 0 : -1}
+            onClick={() => openPanel("menu")}
+            onMouseEnter={() => openPanel("menu")}
+          >
+            <MenuIcon className="h-10 w-10" />
           </HeaderIcon>
           <Link href="/" aria-label="Timect home" tabIndex={stacked ? 0 : -1} className="flex-1 md:ms-2">
             <Logo light compact />
