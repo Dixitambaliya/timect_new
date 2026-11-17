@@ -49,5 +49,4 @@ and roles) · Settings. Light/dark theme, JWT session guarded by `src/proxy.ts`.
 * `admin_users`, `media_library`, `audit_logs`.
 
 `src/db/seed.ts` **drops and recreates** `products` from `src/data/products.json`
--don't run it against the live database unless you intend to reset the catalog.
-## test
+<br>-don't run it against the live database unless you intend to reset the catalog.
