@@ -21,6 +21,18 @@ const watches = [
   `${CDN}/v1784048481/timect/ladies_gold_tt.png`,
   `${CDN}/v1784048491/timect/rose_ladies.png`,
 ];
+const collectionImages = [
+  "https://res.cloudinary.com/dphscxzb4/image/upload/v1795007968/ChatGPT_Image_Aug_14_2026_10_42_01_PM_compressed_ojll82.png",
+  "https://res.cloudinary.com/dphscxzb4/image/upload/v1795007968/ChatGPT_Image_Aug_15_2026_02_02_29_PM_compressed_ijnnzi.png",
+  "https://res.cloudinary.com/dphscxzb4/image/upload/v1795007968/ChatGPT_Image_Aug_14_2026_11_11_45_PM_compressed_lzrdip.png",
+];
+const timelineImages = [
+  "https://res.cloudinary.com/dphscxzb4/image/upload/v1794738506/timect/admin/general/lkjubswku6x0ybptntps.png",
+  "https://res.cloudinary.com/dphscxzb4/image/upload/v1794735086/timect/admin/general/zvydu6ljp313xmul4hcf.png",
+  "https://res.cloudinary.com/dphscxzb4/image/upload/v1793957997/timect/admin/general/xqvt5sjbu9zzcvrpshok.png",
+  "https://res.cloudinary.com/dphscxzb4/image/upload/v1793957455/timect/admin/general/e7qypfi1xkqhijjx8rvg.png",
+  "https://res.cloudinary.com/dphscxzb4/image/upload/v1794736027/timect/admin/general/sika95sq0c1ysorfk4wl.png",
+];
 const brands = [
   ["richard-mille", "Richard Mille"], ["patek-philippe", "Patek Philippe"],
   ["audemars-piguet", "Audemars Piguet"], ["rolex", "Rolex"], ["cartier", "Cartier"],
@@ -69,7 +81,7 @@ export default function AboutPage() {
           <div className={styles.features}>
             {features.map(({ title, text, icon: Icon, position }) => <article key={title} className={`${styles.feature} ${position} reveal-rise`}><Icon size={35} strokeWidth={1.1} aria-hidden="true" /><h3>{title}</h3><p>{text}</p></article>)}
             <article className={`${styles.exclusive} reveal-rise`}>
-              <div className={styles.watchTrio} aria-hidden="true">{watches.slice(0, 3).map((src, i) => <img key={src} src={src} alt="" loading="lazy" className={styles[`trio${i}`]} width={240} height={320} />)}</div>
+              <div className={styles.watchTrio} aria-hidden="true">{collectionImages.map((src, i) => <img key={src} src={src} alt="" loading="lazy" className={styles[`trio${i}`]} width={240} height={320} />)}</div>
               <div><h3>A considered collection</h3><p>Distinctive dials, timeless proportions, and timepieces chosen for everyday life.</p><Link href="/watches" className={styles.collectionLink}>Explore our watches <span aria-hidden="true">↗</span></Link></div>
             </article>
           </div>
@@ -82,14 +94,14 @@ export default function AboutPage() {
             <article className={`${styles.experience} reveal-rise`}><strong>{years}<span>+</span></strong><p>Since our founding in 2003, our passion for watch design, craftsmanship, and the details of everyday wear has guided our journey. We believe every purchase should feel informed, intentional, and timeless.</p></article>
           </div>
           <div className={styles.storyRight}>
-            <div className={`${styles.wrist} reveal-rise`}><img src="/images/about/detail.jpg" alt="A classic steel wristwatch paired with a crisp white cuff" loading="lazy" width={1400} height={1600} /></div>
-            <article className={`${styles.meaning} reveal-rise`}><p>A watch is more than an instrument of time.<br />It represents history, craftsmanship, and personal meaning. It marks an achievement, a gift, a moment that matters. Whether it’s a vintage classic or a modern icon, every timepiece tells a story.</p><div className={styles.timeline} aria-label="A timepiece for every chapter">{watches.map((src, i) => <div key={src} className={`${styles.timelineWatch} ${i % 2 ? styles.above : styles.below}`}><img src={src} alt="" loading="lazy" width={100} height={130} /><span /></div>)}</div></article>
+            <div className={`${styles.wrist} reveal-rise`}><img src="https://res.cloudinary.com/dphscxzb4/image/upload/v1795008663/timect/admin/general/l74nmbp1twbeqedc1hri.png" alt="A classic steel wristwatch paired with a crisp white cuff" loading="lazy" width={1400} height={1600} /></div>
+            <article className={`${styles.meaning} reveal-rise`}><p>A watch is more than an instrument of time.<br />It represents history, craftsmanship, and personal meaning. It marks an achievement, a gift, a moment that matters. Whether it’s a vintage classic or a modern icon, every timepiece tells a story.</p><div className={styles.timeline} aria-label="A timepiece for every chapter">{timelineImages.map((src, i) => <div key={src} className={`${styles.timelineWatch} ${i % 2 ? styles.above : styles.below}`}><img src={src} alt="" loading="lazy" width={100} height={130} /><span /></div>)}</div></article>
           </div>
         </section>
 
         <section className={styles.concierge} aria-labelledby="concierge-title">
           <div className={`${styles.conciergeText} reveal-rise`}><h2 id="concierge-title">Need a specific watch?<br />Looking for expert advice?</h2><p>Our team is ready to assist with personal recommendations<br className={styles.desktopBreak} /> and every detail of your watch journey.</p><Link href="/contact" className={styles.contactButton}>CONTACT US <span aria-hidden="true">↗</span></Link></div>
-          <img className={styles.conciergeWatch} src={watches[0]} alt="A blue-dial Timect watch with a polished steel bracelet" loading="lazy" width={650} height={780} />
+          <img className={styles.conciergeWatch} src="https://res.cloudinary.com/dphscxzb4/image/upload/v1793773012/timect/admin/general/scrvodqc8ekmd1bhic0f.png" alt="Timect watch" loading="lazy" width={650} height={780} />
         </section>
       </div>
     </>
