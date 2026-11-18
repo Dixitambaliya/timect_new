@@ -78,16 +78,6 @@ export default function MenuDrawer() {
       side="left"
       label="Menu"
       width="md:w-[600px]"
-      aside={
-        <button
-          type="button"
-          onClick={closePanel}
-          aria-label="Close menu"
-          className="mt-[calc(100vh-272px)] flex h-20 w-20 items-center justify-center rounded-fuse bg-white text-ink shadow-lg transition-transform duration-400 hover:rotate-90"
-        >
-          <CloseIcon />
-        </button>
-      }
     >
       <div className="flex items-center justify-between gap-2 p-3">
         <button
