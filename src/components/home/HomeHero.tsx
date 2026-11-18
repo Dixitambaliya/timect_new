@@ -8,7 +8,7 @@ import { catalogThumbSrcSet, catalogThumbUrl } from "@/lib/catalog-image";
 import { ArrowLeft, ArrowRight } from "@/components/fuse/icons";
 import { canonicalCatalogHref } from "@/components/site/navigation";
 
-const AUTOPLAY = 5500;
+const AUTOPLAY = 3000;
 
 function BackgroundTitle({ slide }: { slide: HeroSlide }) {
   const primary = slide.title.trim() || "TIMECT";
