@@ -108,17 +108,17 @@ export default function HomeHero({ slides }: { slides: HeroSlide[] }) {
             >
               <BackgroundTitle slide={slide} />
 
-              <div className="absolute inset-x-5 top-[16%] z-[4] md:left-[6%] md:right-auto md:top-[17%] md:w-[50%] lg:left-[4.2%] lg:top-[18%] lg:w-[38%] xl:w-[34%]">
+              <div className="hero-content-edge absolute right-3 top-[16%] z-[4] md:right-auto md:top-[17%] md:w-[50%] lg:top-[18%] lg:w-[38%] xl:w-[34%]">
                 <div
                   className={cx(
                     "transition-[opacity,transform] duration-700 ease-fuse-out",
                     active && loaded ? "translate-y-0 opacity-100" : "translate-y-5 opacity-0",
                   )}
                 >
-                  <div className="mb-4 flex items-center gap-3 text-[10px] font-semibold uppercase tracking-[0.3em] text-[#52627e] md:mb-6 md:gap-4 md:text-[11px] md:tracking-[0.42em] lg:mb-7">
+                  {/* <div className="mb-4 flex items-center gap-3 text-[10px] font-semibold uppercase tracking-[0.3em] text-[#52627e] md:mb-6 md:gap-4 md:text-[11px] md:tracking-[0.42em] lg:mb-7">
                     <span>Timect collection</span>
                     <span className="h-px w-12 bg-[#76849a] md:w-20" />
-                  </div>
+                  </div> */}
                   <h1 className="max-w-[520px] font-chivo text-[44px] font-black leading-[0.92] tracking-[-0.055em] text-[#102852] sm:text-[52px] md:text-[clamp(58px,7.5vw,76px)] lg:text-[clamp(64px,6vw,104px)]">
                     Find<br />Your Time.
                   </h1>
@@ -171,7 +171,7 @@ export default function HomeHero({ slides }: { slides: HeroSlide[] }) {
           );
         })}
 
-        <div className="absolute bottom-6 left-5 z-[8] flex items-center gap-2 text-[10px] font-semibold tracking-[0.12em] text-[#66748d] sm:gap-3 sm:text-[11px] md:bottom-9 md:left-[6%] lg:left-[4.2%]">
+        <div className="hero-content-edge absolute bottom-6 z-[8] flex items-center gap-2 text-[10px] font-semibold tracking-[0.12em] text-[#66748d] sm:gap-3 sm:text-[11px] md:bottom-9">
           <span>{slideNumber}</span>
           <span className="h-px w-5 bg-[#aeb6c2]" />
           <span>{slideCount}</span>

@@ -8,7 +8,7 @@ import { cx } from "@/lib/cx";
 import { catalogThumbSrcSet, catalogThumbUrl } from "@/lib/catalog-image";
 import { useCarousel, useDragScroll } from "@/components/fuse/hooks";
 import { CarouselProgress, Section, SectionHeading, SliderArrows } from "@/components/fuse/ui";
-import { ButtonOutline, ButtonPrimary } from "@/components/fuse/buttons";
+import { ButtonOutline } from "@/components/fuse/buttons";
 import { ArrowRight } from "@/components/fuse/icons";
 import ProductCard, { type CardProduct } from "@/components/site/ProductCard";
 import { canonicalCatalogHref, watchesFilterHref } from "@/components/site/navigation";
@@ -122,8 +122,8 @@ export function CategoryCarousel({ categories }: { categories: ShopCategory[] })
   useDragScroll(car.ref);
   if (!categories.length) return null;
   return (
-    <Section className="container-fuse py-8 md:py-12">
-      <div className="relative isolate overflow-hidden rounded-fuse py-7 md:py-14">
+    <Section className="container-fuse py-6 md:py-10">
+      <div className="relative isolate overflow-hidden rounded-fuse py-6 md:py-10">
         {categories.map((c, i) => (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -135,15 +135,15 @@ export function CategoryCarousel({ categories }: { categories: ShopCategory[] })
           />
         ))}
         <div className="absolute inset-0 -z-10 bg-white/35" />
-        <div className="mb-6 flex items-end justify-between gap-6 px-4 md:mb-10 md:px-12">
+        <div className="mb-5 flex items-end justify-between gap-6 px-4 md:mb-7 md:px-10">
           <h2 className="reveal-wipe fuse-h2 max-w-[520px]">Shop by category</h2>
           <SliderArrows carousel={car} glass className="hidden md:flex" />
         </div>
-        <ul ref={car.ref} className="no-scrollbar flex snap-x snap-mandatory scroll-px-4 gap-2 overflow-x-auto px-4 py-3 md:scroll-px-12 md:px-12">
+        <ul ref={car.ref} className="no-scrollbar flex snap-x snap-mandatory scroll-px-4 gap-2 overflow-x-auto px-4 py-3 md:scroll-px-10 md:px-10">
           {categories.map((c, i) => (
             <li
               key={c.slug}
-              className="reveal-rise w-[204px] shrink-0 snap-start md:w-[350px]"
+              className="reveal-rise w-[188px] shrink-0 snap-start md:w-[300px]"
               style={{ "--delay": `${i * 0.06}s` } as CSSProperties}
               onMouseEnter={() => setBg(i)}
               onFocus={() => setBg(i)}
@@ -157,20 +157,20 @@ export function CategoryCarousel({ categories }: { categories: ShopCategory[] })
                   <img
                     src={catalogThumbUrl(c.image, 480)}
                     srcSet={catalogThumbSrcSet(c.image, [240, 360, 480, 720])}
-                    sizes="(min-width: 768px) 350px, 204px"
+                    sizes="(min-width: 768px) 300px, 188px"
                     alt={`${c.label} watches by Timect`}
                     loading="lazy"
                     className="img-fill transition-transform duration-[1100ms] ease-fuse-out group-hover/c:scale-110"
                   />
                 </span>
-                <span className="block px-3 pb-4 pt-3 text-[16px] font-semibold capitalize">
+                <span className="block px-3 pb-3 pt-2.5 text-[15px] font-semibold capitalize">
                   <span className="link-hover">{c.label.toLowerCase()}</span>
                 </span>
               </Link>
             </li>
           ))}
         </ul>
-        <div className="mt-9 flex justify-center md:mt-12">
+        <div className="mt-6 flex justify-center md:mt-8">
           <ButtonOutline href="/watches" className="min-w-[214px] bg-white">
             See all watches
           </ButtonOutline>
@@ -180,48 +180,34 @@ export function CategoryCarousel({ categories }: { categories: ShopCategory[] })
   );
 }
 
-/**
- * Two-up full-bleed banners (For Him / For Her). Copy is revealed on hover on
- * desktop while the image slowly zooms; always visible on touch.
- */
+/** Two collection banners with always-visible text and links. */
 export function GridBanner({ banners }: { banners: PromoBanner[] }) {
   if (!banners.length) return null;
   return (
     <Section className="container-fuse py-10 md:py-[60px]">
-      <div className={cx("grid gap-2 overflow-hidden rounded-fuse md:gap-0", banners.length > 1 && "md:grid-cols-2")}>
-        {banners.map((b, i) => (
+      <div className={cx("collection-split overflow-hidden rounded-fuse", banners.length === 2 && "collection-split--paired")}>
+        {banners.map((b) => (
           <div
             key={b.id || b.title}
-            className="reveal-fade group/gb relative aspect-[708/780] overflow-hidden rounded-fuse md:aspect-auto md:h-[min(70svh,640px)] md:rounded-none"
-            style={{ "--delay": `${i * 0.15}s` } as CSSProperties}
+            className="collection-split__panel group/gb"
           >
-            <Link
-              href={canonicalCatalogHref(b.href)}
-              tabIndex={-1}
-              aria-hidden
-              className="absolute inset-0 z-[1]"
-            />
-            <div data-parallax="8" className="absolute inset-x-0 -inset-y-[12%]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={catalogThumbUrl(b.image, 1400)}
-                alt={`${b.title} Timect watches`}
+                src={catalogThumbUrl(b.image, 960)}
+                srcSet={catalogThumbSrcSet(b.image, [480, 720, 960, 1400])}
+                sizes="(min-width: 768px) 50vw, 100vw"
+                alt=""
                 loading="lazy"
-                className="img-fill transition-transform duration-[1.6s] ease-fuse group-hover/gb:scale-[1.06]"
+                className="collection-split__image"
               />
+            <div className="collection-split__content">
+              <h2>{b.title}</h2>
+              <span className="collection-split__accent" aria-hidden="true" />
+              {b.text && <p>{b.text}</p>}
+              <Link href={canonicalCatalogHref(b.href)} className="collection-split__link" aria-label={`${b.buttonLabel || "Explore"} ${b.title} watches`}>
+                {b.buttonLabel || "Explore"} <ArrowRight className="h-5 w-5" />
+              </Link>
             </div>
-            <div className="absolute inset-0 bg-[#0000001a]" />
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] flex flex-col items-start bg-[linear-gradient(180deg,rgba(35,35,35,0),rgba(35,35,35,.65))] p-6 pt-32 text-white transition-[opacity,transform] duration-[600ms] ease-fuse-out md:translate-y-10 md:p-12 md:pt-48 md:opacity-0 md:group-focus-within/gb:translate-y-0 md:group-focus-within/gb:opacity-100 md:group-hover/gb:translate-y-0 md:group-hover/gb:opacity-100">
-              <h2 className="text-[28px] font-bold text-white md:text-[44px] md:leading-[1.09]">{b.title}</h2>
-              {b.text && <p className="mt-3 max-w-[460px] text-[16px] leading-[1.5]">{b.text}</p>}
-              <ButtonPrimary href={canonicalCatalogHref(b.href)} glass bg="#ffffff" className="pointer-events-auto mt-6 !bg-white/10">
-                {b.buttonLabel || "Explore"}
-              </ButtonPrimary>
-            </div>
-            {/* Title visible before hover on desktop */}
-            <p className="pointer-events-none absolute left-6 top-6 hidden text-[24px] font-bold text-white drop-shadow transition-opacity duration-400 group-hover/gb:opacity-0 md:left-12 md:top-10 md:block">
-              {b.title}
-            </p>
           </div>
         ))}
       </div>
