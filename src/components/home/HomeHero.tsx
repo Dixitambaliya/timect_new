@@ -127,10 +127,11 @@ export default function HomeHero({ slides }: { slides: HeroSlide[] }) {
             >
               <BackgroundTitle slide={slide} />
 
-              <div className="hero-content-edge absolute right-3 top-[16%] z-[4] md:right-auto md:top-[17%] md:w-[55%] lg:top-[18%] lg:w-[48%] xl:w-[44%]">
+              <div className="pointer-events-none absolute inset-x-0 top-[16%] z-[4] md:top-[17%] lg:top-[18%]">
+                <div className="home-content-container">
                 <div
                   className={cx(
-                    "pl-4 transition-[opacity,transform] duration-1000 ease-fuse-out motion-reduce:transition-none md:pl-5",
+                    "pointer-events-auto transition-[opacity,transform] duration-1000 ease-fuse-out motion-reduce:transition-none md:w-[55%] lg:w-[48%] xl:w-[44%]",
                     active && loaded ? "translate-y-0 opacity-100" : "translate-y-5 opacity-0",
                   )}
                 >
@@ -163,6 +164,7 @@ export default function HomeHero({ slides }: { slides: HeroSlide[] }) {
                     </Link>
                   </div>
                 </div>
+                </div>
               </div>
 
               <div
@@ -190,7 +192,9 @@ export default function HomeHero({ slides }: { slides: HeroSlide[] }) {
           );
         })}
 
-        <div className="hero-content-edge absolute bottom-6 z-[8] flex items-center gap-2 text-[10px] font-semibold tracking-[0.12em] text-[#66748d] sm:gap-3 sm:text-[11px] md:bottom-9">
+        <div className="pointer-events-none absolute inset-x-0 bottom-6 z-[8] md:bottom-9">
+          <div className="home-content-container">
+          <div className="pointer-events-auto flex items-center gap-2 text-[10px] font-semibold tracking-[0.12em] text-[#66748d] sm:gap-3 sm:text-[11px]">
           <span>{slideNumber}</span>
           <span className="h-px w-5 bg-[#aeb6c2]" />
           <span>{slideCount}</span>
@@ -216,6 +220,8 @@ export default function HomeHero({ slides }: { slides: HeroSlide[] }) {
             <button type="button" onClick={() => go(index + 1)} aria-label="Next watch" className="flex h-9 w-9 items-center justify-center rounded-full border border-[#aeb6c2] transition-colors hover:bg-white">
               <ArrowRight className="h-3.5 w-3.5" />
             </button>
+          </div>
+          </div>
           </div>
         </div>
 

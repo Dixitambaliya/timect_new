@@ -80,7 +80,7 @@ export default function Header() {
         <div
           className={cx(
             "mx-auto flex items-center justify-between gap-4 rounded-fuse transition-colors duration-400",
-            transparent ? "w-full px-3 py-3 md:p-4 xl:p-8" : "max-w-site bg-white px-3 py-3 md:px-4 md:py-5",
+            transparent ? "home-content-container py-3 md:py-4 xl:py-8" : "max-w-site bg-white px-3 py-3 md:px-4 md:py-5",
           )}
         >
           <div className="flex items-center gap-3 xl:gap-10">

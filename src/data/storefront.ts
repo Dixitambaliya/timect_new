@@ -66,11 +66,11 @@ export const DEFAULT_STOREFRONT: StorefrontSettings = {
   heroSlides: [
     {
       id: "anniversary",
-      eyebrow: "No. 01 -145th Anniversary Edition",
+      eyebrow: "No. 01 -Anniversary Edition",
       title: "Anniversary",
       subtitle: "Heritage",
       description:
-        "Celebrating 23 years of Japanese precision horology with hand-textured silk dial artistry and 70-hour automatic caliber.",
+        "Founded in 2003, Timect brings considered design to watches for everyday wear.",
       price: "₹1,30,000",
       image: `${CDN}/v1784048472/timect/image_2.png`,
       href: "/watches",
