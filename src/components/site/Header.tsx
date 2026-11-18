@@ -72,14 +72,14 @@ export default function Header() {
         ref={headerRef}
         className={cx(
           "z-50 transition-opacity duration-400",
-          transparent ? "absolute inset-x-1 top-[var(--announcement-h)] md:inset-x-3" : "relative mx-1 md:mx-3",
+          transparent ? "absolute inset-x-1 top-[var(--announcement-h)] md:inset-x-0" : "relative mx-1 md:mx-3",
           stacked && "pointer-events-none opacity-0",
         )}
       >
         <div
           className={cx(
-            "mx-auto flex max-w-site items-center justify-between gap-4 rounded-fuse transition-colors duration-400",
-            transparent ? "px-3 py-3 md:p-4 xl:p-8" : "bg-white px-3 py-3 md:px-4 md:py-5",
+            "mx-auto flex items-center justify-between gap-4 rounded-fuse transition-colors duration-400",
+            transparent ? "w-full px-3 py-3 md:p-4 xl:p-8" : "max-w-site bg-white px-3 py-3 md:px-4 md:py-5",
           )}
         >
           <div className="flex items-center gap-3 xl:gap-10">

@@ -40,13 +40,19 @@ function BackgroundTitle({ slide }: { slide: HeroSlide }) {
 
 export default function HomeHero({ slides }: { slides: HeroSlide[] }) {
   const [index, setIndex] = useState(0);
-  const [paused, setPaused] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  const [focused, setFocused] = useState(false);
+  const [previousIndex, setPreviousIndex] = useState(0);
   const [loaded, setLoaded] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(false);
   const touch = useRef<number | null>(null);
 
   const go = useCallback(
-    (next: number) => setIndex((next + slides.length) % slides.length),
-    [slides.length],
+    (next: number) => {
+      setPreviousIndex(index);
+      setIndex((next + slides.length) % slides.length);
+    },
+    [index, slides.length],
   );
 
   useEffect(() => {
@@ -55,10 +61,18 @@ export default function HomeHero({ slides }: { slides: HeroSlide[] }) {
   }, []);
 
   useEffect(() => {
-    if (paused || slides.length < 2) return;
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const update = () => setReducedMotion(media.matches);
+    update();
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
+
+  useEffect(() => {
+    if (hovered || focused || reducedMotion || slides.length < 2) return;
     const timer = setTimeout(() => go(index + 1), AUTOPLAY);
     return () => clearTimeout(timer);
-  }, [go, index, paused, slides.length]);
+  }, [go, index, hovered, focused, reducedMotion, slides.length]);
 
   if (!slides.length) return null;
 
@@ -68,8 +82,12 @@ export default function HomeHero({ slides }: { slides: HeroSlide[] }) {
   return (
     <section
       className="container-fuse pb-2 md:max-w-none md:px-0 md:pb-5"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onFocusCapture={() => setFocused(true)}
+      onBlurCapture={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) setFocused(false);
+      }}
       aria-roledescription="carousel"
       aria-label="Featured watches"
     >
@@ -92,7 +110,8 @@ export default function HomeHero({ slides }: { slides: HeroSlide[] }) {
 
         {slides.map((slide, slideIndex) => {
           const active = slideIndex === index;
-          const nearby = active || Math.abs(slideIndex - index) === 1;
+          const distance = Math.abs(slideIndex - index);
+          const nearby = active || slideIndex === previousIndex || distance === 1 || distance === slides.length - 1;
 
           return (
             <div
@@ -102,25 +121,25 @@ export default function HomeHero({ slides }: { slides: HeroSlide[] }) {
               aria-label={`${slideIndex + 1} of ${slides.length}`}
               aria-hidden={!active}
               className={cx(
-                "absolute inset-0 transition-opacity duration-700 ease-fuse",
+                "absolute inset-0 transition-opacity duration-1000 ease-in-out motion-reduce:transition-none",
                 active ? "z-[2] opacity-100" : "pointer-events-none z-[1] opacity-0",
               )}
             >
               <BackgroundTitle slide={slide} />
 
-              <div className="absolute inset-x-5 top-[16%] z-[4] md:left-[6%] md:right-auto md:top-[17%] md:w-[50%] lg:left-[4.2%] lg:top-[18%] lg:w-[38%] xl:w-[34%]">
+              <div className="hero-content-edge absolute right-3 top-[16%] z-[4] md:right-auto md:top-[17%] md:w-[55%] lg:top-[18%] lg:w-[48%] xl:w-[44%]">
                 <div
                   className={cx(
-                    "transition-[opacity,transform] duration-700 ease-fuse-out",
+                    "pl-4 transition-[opacity,transform] duration-1000 ease-fuse-out motion-reduce:transition-none md:pl-5",
                     active && loaded ? "translate-y-0 opacity-100" : "translate-y-5 opacity-0",
                   )}
                 >
-                  <div className="mb-4 flex items-center gap-3 text-[10px] font-semibold uppercase tracking-[0.3em] text-[#52627e] md:mb-6 md:gap-4 md:text-[11px] md:tracking-[0.42em] lg:mb-7">
+                  {/* <div className="mb-4 flex items-center gap-3 text-[10px] font-semibold uppercase tracking-[0.3em] text-[#52627e] md:mb-6 md:gap-4 md:text-[11px] md:tracking-[0.42em] lg:mb-7">
                     <span>Timect collection</span>
                     <span className="h-px w-12 bg-[#76849a] md:w-20" />
-                  </div>
+                  </div> */}
                   <h1 className="max-w-[520px] font-chivo text-[44px] font-black leading-[0.92] tracking-[-0.055em] text-[#102852] sm:text-[52px] md:text-[clamp(58px,7.5vw,76px)] lg:text-[clamp(64px,6vw,104px)]">
-                    Find<br />Your Time.
+                    Find<br /><span className="whitespace-nowrap">Your Time.</span>
                   </h1>
                   <p className="mt-3 max-w-[360px] text-[14px] leading-[1.55] text-[#66748d] sm:text-[15px] md:mt-5 md:max-w-[470px] md:text-[17px] lg:text-[19px]">
                     {slide.description || "Timeless designs. Everyday distinction."}
@@ -148,10 +167,10 @@ export default function HomeHero({ slides }: { slides: HeroSlide[] }) {
 
               <div
                 className={cx(
-                  "absolute bottom-[72px] left-[17%] z-[3] h-[37%] w-[66%] transition-[opacity,transform] duration-1000 ease-fuse-out sm:left-[21%] sm:h-[40%] sm:w-[58%] md:bottom-[5%] md:left-auto md:right-[1%] md:h-[52%] md:w-[45%] lg:bottom-[4%] lg:right-[3%] lg:h-[78%] lg:w-[46%]",
+                  "absolute bottom-[72px] left-[17%] z-[3] h-[37%] w-[66%] transition-[opacity,transform] duration-[1200ms] ease-fuse-out motion-reduce:transition-none sm:left-[21%] sm:h-[40%] sm:w-[58%] md:bottom-[5%] md:left-auto md:right-[1%] md:h-[52%] md:w-[45%] lg:bottom-[4%] lg:right-[3%] lg:h-[78%] lg:w-[46%]",
                   active && loaded ? "translate-x-0 translate-y-0 opacity-100" : "translate-x-8 translate-y-5 opacity-0",
                 )}
-                style={{ transitionDelay: active ? "120ms" : "0ms" }}
+                style={{ transitionDelay: active && !reducedMotion ? "120ms" : "0ms" }}
               >
                 <div className="hero-watch-ambient-shadow" aria-hidden />
                 <div className="hero-watch-contact-shadow" aria-hidden />
@@ -171,7 +190,7 @@ export default function HomeHero({ slides }: { slides: HeroSlide[] }) {
           );
         })}
 
-        <div className="absolute bottom-6 left-5 z-[8] flex items-center gap-2 text-[10px] font-semibold tracking-[0.12em] text-[#66748d] sm:gap-3 sm:text-[11px] md:bottom-9 md:left-[6%] lg:left-[4.2%]">
+        <div className="hero-content-edge absolute bottom-6 z-[8] flex items-center gap-2 text-[10px] font-semibold tracking-[0.12em] text-[#66748d] sm:gap-3 sm:text-[11px] md:bottom-9">
           <span>{slideNumber}</span>
           <span className="h-px w-5 bg-[#aeb6c2]" />
           <span>{slideCount}</span>

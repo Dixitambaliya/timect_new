@@ -59,7 +59,7 @@ export type StorefrontSettings = {
 
 export const DEFAULT_STOREFRONT: StorefrontSettings = {
   announcement: [
-    "Celebrating 145 Years of Craftsmanship",
+    "Celebrating 23 Years of Craftsmanship",
     "5-year international guarantee on every Timect watch",
     "Questions about a model? Ask our concierge on WhatsApp",
   ],
@@ -70,7 +70,7 @@ export const DEFAULT_STOREFRONT: StorefrontSettings = {
       title: "Anniversary",
       subtitle: "Heritage",
       description:
-        "Celebrating 145 years of Japanese precision horology with hand-textured silk dial artistry and 70-hour automatic caliber.",
+        "Celebrating 23 years of Japanese precision horology with hand-textured silk dial artistry and 70-hour automatic caliber.",
       price: "₹1,30,000",
       image: `${CDN}/v1784048472/timect/image_2.png`,
       href: "/watches",
