@@ -1,15 +1,13 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { cx } from "@/lib/cx";
-import { ArrowLeft, ArrowRight, WhatsApp } from "@/components/fuse/icons";
-import { UTILITY_LINKS } from "./navigation";
-import { useSite, whatsappLink } from "./SiteProvider";
+import { ArrowLeft, ArrowRight } from "@/components/fuse/icons";
+import { useSite } from "./SiteProvider";
 
-/** Top bar: utility links · rotating CMS messages · WhatsApp concierge. */
+/** Top bar with rotating CMS messages. */
 export default function AnnouncementBar() {
-  const { storefront, whatsappNumber } = useSite();
+  const { storefront } = useSite();
   const messages = storefront.announcement;
   const [index, setIndex] = useState(0);
   const [dir, setDir] = useState(1);
@@ -37,16 +35,8 @@ export default function AnnouncementBar() {
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      <div className="mx-auto grid h-full max-w-site grid-cols-[1fr] items-center px-3 lg:grid-cols-[1fr_auto_1fr] lg:px-12">
-        <nav className="hidden gap-8 lg:flex" aria-label="Utility">
-          {UTILITY_LINKS.map((l) => (
-            <Link key={l.href} href={l.href} className="link-hover">
-              {l.title}
-            </Link>
-          ))}
-        </nav>
-
-        <div className="flex items-center justify-between gap-3 lg:w-[520px]">
+      <div className="mx-auto flex h-full max-w-site items-center justify-center px-3 lg:px-12">
+        <div className="flex w-full max-w-[520px] items-center justify-between gap-3">
           <button type="button" onClick={() => go(-1)} aria-label="Previous announcement" className="p-2">
             <ArrowLeft className="h-4 w-4" />
           </button>
@@ -69,20 +59,6 @@ export default function AnnouncementBar() {
           </button>
         </div>
 
-        <div className="hidden items-center justify-end lg:flex">
-          <a
-            href={whatsappLink(
-              storefront.whatsappButton?.phoneNumber || whatsappNumber,
-              storefront.whatsappButton?.conciergeMessage || "Hi Timect, I have a question about your watches.",
-            )}
-            target="_blank"
-            rel="noreferrer"
-            className="link-hover flex items-center gap-2"
-          >
-            <WhatsApp className="h-4 w-4 text-whatsapp" />
-            Chat with a watch specialist
-          </a>
-        </div>
       </div>
     </div>
   );
