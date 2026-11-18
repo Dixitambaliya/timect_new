@@ -22,7 +22,6 @@ function HeaderIcon({
   className?: string;
   href?: string;
   onClick?: () => void;
-  onMouseEnter?: () => void;
   tabIndex?: number;
   "aria-label": string;
 }) {
@@ -88,7 +87,6 @@ export default function Header() {
               variant={iconVariant}
               aria-label="Open menu"
               onClick={() => openPanel("menu")}
-              onMouseEnter={() => openPanel("menu")}
             >
               <MenuIcon className="h-10 w-10" />
             </HeaderIcon>
@@ -123,7 +121,6 @@ export default function Header() {
             aria-label="Open menu"
             tabIndex={stacked ? 0 : -1}
             onClick={() => openPanel("menu")}
-            onMouseEnter={() => openPanel("menu")}
           >
             <MenuIcon className="h-10 w-10" />
           </HeaderIcon>
