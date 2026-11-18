@@ -3,7 +3,6 @@
 import { useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import Lenis from "lenis";
-import "lenis/dist/lenis.css";
 import { getLenis, setLenis } from "@/lib/smooth-scroll";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 
