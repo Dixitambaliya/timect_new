@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { getShopCategories, getStorefront } from "@/db/content";
+import { getInspectionRestriction, getShopCategories, getStorefront } from "@/db/content";
 import SmoothScroll from "@/components/site/SmoothScroll";
 import ScrollMotion from "@/components/site/ScrollMotion";
 import { SiteProvider } from "@/components/site/SiteProvider";
@@ -11,17 +11,19 @@ import SearchDrawer from "@/components/site/SearchDrawer";
 import QuickView from "@/components/site/QuickView";
 import BackToTop from "@/components/site/BackToTop";
 import VisitorTracker from "@/components/site/VisitorTracker";
+import InspectionRestriction from "@/components/site/InspectionRestriction";
 import { JsonLd, siteGraph } from "@/lib/seo/structured-data";
 
 // Storefront content is edited live from the admin panel.
 export const dynamic = "force-dynamic";
 
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
-  const [categories, storefront] = await Promise.all([getShopCategories(), getStorefront()]);
+  const [categories, storefront, restrictInspection] = await Promise.all([getShopCategories(), getStorefront(), getInspectionRestriction()]);
   const whatsappNumber = storefront.contact.whatsapp || process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "";
 
   return (
     <SiteProvider categories={categories} storefront={storefront} whatsappNumber={whatsappNumber}>
+      <InspectionRestriction enabled={restrictInspection} />
       <JsonLd data={siteGraph(storefront)} />
       <a
         href="#main"

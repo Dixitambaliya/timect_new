@@ -235,10 +235,12 @@ export function QuoteTicker({ text, images }: { text: string; images: string[] }
         <span key={i} className="flex shrink-0 items-center">
           <Link
             href="/watches"
+            aria-label="Explore Timect watches"
+            tabIndex={k === 1 ? -1 : undefined}
             className="mx-4 block h-[60px] w-[80px] shrink-0 md:mx-10 md:h-[150px] md:w-[204px]"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={catalogThumbUrl(src, 420)} alt="" loading="lazy" className="h-full w-full object-contain drop-shadow-[0_12px_18px_rgba(0,0,0,.18)] transition-transform duration-700 hover:scale-110" />
+            <img src={catalogThumbUrl(src, 420)} srcSet={catalogThumbUrl(src, 160) !== catalogThumbUrl(src, 420) ? `${catalogThumbUrl(src, 160)} 160w, ${catalogThumbUrl(src, 420)} 420w` : undefined} sizes="(min-width: 768px) 204px, 80px" alt="" loading="lazy" className="h-full w-full object-contain drop-shadow-[0_12px_18px_rgba(0,0,0,.18)] transition-transform duration-700 hover:scale-110" />
           </Link>
           <p className="whitespace-nowrap font-chivo text-[44px] font-bold leading-[1.1] text-heading md:text-[110px] xl:text-[160px]">{text}</p>
         </span>

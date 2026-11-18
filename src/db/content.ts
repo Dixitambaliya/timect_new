@@ -36,6 +36,10 @@ async function readSetting<T>(key: string): Promise<T | null> {
   }
 }
 
+export const getInspectionRestriction = cache(async (): Promise<boolean> =>
+  (await readSetting<boolean>("restrict_inspection")) === true,
+);
+
 export const getStorefront = cache(async (): Promise<StorefrontSettings> => {
   const stored = await readSetting<Partial<StorefrontSettings>>(
     STOREFRONT_SETTING_KEY,

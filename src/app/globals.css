@@ -590,3 +590,45 @@ html.lenis, html.lenis-smooth { scroll-behavior: auto; }
   }
   .reveal-rise, .reveal-fade, .reveal-wipe, .reveal-zoom { opacity: 1; transform: none; clip-path: none; }
 }
+/* About: an editorial chapter inspired by the geometry of a watch dial. */
+.about-expertise { background: #191d20; color: #f6f5ef; }
+.about-expertise__intro { position: relative; min-height: 490px; padding: clamp(32px, 6vw, 96px); display: flex; align-items: center; overflow: hidden; }
+.about-expertise__eyebrow { color: #c7bca6; font-size: 11px; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; }
+.about-expertise__eyebrow span { color: #777f7c; padding: 0 .6em; }
+.about-expertise__heading { margin-top: 30px; font-family: Georgia, serif; font-size: clamp(54px, 8vw, 112px); line-height: .98; letter-spacing: -.055em; font-weight: 400; }
+.about-expertise__heading em { color: #c8b99b; font-weight: 400; }
+.about-expertise__lead { max-width: 430px; margin-top: 28px; color: #c6c9c5; font-size: 16px; line-height: 1.8; }
+.about-expertise__heritage { display: flex; align-items: center; gap: 15px; margin-top: 30px; color: #d5c7aa; }
+.about-expertise__heritage strong { font-family: Georgia, serif; font-size: 48px; font-weight: 400; line-height: 1; }
+.about-expertise__heritage span { color: #c6c9c5; font-size: 11px; line-height: 1.6; letter-spacing: .1em; text-transform: uppercase; }
+.about-expertise__index { position: absolute; bottom: 35px; right: clamp(32px, 6vw, 96px); color: #a9ada7; font-size: 10px; letter-spacing: .2em; }
+.about-expertise__orbit { position: absolute; width: min(65vw, 680px); aspect-ratio: 1; right: -5%; top: 50%; transform: translateY(-50%); border: 1px solid #ffffff1c; border-radius: 50%; }
+.about-expertise__orbit::before, .about-expertise__orbit::after, .about-expertise__orbit span { content: ""; position: absolute; border: 1px solid #ffffff1a; border-radius: 50%; inset: 10%; }
+.about-expertise__orbit::after { inset: 25%; }
+.about-expertise__orbit span:first-child { inset: -1px; border-color: transparent; border-top-color: #c8b99b; animation: about-orbit 24s linear infinite; }
+.about-expertise__orbit span:nth-child(2) { inset: 10%; border-color: transparent; border-bottom-color: #c8b99b88; animation: about-orbit 18s linear infinite reverse; }
+.about-expertise__orbit span:nth-child(3) { inset: 25%; border-color: transparent; border-left-color: #c8b99b88; animation: about-orbit 14s linear infinite; }
+@keyframes about-orbit { to { transform: rotate(360deg); } }
+.about-expertise__list { background: #edece6; color: #202522; padding: 0 clamp(24px, 6vw, 96px); }
+.about-expertise__row { display: grid; grid-template-columns: 55px minmax(180px, .9fr) minmax(220px, 1fr) 24px; align-items: start; gap: 20px; padding: 36px 0; border-bottom: 1px solid #c9ccc3; transition: padding .35s ease; }
+.about-expertise__row:hover { padding-left: 10px; }
+.about-expertise__number { color: #7b8178; font-size: 11px; letter-spacing: .15em; padding-top: 8px; }
+.about-expertise__row h3 { font-family: Georgia, serif; font-weight: 400; font-size: clamp(25px, 2.8vw, 37px); letter-spacing: -.035em; line-height: 1.1; }
+.about-expertise__row p { max-width: 390px; color: #555c55; font-size: 15px; line-height: 1.75; }
+.about-expertise__arrow { color: #8e9489; font-size: 21px; transition: transform .35s ease; }
+.about-expertise__row:hover .about-expertise__arrow { transform: translate(4px, -4px); }
+.about-expertise__footer { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; padding: 30px 0 38px; font-size: 11px; text-transform: uppercase; letter-spacing: .14em; color: #737a70; }
+.about-expertise__footer a { color: #202522; font-weight: 700; }
+.about-expertise__footer a span { margin-left: 8px; }
+@media (max-width: 700px) {
+  .about-expertise__intro { min-height: 430px; align-items: flex-end; padding-bottom: 70px; }
+  .about-expertise__orbit { width: 100vw; right: -40%; top: 35%; }
+  .about-expertise__row { grid-template-columns: 35px 1fr 20px; gap: 12px; padding: 28px 0; }
+  .about-expertise__row h3 { grid-column: 2; }
+  .about-expertise__row p { grid-column: 2; }
+  .about-expertise__arrow { grid-column: 3; grid-row: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .about-expertise__orbit span { animation: none !important; }
+  .about-expertise__row, .about-expertise__arrow { transition: none; }
+}

@@ -59,6 +59,8 @@ export default function BlogEditorForm({ postId }: { postId?: number }) {
   const [readingTime, setReadingTime] = useState(5);
   const [featuredImageUrl, setFeaturedImageUrl] = useState("");
   const [featuredImageId, setFeaturedImageId] = useState<number | null>(null);
+  const [featuredImageAlt, setFeaturedImageAlt] = useState("");
+  const [contentJson, setContentJson] = useState<Record<string, unknown>>({});
 
   // Media Picker Dialog State
   const [showMediaPicker, setShowMediaPicker] = useState(false);
@@ -98,6 +100,10 @@ export default function BlogEditorForm({ postId }: { postId?: number }) {
             setReadingTime(p.reading_time_minutes || 5);
             setFeaturedImageUrl(p.featured_image_url || "");
             setFeaturedImageId(p.featured_image_id || null);
+            if (p.content_json && typeof p.content_json === "object" && !Array.isArray(p.content_json)) {
+              setContentJson(p.content_json);
+              setFeaturedImageAlt(typeof p.content_json.featuredImageAlt === "string" ? p.content_json.featuredImageAlt : "");
+            }
 
             if (p.seo?.direct_answer) {
               setDirectAnswer(p.seo.direct_answer);
@@ -199,6 +205,7 @@ export default function BlogEditorForm({ postId }: { postId?: number }) {
       subtitle,
       excerpt,
       contentHtml,
+      contentJson: { ...contentJson, featuredImageAlt: featuredImageAlt.trim() },
       categoryId,
       status: postStatus,
       isFeatured,
@@ -782,6 +789,11 @@ export default function BlogEditorForm({ postId }: { postId?: number }) {
                 <Upload className="h-4 w-4" /> Browse Media
               </button>
             </div>
+          </div>
+
+          <div>
+            <label htmlFor="featured-image-alt" className="block text-xs font-semibold uppercase tracking-wider text-[var(--admin-muted)]">Image description</label>
+            <input id="featured-image-alt" type="text" value={featuredImageAlt} onChange={(e) => setFeaturedImageAlt(e.target.value)} placeholder="Describe the featured image" className="admin-input mt-2 w-full text-sm" />
           </div>
 
           {featuredImageUrl && (

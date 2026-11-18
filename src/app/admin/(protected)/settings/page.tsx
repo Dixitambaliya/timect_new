@@ -9,10 +9,14 @@ import {
 } from "@/admin/actions/auth";
 import type { AdminSession } from "@/admin/lib/session";
 import { useToast } from "@/admin/hooks/useToast";
+import { adminGetInspectionRestriction, adminSaveInspectionRestriction } from "@/admin/actions/inspection";
+import { canWrite } from "@/admin/lib/constants";
 
 export default function SettingsPage() {
   const { success, error } = useToast();
   const [user, setUser] = useState<AdminSession | null>(null);
+  const [restriction, setRestriction] = useState<boolean | null>(null);
+  const [savingRestriction, setSavingRestriction] = useState(false);
   const [state, formAction, pending] = useActionState(
     async (
       _prev: { ok: boolean; error?: string } | null,
@@ -26,7 +30,24 @@ export default function SettingsPage() {
 
   useEffect(() => {
     getCurrentAdmin().then(setUser);
-  }, []);
+    adminGetInspectionRestriction().then(setRestriction).catch(() => error("Failed to load inspection setting"));
+  }, [error]);
+
+  async function changeRestriction(enabled: boolean) {
+    setSavingRestriction(true);
+    try {
+      const result = await adminSaveInspectionRestriction(enabled);
+      if (!result.ok) error(result.error || "Failed to save inspection setting");
+      else {
+        setRestriction(enabled);
+        success("Inspection setting saved");
+      }
+    } catch {
+      error("Failed to save inspection setting");
+    } finally {
+      setSavingRestriction(false);
+    }
+  }
 
   useEffect(() => {
     if (!state) return;
@@ -45,8 +66,20 @@ export default function SettingsPage() {
         />
         <h1 className="text-[28px] font-bold leading-tight tracking-tight md:text-[34px]">Settings</h1>
         <p className="mt-1 text-sm text-[var(--admin-muted)]">
-          Account security and environment notes
+          Account security and storefront controls
         </p>
+      </div>
+
+      <div className="admin-card p-6">
+        <h2 className="text-sm font-semibold">Storefront inspection shortcuts</h2>
+        <p className="mt-2 text-sm text-[var(--admin-muted)]">
+          Restrict right-click menus and common developer-tools shortcuts on the storefront. This cannot prevent all inspection or protect public content.
+        </p>
+        <label className="mt-4 flex items-center gap-3 text-sm">
+          <input type="checkbox" checked={restriction === true} disabled={restriction === null || savingRestriction || !user || !canWrite(user.role)} onChange={(event) => changeRestriction(event.target.checked)} />
+          Restrict inspection shortcuts
+        </label>
+        <p className="mt-2 text-xs text-[var(--admin-muted)]">Changes apply when visitors load or refresh a storefront page. The admin panel is unaffected.</p>
       </div>
 
       <div className="admin-card p-6">

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import ContentPage from "@/components/site/ContentPage";
 import { ButtonPrimary, ButtonOutline } from "@/components/fuse/buttons";
-import { Box, Shield, Watch } from "@/components/fuse/icons";
 import { createPageMetadata } from "@/lib/seo/metadata";
 import { JsonLd, breadcrumbSchema, webPageSchema } from "@/lib/seo/structured-data";
 
@@ -15,25 +15,26 @@ export const metadata: Metadata = createPageMetadata({
 const IMAGE =
   "https://res.cloudinary.com/dphscxzb4/image/upload/timect/admin/general/yur96x65jjbxtdx5ff97.png";
 
-const PILLARS = [
+const EXPERTISE = [
   {
-    icon: Watch,
-    title: "Built as instruments",
-    text: "We evaluate each watch as a complete instrument: balanced case proportions, a legible dial, a suitable movement, and straps selected for comfort during regular wear. Product pages identify the available specifications for each model.",
+    number: "01",
+    title: "Design & proportion",
+    text: "From the shape of the case to the clarity of the dial, we look at how the details come together on the wrist.",
   },
   {
-    icon: Box,
-    title: "From movement to finished watch",
-    text: "A watch brings together its movement, case, dial, hands, crystal, and strap or bracelet. We publish the available model specifications so these details can be compared before making an enquiry.",
+    number: "02",
+    title: "The details within",
+    text: "Movements, cases, crystals and straps each play a part. Our model specifications help you understand what makes a watch right for you.",
   },
   {
-    icon: Shield,
-    title: "Our promise",
-    text: "Whether you are comparing a classic dress piece, a daily sports watch, or a refined ladies model, our goal is to provide clear imagery, specifications, and a direct route to ask questions.",
+    number: "03",
+    title: "A considered choice",
+    text: "Clear imagery, practical information and a direct way to ask questions make it easier to find a watch you will enjoy wearing.",
   },
 ];
 
 export default function AboutPage() {
+  const years = new Date().getFullYear() - 2003;
   return (
     <>
       <JsonLd data={webPageSchema({ name: "About Timect Watches", description: "Learn about the Timect Watches brand and its approach to watch design, components, finishing, and product information.", path: "/about", type: "AboutPage" })} />
@@ -64,17 +65,29 @@ export default function AboutPage() {
           </div>
         </div>
       </div>
-      <ul className="mt-3 grid gap-3 md:grid-cols-3">
-        {PILLARS.map(({ icon: Icon, title, text }, i) => (
-          <li key={title} className="hover-lift animate-rise-in rounded-fuse bg-white p-6 md:p-10" style={{ animationDelay: `${150 + i * 80}ms` }}>
-            <span className="flex h-14 w-14 items-center justify-center rounded-fuse-md bg-bg text-heading">
-              <Icon />
-            </span>
-            <h3 className="mt-6 text-[22px] font-bold md:text-[24px]">{title}</h3>
-            <p className="mt-4 text-[16px] leading-[1.7] text-[#2b2f38]">{text}</p>
-          </li>
-        ))}
-      </ul>
+      <section className="about-expertise mt-3 overflow-hidden rounded-fuse" aria-labelledby="expertise-title">
+        <div className="about-expertise__intro">
+          <div className="about-expertise__orbit" aria-hidden="true"><span /><span /><span /></div>
+          <div className="relative z-10">
+            <p className="about-expertise__eyebrow reveal-rise">The Timect approach <span> / </span> Our expertise</p>
+            <h2 id="expertise-title" className="about-expertise__heading reveal-rise">Time is in<br /><em>the details.</em></h2>
+            <p className="about-expertise__lead reveal-rise">A watch is more than the sum of its parts. Here is what we pay attention to, from the first glance to everyday wear.</p>
+            <p className="about-expertise__heritage reveal-rise"><strong>{years}</strong><span>years since<br />our founding in 2003</span></p>
+          </div>
+          <span className="about-expertise__index" aria-hidden="true">T / 01—03</span>
+        </div>
+        <div className="about-expertise__list">
+          {EXPERTISE.map(({ number, title, text }) => (
+            <div key={number} className="about-expertise__row reveal-rise">
+              <span className="about-expertise__number">{number}</span>
+              <h3>{title}</h3>
+              <p>{text}</p>
+              <span className="about-expertise__arrow" aria-hidden="true">↗</span>
+            </div>
+          ))}
+          <div className="about-expertise__footer"><span>Thoughtful watches. Clear details.</span><Link href="/watches">Explore the collection <span aria-hidden="true">↗</span></Link></div>
+        </div>
+      </section>
     </ContentPage>
     </>
   );

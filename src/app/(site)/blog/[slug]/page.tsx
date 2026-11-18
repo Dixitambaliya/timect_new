@@ -24,6 +24,8 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     return { title: "Article Not Found | Timect Watches" };
   }
 
+  const imageAlt = typeof post.content_json?.featuredImageAlt === "string" && post.content_json.featuredImageAlt.trim() || post.title;
+
   const seoTitle = post.seo?.meta_title || `${post.title} | Timect Watches`;
   const seoDescription = post.seo?.meta_description || post.excerpt;
   const canonical = absoluteUrl(`/blog/${slug}`);
@@ -46,7 +48,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
           url: post.featured_image_url || "/api/blog/images/1",
           width: 1200,
           height: 800,
-          alt: post.title,
+          alt: imageAlt,
         },
       ],
       type: "article",
@@ -72,6 +74,7 @@ export default async function BlogPostDetailPage({ params }: BlogPostPageProps) 
   }
 
   const related = await getRelatedBlogPosts(post.id, post.category_id, 4);
+  const imageAlt = typeof post.content_json?.featuredImageAlt === "string" && post.content_json.featuredImageAlt.trim() || post.title;
 
   const structuredData: JsonLdValue[] = [
     {
@@ -197,7 +200,7 @@ export default async function BlogPostDetailPage({ params }: BlogPostPageProps) 
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={post.featured_image_url || "/api/blog/images/1"}
-            alt={post.title}
+            alt={imageAlt}
             className="w-full h-auto object-cover max-h-[460px]"
           />
         </div>
