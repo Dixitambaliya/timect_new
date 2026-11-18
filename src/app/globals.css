@@ -153,12 +153,12 @@
 }
 
 /* Shared alignment for the homepage header and hero content. */
-.home-content-container { width: 100%; max-width: var(--container-site); margin-inline: auto; padding-left: 20px; padding-right: 12px; }
+.home-content-container { width: 100%; max-width: var(--container-site); margin-inline: auto; padding-left: 5px; padding-right: 12px; }
 @media (min-width: 768px) {
-  .home-content-container { padding-left: 24px; padding-right: 16px; }
+  .home-content-container { padding-right: 16px; }
 }
 @media (min-width: 1200px) {
-  .home-content-container { padding-left: 40px; padding-right: 32px; }
+  .home-content-container { padding-right: 32px; }
 }
 
 /* Liquid-glass surface used for header buttons, drawers, CTAs on imagery */
