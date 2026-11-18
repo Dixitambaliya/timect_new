@@ -22,3 +22,10 @@ export function catalogThumbUrl(
     `/upload/f_auto,q_auto,c_limit,w_${width}/`,
   );
 }
+
+/** Generate width candidates only when Cloudinary can resize the original URL. */
+export function catalogThumbSrcSet(url: string | null | undefined, widths: number[]): string | undefined {
+  if (!url || widths.length < 2) return undefined;
+  if (catalogThumbUrl(url, widths[0]) === catalogThumbUrl(url, widths[1])) return undefined;
+  return widths.map((width) => `${catalogThumbUrl(url, width)} ${width}w`).join(", ");
+}

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { HeroSlide } from "@/data/storefront";
 import { cx } from "@/lib/cx";
-import { catalogThumbUrl } from "@/lib/catalog-image";
+import { catalogThumbSrcSet, catalogThumbUrl } from "@/lib/catalog-image";
 import { ArrowLeft, ArrowRight } from "@/components/fuse/icons";
 import { canonicalCatalogHref } from "@/components/site/navigation";
 
@@ -159,6 +159,8 @@ export default function HomeHero({ slides }: { slides: HeroSlide[] }) {
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={catalogThumbUrl(slide.image, 1100)}
+                    srcSet={catalogThumbSrcSet(slide.image, [320, 480, 640, 960, 1200])}
+                    sizes="(min-width: 1024px) 46vw, (min-width: 768px) 45vw, (min-width: 640px) 58vw, 66vw"
                     alt={`${slide.title} ${slide.subtitle}`.trim()}
                     loading={active ? "eager" : "lazy"}
                     className="relative z-[2] h-full w-full object-contain object-center [filter:drop-shadow(0_18px_14px_rgba(16,40,82,.14))_drop-shadow(0_38px_32px_rgba(34,44,58,.18))] transition-transform duration-700 hover:scale-[1.025]"

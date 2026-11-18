@@ -4,7 +4,7 @@ import { displayPrice, formatPrice, calculateDiscount, isNumericPrice } from "@/
 import Link from "next/link";
 import { useState } from "react";
 import { cx } from "@/lib/cx";
-import { catalogThumbUrl } from "@/lib/catalog-image";
+import { catalogThumbSrcSet, catalogThumbUrl } from "@/lib/catalog-image";
 import { Badge } from "@/components/fuse/buttons";
 import { QuickViewIcon, Star } from "@/components/fuse/icons";
 import { useSite } from "./SiteProvider";
@@ -99,6 +99,8 @@ export default function ProductCard({
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={primary}
+            srcSet={catalogThumbSrcSet(product.image, [240, 360, 480, 720, 960])}
+            sizes="(min-width: 1280px) 25vw, (min-width: 768px) 33vw, 50vw"
             alt={name}
             loading={priority ? "eager" : "lazy"}
             decoding="async"
@@ -112,6 +114,8 @@ export default function ProductCard({
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={hover}
+              srcSet={catalogThumbSrcSet(product.hoverImage, [240, 360, 480, 720, 960])}
+              sizes="(min-width: 1280px) 25vw, (min-width: 768px) 33vw, 50vw"
               alt=""
               decoding="async"
               className={cx(

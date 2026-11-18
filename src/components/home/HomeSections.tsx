@@ -5,7 +5,7 @@ import { useState, type CSSProperties } from "react";
 import type { PromoBanner } from "@/data/storefront";
 import type { ShopCategory } from "@/db/content";
 import { cx } from "@/lib/cx";
-import { catalogThumbUrl } from "@/lib/catalog-image";
+import { catalogThumbSrcSet, catalogThumbUrl } from "@/lib/catalog-image";
 import { useCarousel, useDragScroll } from "@/components/fuse/hooks";
 import { CarouselProgress, Section, SectionHeading, SliderArrows } from "@/components/fuse/ui";
 import { ButtonOutline, ButtonPrimary } from "@/components/fuse/buttons";
@@ -128,7 +128,7 @@ export function CategoryCarousel({ categories }: { categories: ShopCategory[] })
           // eslint-disable-next-line @next/next/no-img-element
           <img
             key={c.slug}
-            src={catalogThumbUrl(c.image, 600)}
+            src={catalogThumbUrl(c.image, 240)}
             alt=""
             aria-hidden
             className={cx("img-fill -z-10 scale-110 blur-[32px] transition-opacity duration-1000 ease-fuse", i === bg ? "opacity-100" : "opacity-0")}
@@ -156,6 +156,8 @@ export function CategoryCarousel({ categories }: { categories: ShopCategory[] })
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={catalogThumbUrl(c.image, 480)}
+                    srcSet={catalogThumbSrcSet(c.image, [240, 360, 480, 720])}
+                    sizes="(min-width: 768px) 350px, 204px"
                     alt={`${c.label} watches by Timect`}
                     loading="lazy"
                     className="img-fill transition-transform duration-[1100ms] ease-fuse-out group-hover/c:scale-110"
@@ -240,7 +242,7 @@ export function QuoteTicker({ text, images }: { text: string; images: string[] }
             className="mx-4 block h-[60px] w-[80px] shrink-0 md:mx-10 md:h-[150px] md:w-[204px]"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={catalogThumbUrl(src, 420)} srcSet={catalogThumbUrl(src, 160) !== catalogThumbUrl(src, 420) ? `${catalogThumbUrl(src, 160)} 160w, ${catalogThumbUrl(src, 420)} 420w` : undefined} sizes="(min-width: 768px) 204px, 80px" alt="" loading="lazy" className="h-full w-full object-contain drop-shadow-[0_12px_18px_rgba(0,0,0,.18)] transition-transform duration-700 hover:scale-110" />
+            <img src={catalogThumbUrl(src, 420)} srcSet={catalogThumbSrcSet(src, [120, 160, 240, 420])} sizes="(min-width: 768px) 204px, 80px" alt="" loading="lazy" className="h-full w-full object-contain drop-shadow-[0_12px_18px_rgba(0,0,0,.18)] transition-transform duration-700 hover:scale-110" />
           </Link>
           <p className="whitespace-nowrap font-chivo text-[44px] font-bold leading-[1.1] text-heading md:text-[110px] xl:text-[160px]">{text}</p>
         </span>
