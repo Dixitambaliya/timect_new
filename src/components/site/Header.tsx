@@ -115,7 +115,7 @@ export default function Header() {
         )}
         aria-hidden={!stacked}
       >
-        <div className="glass-dark flex items-center gap-3 rounded-fuse !bg-[#232323cc] p-2 shadow-[0_12px_40px_rgba(0,0,0,.18)]">
+        <div className="glass-dark relative flex items-center gap-3 rounded-fuse !bg-[#232323cc] p-2 shadow-[0_12px_40px_rgba(0,0,0,.18)]">
           <HeaderIcon
             variant="dark"
             aria-label="Open menu"
@@ -124,14 +124,11 @@ export default function Header() {
           >
             <MenuIcon className="h-10 w-10" />
           </HeaderIcon>
-          <Link href="/" aria-label="Timect home" tabIndex={stacked ? 0 : -1} className="flex-1 md:ms-2">
+          <Link href="/" aria-label="Timect home" tabIndex={stacked ? 0 : -1} className="absolute left-1/2 -translate-x-1/2">
             <Logo light compact />
           </Link>
-          <HeaderIcon variant="dark" aria-label="Search" tabIndex={stacked ? 0 : -1} onClick={() => openPanel("search")}>
+          <HeaderIcon variant="dark" aria-label="Search" tabIndex={stacked ? 0 : -1} onClick={() => openPanel("search")} className="ms-auto">
             <SearchIcon />
-          </HeaderIcon>
-          <HeaderIcon variant="dark" aria-label="Shop watches" tabIndex={stacked ? 0 : -1} href="/watches" className="hidden sm:inline-flex">
-            <ArrowRight />
           </HeaderIcon>
         </div>
       </div>
