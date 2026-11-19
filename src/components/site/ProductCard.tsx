@@ -116,7 +116,8 @@ export default function ProductCard({
               src={hover}
               srcSet={catalogThumbSrcSet(product.hoverImage, [240, 360, 480, 720, 960])}
               sizes="(min-width: 1280px) 25vw, (min-width: 768px) 33vw, 50vw"
-              alt=""
+              alt={`${name}, alternate view`}
+              aria-hidden="true"
               decoding="async"
               className={cx(
                 "img-fill object-contain p-4 transition-[opacity,transform] duration-[900ms] ease-fuse-out md:p-6",

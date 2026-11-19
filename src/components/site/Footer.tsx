@@ -22,7 +22,7 @@ function Newsletter() {
     <Section className="mb-3">
       <div className="reveal-fade relative isolate overflow-hidden rounded-fuse px-6 py-10 text-white md:px-20 md:py-14">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={NEWSLETTER_BG} alt="" aria-hidden className="img-fill -z-10 scale-125 blur-[50px]" />
+        <img src={NEWSLETTER_BG} alt="Blurred watch background" aria-hidden className="img-fill -z-10 scale-125 blur-[50px]" />
         <div className="absolute inset-0 -z-10 bg-[#404b62]/70" />
         <div className="grid items-center gap-6 lg:grid-cols-2">
           <div>
