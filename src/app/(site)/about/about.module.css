@@ -31,17 +31,17 @@
 .exclusive { grid-area:1/2/3/3; background:#202020; color:#fff; border-radius:10px; overflow:hidden; display:flex; flex-direction:column; justify-content:space-between; text-align:center; padding:45px 24px 42px; }
 .exclusive>div:last-child { position:relative; z-index:1; }
 .exclusive p { color:#c7c7c7; }
-.watchTrio { position:relative; height:290px; margin:0 -24px 20px; perspective:900px; }
-.watchTrio img { position:absolute; left:18%; width:64%; height:100%; object-fit:contain; filter:drop-shadow(0 15px 15px #0005); animation:collection-rotate 12s cubic-bezier(.45,0,.2,1) infinite; }
-.trio0 { transform:translateX(-90%) rotateY(35deg) scale(.86); animation-delay:-8s!important; }
-.trio1 { transform:translateX(0) rotateY(0); }
-.trio2 { transform:translateX(90%) rotateY(-35deg) scale(.86); animation-delay:-4s!important; }
+.watchTrio { position:relative; height:290px; margin:0 -24px 20px; }
+.watchTrio img { position:absolute; left:18%; width:64%; height:100%; object-fit:contain; animation:collection-rotate 12s cubic-bezier(.45,0,.2,1) infinite; }
+.trio0 { transform:translateX(-90%); animation-delay:-8s!important; }
+.trio1 { transform:translateX(0); }
+.trio2 { transform:translateX(90%); animation-delay:-4s!important; }
 @keyframes collection-rotate {
-  0%,24%,100% { transform:translateX(0) rotateY(0) scale(1); opacity:1; z-index:3; }
-  33.333%,57% { transform:translateX(-90%) rotateY(35deg) scale(.86); opacity:.8; z-index:1; }
-  61% { transform:translateX(-115%) rotateY(70deg) scale(.75); opacity:0; z-index:0; }
-  62% { transform:translateX(115%) rotateY(-70deg) scale(.75); opacity:0; z-index:0; }
-  66.667%,90% { transform:translateX(90%) rotateY(-35deg) scale(.86); opacity:.8; z-index:1; }
+  0%,24%,100% { transform:translateX(0); opacity:1; z-index:3; }
+  33.333%,57% { transform:translateX(-90%); opacity:1; z-index:1; }
+  61% { transform:translateX(-115%); opacity:0; z-index:0; }
+  62% { transform:translateX(115%); opacity:0; z-index:0; }
+  66.667%,90% { transform:translateX(90%); opacity:1; z-index:1; }
 }
 .collectionLink { display:inline-flex; align-items:center; gap:16px; margin-top:18px; font-size:12px; border-bottom:1px solid #777; padding-bottom:4px; }
 .story { display:grid; grid-template-columns:1fr 1fr; gap:12px; padding-top:15px; }

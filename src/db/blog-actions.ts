@@ -132,7 +132,7 @@ export async function getPublishedBlogPosts(options?: {
         LEFT JOIN blog_categories c ON p.category_id = c.id
         LEFT JOIN blog_authors a ON p.author_id = a.id
         WHERE p.status = 'published' AND c.slug = ${options.categorySlug}
-        ORDER BY p.published_at DESC NULLS LAST, p.created_at DESC
+        ORDER BY p.published_at DESC NULLS LAST, p.created_at DESC, p.id DESC
         LIMIT ${limit} OFFSET ${offset}
       `;
     } else if (options?.featured) {
@@ -169,7 +169,7 @@ export async function getPublishedBlogPosts(options?: {
         LEFT JOIN blog_categories c ON p.category_id = c.id
         LEFT JOIN blog_authors a ON p.author_id = a.id
         WHERE p.status = 'published' AND (LOWER(p.title) LIKE ${q} OR LOWER(p.excerpt) LIKE ${q})
-        ORDER BY p.published_at DESC NULLS LAST, p.created_at DESC
+        ORDER BY p.published_at DESC NULLS LAST, p.created_at DESC, p.id DESC
         LIMIT ${limit} OFFSET ${offset}
       `;
     } else {
@@ -181,7 +181,7 @@ export async function getPublishedBlogPosts(options?: {
         LEFT JOIN blog_categories c ON p.category_id = c.id
         LEFT JOIN blog_authors a ON p.author_id = a.id
         WHERE p.status = 'published'
-        ORDER BY p.published_at DESC NULLS LAST, p.created_at DESC
+        ORDER BY p.published_at DESC NULLS LAST, p.created_at DESC, p.id DESC
         LIMIT ${limit} OFFSET ${offset}
       `;
     }

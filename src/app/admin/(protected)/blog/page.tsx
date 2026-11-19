@@ -126,18 +126,6 @@ export default function AdminBlogPage() {
           <p className="text-xs font-semibold uppercase tracking-wider text-[var(--admin-muted)]">Total Articles</p>
           <p className="mt-1 text-2xl font-bold text-[var(--admin-heading)]">{pagination.total}</p>
         </div>
-        <div className="admin-card p-4">
-          <p className="text-xs font-semibold uppercase tracking-wider text-[var(--admin-muted)]">AEO Optimized</p>
-          <p className="mt-1 text-2xl font-bold text-[var(--admin-success)]">100%</p>
-        </div>
-        <div className="admin-card p-4">
-          <p className="text-xs font-semibold uppercase tracking-wider text-[var(--admin-muted)]">Direct Answers</p>
-          <p className="mt-1 text-2xl font-bold text-[var(--admin-accent)]">Active</p>
-        </div>
-        <div className="admin-card p-4">
-          <p className="text-xs font-semibold uppercase tracking-wider text-[var(--admin-muted)]">Stored Images</p>
-          <p className="mt-1 text-2xl font-bold text-[var(--admin-warning)]">30 Live</p>
-        </div>
       </div>
 
       {/* Filters & Search */}

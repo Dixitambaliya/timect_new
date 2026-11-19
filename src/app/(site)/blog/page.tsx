@@ -8,9 +8,9 @@ import { createPageMetadata } from "@/lib/seo/metadata";
 import { absoluteUrl } from "@/lib/seo/site-config";
 import { JsonLd } from "@/lib/seo/structured-data";
 import { Breadcrumbs } from "@/components/fuse/buttons";
-import { Clock, ArrowRight } from "lucide-react";
+import { BlogFilters, BlogPagination, blogPageNumber } from "@/components/blog/BlogNavigation";
 
-export const metadata: Metadata = {
+const baseMetadata: Metadata = {
   ...createPageMetadata({
     title: "Watch Guides & Blogs | Timect Watches",
     description:
@@ -21,16 +21,21 @@ export const metadata: Metadata = {
   title: { absolute: "Watch Guides & Blogs | Timect Watches" },
 };
 
-export default async function BlogHomePage() {
-  const [featuredPosts, latestPosts, categories, trendingPosts] = await Promise.all([
-    getPublishedBlogPosts({ featured: true, limit: 1 }),
-    getPublishedBlogPosts({ limit: 15 }),
+export async function generateMetadata({ searchParams }: { searchParams: Promise<{ page?: string | string[] }> }): Promise<Metadata> {
+  const page = blogPageNumber((await searchParams).page);
+  return page > 1 ? { ...baseMetadata, alternates: { canonical: absoluteUrl(`/blog?page=${page}`) } } : baseMetadata;
+}
+
+export default async function BlogHomePage({ searchParams }: { searchParams: Promise<{ page?: string | string[] }> }) {
+  const page = blogPageNumber((await searchParams).page);
+  const pageSize = 9;
+  const [latestPosts, categories] = await Promise.all([
+    getPublishedBlogPosts({ limit: pageSize + 1, offset: (page - 1) * pageSize }),
     getBlogCategories(),
-    getPublishedBlogPosts({ trending: true, limit: 4 }),
   ]);
 
-  const heroPost = featuredPosts[0] || latestPosts[0];
-  const gridPosts = latestPosts.filter((p) => p.id !== heroPost?.id);
+  const gridPosts = latestPosts.slice(0, pageSize);
+  const hasNext = latestPosts.length > pageSize;
 
   return (
     <div className="container-fuse pb-16 pt-6 md:pt-10">
@@ -62,90 +67,16 @@ export default async function BlogHomePage() {
           Essential insights into mechanical timekeeping, movement craftsmanship, case metallurgy, and collector guides.
         </p>
 
-        {/* Category Filter Pills */}
-        <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
-          <Link
-            href="/blog"
-            className="rounded-fuse-md bg-heading px-3.5 py-1.5 text-[13px] font-semibold text-white transition hover:opacity-90"
-          >
-            All Stories
-          </Link>
-          {categories.map((c) => (
-            <Link
-              key={c.id}
-              href={`/blog/category/${c.slug}`}
-              className="rounded-fuse-md border border-line bg-white px-3.5 py-1.5 text-[13px] font-semibold text-heading transition hover:border-line-hover hover:bg-bg"
-            >
-              {c.name}
-            </Link>
-          ))}
-        </div>
+        <BlogFilters categories={categories} />
       </div>
 
-      {/* Hero Featured Story -compacted to proportional size */}
-      {heroPost && (
-        <div className="mt-8 md:mt-10">
-          <div className="group grid grid-cols-1 gap-6 rounded-fuse bg-white p-5 md:grid-cols-12 md:p-8 shadow-sm transition hover:shadow-md">
-            <div className="relative overflow-hidden rounded-fuse-md md:col-span-6 bg-bg aspect-[16/10] max-h-[380px]">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={heroPost.featured_image_url || "/api/blog/images/1"}
-                alt={heroPost.title}
-                className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-              />
-              <div className="absolute top-3 left-3">
-                <span className="rounded-fuse-sm bg-heading/90 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-white backdrop-blur">
-                  Featured
-                </span>
-              </div>
-            </div>
-
-            <div className="flex flex-col justify-between md:col-span-6 md:py-2">
-              <div>
-                <div className="flex items-center gap-2 text-[12px] font-semibold uppercase tracking-wider text-muted">
-                  <span>{heroPost.category?.name || "Horology"}</span>
-                  <span>•</span>
-                  <span className="flex items-center gap-1">
-                    <Clock className="h-3 w-3" /> {heroPost.reading_time_minutes} min read
-                  </span>
-                </div>
-
-                <h2 className="mt-3 text-[22px] font-bold tracking-tight text-heading md:text-[28px] leading-snug">
-                  <Link href={`/blog/${heroPost.slug}`} className="hover:underline">
-                    {heroPost.title}
-                  </Link>
-                </h2>
-
-                <p className="mt-3 text-[14px] leading-[1.65] text-[#2b2f38] line-clamp-3">
-                  {heroPost.excerpt}
-                </p>
-              </div>
-
-              <div className="mt-6 flex items-center justify-between border-t border-line/60 pt-4">
-                <span className="text-[12px] text-muted">
-                  {heroPost.published_at ? new Date(heroPost.published_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : ""}
-                </span>
-                <Link
-                  href={`/blog/${heroPost.slug}`}
-                  className="inline-flex items-center gap-1.5 rounded-fuse-sm bg-bg px-3.5 py-1.5 text-[12px] font-semibold text-heading transition hover:bg-heading hover:text-white"
-                >
-                  Read Story <ArrowRight className="h-3.5 w-3.5" />
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Trending Guides Row */}
-      {trendingPosts.length > 0 && (
-        <div className="mt-10 md:mt-12">
-          <div className="mb-3 px-1">
+          {/* <div className="mb-3 px-1">
             <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-muted">Curated</p>
             <h2 className="text-[20px] font-bold text-heading md:text-[24px]">Popular Guides</h2>
-          </div>
+          </div> */}
 
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {/* <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {trendingPosts.map((post, idx) => (
               <div
                 key={post.id}
@@ -170,9 +101,7 @@ export default async function BlogHomePage() {
                 </div>
               </div>
             ))}
-          </div>
-        </div>
-      )}
+          </div> */}
 
       {/* Main Grid matching Catalog Card Proportions */}
       <div className="mt-10 md:mt-12">
@@ -181,7 +110,7 @@ export default async function BlogHomePage() {
           <h2 className="text-[20px] font-bold text-heading md:text-[24px]">All Articles</h2>
         </div>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {gridPosts.map((post) => (
             <article
               key={post.id}
@@ -223,6 +152,7 @@ export default async function BlogHomePage() {
             </article>
           ))}
         </div>
+        <BlogPagination page={page} hasNext={hasNext} basePath="/blog" />
       </div>
     </div>
   );

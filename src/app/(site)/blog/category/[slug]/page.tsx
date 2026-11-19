@@ -6,15 +6,19 @@ import {
   getBlogCategories,
 } from "@/db/blog-actions";
 import { createPageMetadata } from "@/lib/seo/metadata";
+import { absoluteUrl } from "@/lib/seo/site-config";
+import { BlogFilters, BlogPagination, blogPageNumber } from "@/components/blog/BlogNavigation";
 import { Breadcrumbs } from "@/components/fuse/buttons";
 import { JsonLd, breadcrumbSchema, webPageSchema } from "@/lib/seo/structured-data";
 
 interface CategoryPageProps {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ page?: string | string[] }>;
 }
 
-export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: CategoryPageProps): Promise<Metadata> {
   const { slug } = await params;
+  const page = blogPageNumber((await searchParams).page);
   const categories = await getBlogCategories();
   const current = categories.find((c) => c.slug === slug);
 
@@ -30,10 +34,13 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
       keywords: [`${current.name} watch guides`, current.name, "Timect Watches Blogs", "watch education"],
     }),
     title: { absolute: current.seo_title || `${current.name} Watch Guides | Timect Watches` },
+    ...(page > 1 ? { alternates: { canonical: absoluteUrl(`/blog/category/${slug}?page=${page}`) } } : {}),
   };
 }
 
-export default async function BlogCategoryPage({ params }: CategoryPageProps) {
+export default async function BlogCategoryPage({ params, searchParams }: CategoryPageProps) {
+  const page = blogPageNumber((await searchParams).page);
+  const pageSize = 9;
   const { slug } = await params;
   const categories = await getBlogCategories();
   const currentCategory = categories.find((c) => c.slug === slug);
@@ -42,7 +49,8 @@ export default async function BlogCategoryPage({ params }: CategoryPageProps) {
     notFound();
   }
 
-  const posts = await getPublishedBlogPosts({ categorySlug: slug, limit: 30 });
+  const results = await getPublishedBlogPosts({ categorySlug: slug, limit: pageSize + 1, offset: (page - 1) * pageSize });
+  const posts = results.slice(0, pageSize);
 
   return (
     <div className="container-fuse pb-20 pt-12 md:pt-20">
@@ -60,28 +68,7 @@ export default async function BlogCategoryPage({ params }: CategoryPageProps) {
           </p>
         )}
 
-        {/* Quick Category switcher */}
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
-          <Link
-            href="/blog"
-            className="rounded-fuse-md border border-line bg-white px-4 py-2 text-[14px] font-semibold text-heading hover:border-line-hover"
-          >
-            All Stories
-          </Link>
-          {categories.map((c) => (
-            <Link
-              key={c.id}
-              href={`/blog/category/${c.slug}`}
-              className={`rounded-fuse-md px-4 py-2 text-[14px] font-semibold transition ${
-                c.slug === slug
-                  ? "bg-heading text-white"
-                  : "border border-line bg-white text-heading hover:border-line-hover"
-              }`}
-            >
-              {c.name}
-            </Link>
-          ))}
-        </div>
+        <BlogFilters categories={categories} current={slug} />
       </div>
 
       {/* Posts Grid */}
@@ -143,6 +130,7 @@ export default async function BlogCategoryPage({ params }: CategoryPageProps) {
             ))}
           </div>
         )}
+        <BlogPagination page={page} hasNext={results.length > pageSize} basePath={`/blog/category/${slug}`} />
       </div>
     </div>
   );
