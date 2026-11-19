@@ -94,7 +94,7 @@ export default function AboutPage() {
             <article className={`${styles.experience} reveal-rise`}><strong>{years}<span>+</span></strong><p>Since our founding in 2003, our passion for watch design, craftsmanship, and the details of everyday wear has guided our journey. We believe every purchase should feel informed, intentional, and timeless.</p></article>
           </div>
           <div className={styles.storyRight}>
-            <div className={`${styles.wrist} reveal-rise`}><img src="https://res.cloudinary.com/dphscxzb4/image/upload/v1795008663/timect/admin/general/l74nmbp1twbeqedc1hri.png" alt="A classic steel wristwatch paired with a crisp white cuff" loading="lazy" width={1400} height={1600} /></div>
+            <div className={`${styles.wrist} reveal-rise`}><img src="/images/about/TIMECT%20Two-Tone%20Watch%20on%20Wrist.png" alt="A two-tone Timect watch worn with a white cuff" loading="lazy" width={1327} height={1186} /></div>
             <article className={`${styles.meaning} reveal-rise`}><p>A watch is more than an instrument of time.<br />It represents history, craftsmanship, and personal meaning. It marks an achievement, a gift, a moment that matters. Whether it’s a vintage classic or a modern icon, every timepiece tells a story.</p><div className={styles.timeline} aria-label="A timepiece for every chapter">{timelineImages.map((src, i) => <div key={src} className={`${styles.timelineWatch} ${i % 2 ? styles.above : styles.below}`}><img src={src} alt="" loading="lazy" width={100} height={130} /><span /></div>)}</div></article>
           </div>
         </section>
