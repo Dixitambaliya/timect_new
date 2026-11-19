@@ -1,12 +1,11 @@
 "use client";
 
-import { smoothScrollTo } from "@/lib/smooth-scroll";
 import Link from "next/link";
 import { useActionState, useState, type CSSProperties } from "react";
 import { cx } from "@/lib/cx";
 import { subscribeNewsletter, type NewsletterState } from "@/db/inquiries";
 import { Reveal, Section } from "@/components/fuse/ui";
-import { ArrowRight, ArrowUp, Clock, Facebook, Instagram, Mail, Phone, Plus, WhatsApp, YouTube } from "@/components/fuse/icons";
+import { ArrowRight, Clock, Facebook, Instagram, Mail, Phone, Plus, WhatsApp, YouTube } from "@/components/fuse/icons";
 import { FOOTER_MENUS } from "./navigation";
 import FooterWordmark from "./FooterWordmark";
 import { useSite, whatsappLink } from "./SiteProvider";
@@ -173,22 +172,12 @@ export default function Footer() {
       <div className="mt-3 rounded-fuse bg-white px-4 pb-8 pt-10 md:px-8 md:pt-24">
         <FooterWordmark image={WORDMARK_IMG} />
         <p className="mt-10 text-center text-[16px] font-medium text-heading md:mt-14">
-          «{storefront.quote.text}» <span className="text-muted">-{storefront.quote.author}</span>
+          {storefront.quote.text}
         </p>
-        <div className="mt-10 grid items-center gap-6 lg:grid-cols-3">
+        <div className="mt-10 grid items-center gap-6 lg:grid-cols-2">
           <p className="flex flex-wrap items-center justify-center gap-3 text-[16px] text-muted lg:justify-start">
             © {new Date().getFullYear()} Timect. All rights reserved.
           </p>
-          <div className="flex justify-center">
-            <button
-              type="button"
-              onClick={() => smoothScrollTo(0)}
-              aria-label="Back to top"
-              className="group/t flex h-14 w-[148px] items-center justify-center overflow-hidden rounded-fuse border border-line transition-colors duration-400 hover:border-line-hover"
-            >
-              <ArrowUp className="h-6 w-6 transition-transform duration-400 group-hover/t:-translate-y-1" />
-            </button>
-          </div>
           <div className="flex justify-center gap-6 text-[16px] lg:justify-end">
             <Link href="/privacy" className="link-underline">
               Privacy Policy

@@ -45,7 +45,7 @@ export type StorefrontSettings = {
   heroSlides: HeroSlide[];
   banners: PromoBanner[];
   statement: { heading: string; text: string };
-  quote: { text: string; author: string };
+  quote: { text: string};
   contact: {
     careEmail: string;
     serviceEmail: string;
@@ -142,8 +142,7 @@ export const DEFAULT_STOREFRONT: StorefrontSettings = {
     text: "Timect designs and manufactures wristwatches for people who value clarity, reliability, and lasting quality. Every collection moves through case design, dial finishing, movement selection, and rigorous testing before it reaches your wrist.",
   },
   quote: {
-    text: "Time never stops, why should we?",
-    author: "Timect",
+    text: "Time never stops, why should we?"
   },
   contact: {
     careEmail: "care@timect.com",

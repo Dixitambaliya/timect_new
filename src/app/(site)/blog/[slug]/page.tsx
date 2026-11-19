@@ -159,17 +159,15 @@ export default async function BlogPostDetailPage({ params }: BlogPostPageProps) 
       ))}
 
       {/* Breadcrumbs precisely inside container-fuse matching ProductPage / Navbar */}
-      <div className="mb-6">
-        <Breadcrumbs items={breadcrumbItems} />
+      <div className="mb-6 px-3 md:px-4">
+        <Breadcrumbs items={breadcrumbItems} align="start" />
       </div>
 
       {/* Main Single White Rounded Card for the Entire Article */}
       <div className="rounded-fuse bg-white p-6 md:p-12 shadow-sm">
         {/* Article Meta Header */}
         <div className="mx-auto max-w-[820px] text-left">
-          <div className="inline-flex items-center gap-2 rounded-fuse-sm bg-bg border border-line px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-muted">
-            <span>{post.category?.name || "Blog"}</span>
-          </div>
+          <p className="text-[13px] font-medium text-muted">{post.category?.name || "Blog"}</p>
 
           <h1 className="fuse-h2 mt-4 font-bold text-heading text-left">
             {post.title}

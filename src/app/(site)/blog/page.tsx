@@ -57,9 +57,12 @@ export default async function BlogHomePage({ searchParams }: { searchParams: Pro
         }}
       />
 
+      <div className="mb-6 px-3 md:px-4">
+        <Breadcrumbs items={[["Home", "/"], ["Blogs"]]} align="start" />
+      </div>
+
       {/* Header aligned strictly inside container-fuse matching site pages */}
       <div className="px-2">
-        <Breadcrumbs items={[["Home", "/"], ["Blogs"]]} />
         <h1 className="fuse-h1 mx-auto mt-2 max-w-[900px] animate-rise-in text-center">
           Blogs
         </h1>

@@ -124,9 +124,9 @@ export function Badge({
   );
 }
 
-export function Breadcrumbs({ items }: { items: [string, string?][] }) {
+export function Breadcrumbs({ items, align = "center" }: { items: [string, string?][]; align?: "center" | "start" }) {
   return (
-    <nav aria-label="Breadcrumb" className="flex flex-wrap justify-center gap-3 text-[16px] text-muted">
+    <nav aria-label="Breadcrumb" className={`flex flex-wrap ${align === "start" ? "justify-start" : "justify-center"} gap-3 text-[16px] text-muted`}>
       {items.map(([label, href], i) => (
         <span key={`${label}-${i}`} className="flex items-center gap-3">
           {i > 0 && <span className="text-line">|</span>}
