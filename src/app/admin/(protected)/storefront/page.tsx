@@ -364,9 +364,6 @@ export default function StorefrontPage() {
             <Field label="Quote">
               <input className="admin-input" value={data.quote.text} onChange={(e) => patch({ quote: { ...data.quote, text: e.target.value } })} />
             </Field>
-            <Field label="Attribution">
-              <input className="admin-input" value={data.quote.author} onChange={(e) => patch({ quote: { ...data.quote, author: e.target.value } })} />
-            </Field>
           </div>
 
           <div className="admin-card space-y-4 p-5 md:p-6 xl:col-span-2">

@@ -67,7 +67,7 @@ export async function adminSaveStorefront(
         .filter((b) => b.title && b.image)
         .slice(0, 4),
       statement: { heading: clean(input.statement?.heading, 200), text: clean(input.statement?.text, 1000) },
-      quote: { text: clean(input.quote?.text, 200), author: clean(input.quote?.author, 80) },
+      quote: { text: clean(input.quote?.text, 200) },
       contact: {
         careEmail: clean(input.contact?.careEmail, 200),
         serviceEmail: clean(input.contact?.serviceEmail, 200),

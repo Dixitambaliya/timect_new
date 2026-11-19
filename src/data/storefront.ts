@@ -45,7 +45,7 @@ export type StorefrontSettings = {
   heroSlides: HeroSlide[];
   banners: PromoBanner[];
   statement: { heading: string; text: string };
-  quote: { text: string};
+  quote: { text: string };
   contact: {
     careEmail: string;
     serviceEmail: string;
@@ -142,7 +142,7 @@ export const DEFAULT_STOREFRONT: StorefrontSettings = {
     text: "Timect designs and manufactures wristwatches for people who value clarity, reliability, and lasting quality. Every collection moves through case design, dial finishing, movement selection, and rigorous testing before it reaches your wrist.",
   },
   quote: {
-    text: "Time never stops, why should we?"
+    text: "Time never stops, why should we?",
   },
   contact: {
     careEmail: "care@timect.com",
@@ -186,7 +186,7 @@ export function mergeStorefront(
         : d.heroSlides,
     banners: Array.isArray(stored.banners) ? stored.banners : d.banners,
     statement: { ...d.statement, ...(stored.statement || {}) },
-    quote: { ...d.quote, ...(stored.quote || {}) },
+    quote: { text: stored.quote?.text ?? d.quote.text },
     contact: { ...d.contact, ...(stored.contact || {}) },
     whatsappButton: {
       enabled: storedWp?.enabled !== undefined ? Boolean(storedWp.enabled) : dWp.enabled,
