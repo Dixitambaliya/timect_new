@@ -80,8 +80,8 @@ export default function AboutPage() {
           <h2 id="difference-title" className="reveal-rise">What<br />sets us apart</h2>
           <div className={styles.features}>
             {features.map(({ title, text, icon: Icon, position }) => <article key={title} className={`${styles.feature} ${position} reveal-rise`}><Icon size={35} strokeWidth={1.1} aria-hidden="true" /><h3>{title}</h3><p>{text}</p></article>)}
-            <article className={`${styles.exclusive} reveal-rise`}>
-              <div className={styles.watchTrio} aria-hidden="true">{collectionImages.map(({ src, alt }, i) => <img key={src} src={src} alt={alt} loading="lazy" className={styles[`trio${i}`]} width={240} height={320} />)}</div>
+            <article className={styles.exclusive}>
+              <div className={styles.watchTrio} aria-hidden="true">{collectionImages.map(({ src, alt }, i) => <img key={src} src={src} alt={alt} loading="lazy" className={styles[`trio${i}`]} width={1254} height={1254} />)}</div>
               <div><h3>A considered collection</h3><p>Distinctive dials, timeless proportions, and timepieces chosen for everyday life.</p><Link href="/watches" className={styles.collectionLink}>Explore our watches <span aria-hidden="true">↗</span></Link></div>
             </article>
           </div>
@@ -90,7 +90,7 @@ export default function AboutPage() {
         <section className={styles.story} aria-labelledby="story-title">
           <div className={styles.storyLeft}>
             <div className={`${styles.storyHeading} reveal-rise`}><span>OUR STORY</span><h2 id="story-title">Enthusiasts. Collectors.<br />Entrepreneurs.</h2></div>
-            <article className={`${styles.vision} reveal-rise`}><p>We founded Timect with a clear vision—to create considered watches while valuing the significance beyond price.</p><img src="/images/about/globe.png" alt="A globe celebrating the shared international passion for watchmaking" loading="lazy" width={1376} height={1030} /></article>
+            <article className={`${styles.vision} reveal-rise`}><p>We founded Timect with a clear vision-to create considered watches while valuing the significance beyond price.</p><img src="/images/about/globe.png" alt="A globe celebrating the shared international passion for watchmaking" loading="lazy" width={1376} height={1030} /></article>
             <article className={`${styles.experience} reveal-rise`}><strong>{years}<span>+</span></strong><p>Since our founding in 2003, our passion for watch design, craftsmanship, and the details of everyday wear has guided our journey. We believe every purchase should feel informed, intentional, and timeless.</p></article>
           </div>
           <div className={styles.storyRight}>
@@ -100,8 +100,12 @@ export default function AboutPage() {
         </section>
 
         <section className={styles.concierge} aria-labelledby="concierge-title">
-          <div className={`${styles.conciergeText} reveal-rise`}><h2 id="concierge-title">Need a specific watch?<br />Looking for expert advice?</h2><p>Our team is ready to assist with personal recommendations<br className={styles.desktopBreak} /> and every detail of your watch journey.</p><Link href="/contact" className={styles.contactButton}>CONTACT US <span aria-hidden="true">↗</span></Link></div>
-          <img className={styles.conciergeWatch} src="https://res.cloudinary.com/dphscxzb4/image/upload/v1793773012/timect/admin/general/scrvodqc8ekmd1bhic0f.png" alt="Timect watch" loading="lazy" width={650} height={780} />
+          <div className={styles.conciergeText}>
+            <span className={styles.conciergeEyebrow}>PERSONAL ASSISTANCE</span>
+            <h2 id="concierge-title">The right watch starts<br />with a conversation.</h2>
+            <p>Looking for a specific watch or some expert advice? Our team is here to help you find the right timepiece.</p>
+            <Link href="/contact" className={styles.contactButton}>Contact us <span aria-hidden="true">↗</span></Link>
+          </div>
         </section>
       </div>
     </>

@@ -397,7 +397,7 @@ export default function ProductForm({
                   if (discount <= 0 || diff <= 0) return null;
                   return (
                     <div className="md:col-span-2 flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3.5 py-2 text-xs font-semibold text-emerald-800">
-                      <span>✓ Discount Active: {discount}% OFF — Customer saves ₹{diff.toLocaleString("en-IN")}</span>
+                      <span>✓ Discount Active: {discount}% OFF - Customer saves ₹{diff.toLocaleString("en-IN")}</span>
                     </div>
                   );
                 })()}

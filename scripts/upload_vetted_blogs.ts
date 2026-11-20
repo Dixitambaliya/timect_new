@@ -168,7 +168,7 @@ const blogs: BlogPostInput[] = [
 <p class="mb-4 text-ink/80 leading-relaxed">In an era dominated by digital numbers and connected touchscreens, learning to read an analogue clock dial remains a foundational cognitive milestone. An analogue face represents time as continuous space, teaching children how quarters, halves, and hours relate visually. Choosing a first watch requires balancing pedagogy, comfort, and vital safety considerations.</p>
 
 <h2 class="text-2xl font-serif font-bold text-ink mt-8 mb-4">Critical Safety: Secure Battery Compartments</h2>
-<p class="mb-4 text-ink/80 leading-relaxed">Button cell batteries used in quartz timepieces represent serious choking and chemical burn hazards if ingested. Authoritative safety agencies emphasize that children's watches must have child-resistant battery enclosures—either secured by miniature screws or solid snap backs that cannot be pried open by small hands without dedicated watchmaker tools.</p>
+<p class="mb-4 text-ink/80 leading-relaxed">Button cell batteries used in quartz timepieces represent serious choking and chemical burn hazards if ingested. Authoritative safety agencies emphasize that children's watches must have child-resistant battery enclosures-either secured by miniature screws or solid snap backs that cannot be pried open by small hands without dedicated watchmaker tools.</p>
 
 <h2 class="text-2xl font-serif font-bold text-ink mt-8 mb-4">Design Features That Accelerate Time Learning</h2>
 <ul class="list-disc list-inside space-y-2 mb-6 text-ink/80">
@@ -235,7 +235,7 @@ const blogs: BlogPostInput[] = [
     featuredImageUrl: "https://res.cloudinary.com/dphscxzb4/image/upload/v1794910942/timect/admin/general/wm7gbsj1qvmh0lkjbnaj.jpg",
     focusKeyword: "Matching Couple Watches",
     secondaryKeywords: ["couple watch sets", "his and hers watches", "coordinated wedding watches", "anniversary gift watches"],
-    directAnswer: "Great matching watches for couples share design DNA—such as case silhouette, font design, or metal finishing—while respecting individual wrist proportions (e.g. 36mm and 40mm) and personal daily habits.",
+    directAnswer: "Great matching watches for couples share design DNA-such as case silhouette, font design, or metal finishing-while respecting individual wrist proportions (e.g. 36mm and 40mm) and personal daily habits.",
     tagSlugs: ["dress-watch", "Watch Style"],
     faqs: [
       {
@@ -257,7 +257,7 @@ const blogs: BlogPostInput[] = [
 <h2 class="text-2xl font-serif font-bold text-ink mt-8 mb-4">Focus on Shared Design Language</h2>
 <p class="mb-4 text-ink/80 leading-relaxed">A couple's watches should complement each other in photos and across the dinner table without looking like carbon copies. Look for cohesion across these design elements:</p>
 <ul class="list-disc list-inside space-y-2 mb-6 text-ink/80">
-  <li><strong>Unified Case Architecture:</strong> Choosing the same iconic case profile—such as refined cushion cases, minimalist Bauhaus slim bezels, or clean fluted bezels.</li>
+  <li><strong>Unified Case Architecture:</strong> Choosing the same iconic case profile-such as refined cushion cases, minimalist Bauhaus slim bezels, or clean fluted bezels.</li>
   <li><strong>Harmonious Metal Tones:</strong> Warm rose gold bezels or brushed 316L stainless steel bracelets tie two distinct dial treatments together effortlessly.</li>
   <li><strong>Inverted or Complementary Dials:</strong> Consider one timepiece in clean silver-white and the other in deep sunburst navy blue or forest green.</li>
 </ul>
@@ -403,7 +403,7 @@ const blogs: BlogPostInput[] = [
     featuredImageUrl: "https://res.cloudinary.com/dphscxzb4/image/upload/v1794911568/timect/admin/general/atamchnewz77uiz86jjb.png",
     focusKeyword: "Vintage Style Watches",
     secondaryKeywords: ["retro watch style", "vintage inspired dials", "heritage watches for men", "classic mid-century watches"],
-    directAnswer: "Vintage-style watches combine mid-century aesthetics—like boxed crystals, warm cream dials, and 36mm–38mm cases—with modern sapphire scratch resistance, reliable automatic or quartz movements, and robust water resistance.",
+    directAnswer: "Vintage-style watches combine mid-century aesthetics-like boxed crystals, warm cream dials, and 36mm–38mm cases-with modern sapphire scratch resistance, reliable automatic or quartz movements, and robust water resistance.",
     tagSlugs: ["heritage", "Watch Style"],
     faqs: [
       {
@@ -430,7 +430,7 @@ const blogs: BlogPostInput[] = [
 </ul>
 
 <h2 class="text-2xl font-serif font-bold text-ink mt-8 mb-4">Styling Vintage Aesthetics with Contemporary Clothing</h2>
-<p class="mb-4 text-ink/80 leading-relaxed">A vintage-style watch acts as an understated anchor in a modern wardrobe. It pairs naturally with textured fabrics—linen shirts in summer, herringbone tweeds in winter, and relaxed Oxford cloth button-downs year-round. Check out our breakdown of <a href="/blog/best-watches-for-men-by-personal-style" class="text-copper hover:underline font-medium">matching watches to men's personal style</a> for more wardrobe tips.</p>
+<p class="mb-4 text-ink/80 leading-relaxed">A vintage-style watch acts as an understated anchor in a modern wardrobe. It pairs naturally with textured fabrics-linen shirts in summer, herringbone tweeds in winter, and relaxed Oxford cloth button-downs year-round. Check out our breakdown of <a href="/blog/best-watches-for-men-by-personal-style" class="text-copper hover:underline font-medium">matching watches to men's personal style</a> for more wardrobe tips.</p>
 `
   },
   {

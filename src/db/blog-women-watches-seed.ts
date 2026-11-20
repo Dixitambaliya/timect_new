@@ -53,7 +53,7 @@ const articles: Article[] = [
       {
         heading: "1. Small-Dial Minimalist Watches",
         paragraphs: [
-          "Tiny dials — typically 24 mm to 30 mm — are firmly back after years of oversized dominance. The appeal is in their quiet elegance: a slim case that sits flush on the wrist without shouting for attention. Brands are pairing them with ultra-thin movements and plain sunburst dials for a barely-there aesthetic.",
+          "Tiny dials - typically 24 mm to 30 mm - are firmly back after years of oversized dominance. The appeal is in their quiet elegance: a slim case that sits flush on the wrist without shouting for attention. Brands are pairing them with ultra-thin movements and plain sunburst dials for a barely-there aesthetic.",
           "These suit layered stacking with thin bangles or worn alone with an evening dress. The less-is-more approach makes them incredibly versatile across smart and casual settings.",
         ],
         tips: ["Stack two or three small watches or bracelets for a curated arm party.", "Choose a sunburst silver or cream dial for maximum versatility."],
@@ -62,7 +62,7 @@ const articles: Article[] = [
         heading: "2. Rectangular and Vintage-Inspired Shapes",
         paragraphs: [
           "The rectangular watch revival continues into 2026, drawing from 1970s Art Deco influences. Cushion-shaped cases, tank-style proportions, and elongated rectangles all carry an instantly editorial quality that round dials simply cannot replicate.",
-          "They photograph beautifully and pair well with tailored blazers, shirt dresses, and even relaxed denim — the contrast creates intentional, fashion-forward styling.",
+          "They photograph beautifully and pair well with tailored blazers, shirt dresses, and even relaxed denim - the contrast creates intentional, fashion-forward styling.",
         ],
       },
       {
@@ -76,7 +76,7 @@ const articles: Article[] = [
       {
         heading: "4. Two-Tone Metal and Mixed Finishes",
         paragraphs: [
-          "Two-tone watches — combining yellow gold with polished steel — solve the gold-or-silver dilemma entirely. They bridge warm and cool accessories, making them the most adaptable choice for a mixed-metal wardrobe.",
+          "Two-tone watches - combining yellow gold with polished steel - solve the gold-or-silver dilemma entirely. They bridge warm and cool accessories, making them the most adaptable choice for a mixed-metal wardrobe.",
           "Modern two-tone designs use alternating brushed and polished finishes on the same link for a contemporary, textured look rather than the stark contrast of earlier decades.",
         ],
       },
@@ -84,14 +84,14 @@ const articles: Article[] = [
         heading: "5. Pearlescent and Pastel Dials",
         paragraphs: [
           "Mother-of-pearl dials remain perennially popular, but 2026 sees an expansion into lavender, dusty rose, sage, and sky blue. These pastel dials are paired with white or gold cases for a soft, luminous aesthetic.",
-          "They work particularly well under natural light, where the dial shifts color subtly as the angle changes — an almost jewellery-like quality that makes the watch feel precious.",
+          "They work particularly well under natural light, where the dial shifts color subtly as the angle changes - an almost jewellery-like quality that makes the watch feel precious.",
         ],
       },
       {
         heading: "6. Sport-Chic Hybrid Watches",
         paragraphs: [
           "Athletic silhouettes with feminine proportions are growing rapidly. Think a 36 mm cushion-case chronograph on a rubber strap in pale pink, or a diver-inspired bezel on a sleek white dial. These are designed for women who want performance credentials without sacrificing style.",
-          "The sport-chic trend means you can transition from a morning run to a brunch without changing your watch — it looks intentionally stylish rather than merely functional.",
+          "The sport-chic trend means you can transition from a morning run to a brunch without changing your watch - it looks intentionally stylish rather than merely functional.",
         ],
         tips: ["Choose a monochromatic color palette (all white or all black) for the most elegant sport-chic effect.", "Silicone straps are hypoallergenic and easy to clean."],
       },
@@ -106,7 +106,7 @@ const articles: Article[] = [
         heading: "8. Ultra-Thin Dress Watches",
         paragraphs: [
           "Movements under 5 mm thick are a technical achievement and a styling triumph. Ultra-thin watches disappear beneath a cuff and create an almost sculptural quality on the wrist. They are almost always paired with leather straps in neutral tones.",
-          "The best ultra-thin designs rely on restraint for impact — no date window, no complications, just a perfect case-to-dial ratio.",
+          "The best ultra-thin designs rely on restraint for impact - no date window, no complications, just a perfect case-to-dial ratio.",
         ],
       },
       {
@@ -120,7 +120,7 @@ const articles: Article[] = [
         heading: "10. Personalised and Engraved Watches",
         paragraphs: [
           "Customisation is a mega-trend across fashion, and watches are no exception. Brands offering dial colour choices, interchangeable straps, or case-back engraving are seeing strong demand. A monogrammed or engraved watch also makes the most meaningful gift.",
-          "The combination of personal story and functional elegance makes these watches deeply wearable — they are not just accessories but keepsakes.",
+          "The combination of personal story and functional elegance makes these watches deeply wearable - they are not just accessories but keepsakes.",
         ],
         tips: ["Choose an engraving font that matches the watch's overall aesthetic: serif for classic, sans-serif for modern.", "Interchangeable strap systems multiply a single watch's versatility dramatically."],
       },
@@ -137,13 +137,13 @@ const articles: Article[] = [
     excerpt: "Small dial watches are reclaiming the spotlight in women's fashion. Discover why tiny watches are trending, which wrist sizes suit them best, and how to style them beautifully.",
     focusKeyword: "small dial watches for women",
     secondaryKeywords: ["tiny watches for women", "small wrist watches for women", "dainty watches women", "minimalist women's watches"],
-    directAnswer: "Small dial watches for women — typically 24 mm to 32 mm — are back in fashion because they emphasise elegance, feminine proportions, and minimalist aesthetics. They work best on petite to medium wrists and pair beautifully with delicate jewellery, smart-casual, and evening outfits.",
+    directAnswer: "Small dial watches for women - typically 24 mm to 32 mm - are back in fashion because they emphasise elegance, feminine proportions, and minimalist aesthetics. They work best on petite to medium wrists and pair beautifully with delicate jewellery, smart-casual, and evening outfits.",
     readTime: 6,
     isFeatured: false,
     isTrending: true,
     sections: [
       {
-        heading: "Why tiny watches became unfashionable — and why they're back",
+        heading: "Why tiny watches became unfashionable - and why they're back",
         paragraphs: [
           "Through the 2010s, oversized watches dominated for both men and women, driven by the belief that a large watch read as confident and bold. However, fashion's natural pendulum has swung back toward refinement, restraint, and femininity. The result is a renewed appreciation for dials under 32 mm.",
           "Luxury heritage brands and independent designers alike are reintroducing their most compact references, understanding that proportion and intention matter more than scale. When a small watch fits perfectly, it has a jewellery-like quality that larger watches can never replicate.",
@@ -152,7 +152,7 @@ const articles: Article[] = [
       {
         heading: "What wrist size suits a small dial watch?",
         paragraphs: [
-          "Small dial watches are most flattering on wrists measuring 5.5 inches (14 cm) to 6.5 inches (16.5 cm) in circumference. However, the key measurement is lug-to-lug distance — how the case sits across the width of your wrist — rather than dial diameter alone.",
+          "Small dial watches are most flattering on wrists measuring 5.5 inches (14 cm) to 6.5 inches (16.5 cm) in circumference. However, the key measurement is lug-to-lug distance - how the case sits across the width of your wrist - rather than dial diameter alone.",
           "Petite wrists are most naturally suited to 24–28 mm cases. Medium wrists wear 28–32 mm comfortably. Even larger wrists can carry a small watch as a deliberate fashion choice; the contrast creates an intentionally styled, editorial look.",
         ],
         tips: ["Measure your wrist with a tape measure and compare to the watch's lug-to-lug dimension.", "A thin case (under 8 mm) amplifies the delicate effect of a small dial."],
@@ -161,7 +161,7 @@ const articles: Article[] = [
         heading: "Best strap choices for small dial watches",
         paragraphs: [
           "Narrow straps (10–14 mm) are proportionally correct for small cases. Mesh bracelets, fine satin ribbon, slim smooth leather, and petite link bracelets all enhance the dainty aesthetic. Avoid thick rubber or wide NATO straps, which overwhelm a small dial.",
-          "Gold-toned mesh or Milanese loop bracelets are especially popular for small watches — they add warmth, flexibility, and a bracelet-like quality that blurs the line between watch and jewellery.",
+          "Gold-toned mesh or Milanese loop bracelets are especially popular for small watches - they add warmth, flexibility, and a bracelet-like quality that blurs the line between watch and jewellery.",
         ],
       },
       {
@@ -170,7 +170,7 @@ const articles: Article[] = [
           "Small watches layer beautifully with thin bangle bracelets, tennis bracelets, and delicate chain jewelry. Keep scale consistent: fine jewellery with fine watches, substantial jewellery with slightly larger pieces.",
           "For evening wear, a small diamond-set or pearl-dial watch on a satin strap is an effortlessly elegant choice that doubles as fine jewellery. For daytime, a simple steel or gold-tone mini on leather keeps the look refined without feeling overdressed.",
         ],
-        tips: ["Mix metals intentionally: a rose gold watch with yellow gold rings creates a modern eclectic feel.", "Let a small watch be the focal point of a minimal wrist — sometimes one piece is enough."],
+        tips: ["Mix metals intentionally: a rose gold watch with yellow gold rings creates a modern eclectic feel.", "Let a small watch be the focal point of a minimal wrist - sometimes one piece is enough."],
       },
     ],
     faqs: [
@@ -182,7 +182,7 @@ const articles: Article[] = [
     title: "Square vs Round Watches for Women: Which Looks More Elegant?",
     slug: "square-watches-for-women",
     subtitle: "Comparing the geometric case shapes that define two distinct aesthetics.",
-    excerpt: "Square or round? This classic debate in women's watch styling has no single answer — it depends on wrist shape, personal style, and the occasion. Here's everything you need to know.",
+    excerpt: "Square or round? This classic debate in women's watch styling has no single answer - it depends on wrist shape, personal style, and the occasion. Here's everything you need to know.",
     focusKeyword: "square watches for women",
     secondaryKeywords: ["square dial watches for women", "round vs square women's watch", "best women's watch shape", "geometric watches for women"],
     directAnswer: "Square watches look more architectural and editorial, suiting fashion-forward and tailored styles. Round watches are considered more universally elegant and versatile. For formal occasions, round dials are traditional; for a distinctive, design-led look, square or rectangular cases stand out.",
@@ -194,14 +194,14 @@ const articles: Article[] = [
         heading: "The elegance case for round watches",
         paragraphs: [
           "Round dials have been the horological standard for over a century because they mirror the natural movement of clock hands and work harmoniously with the circular shape of the watch mechanism. This inherent logic gives round watches a timeless, refined quality.",
-          "On the wrist, a round case sits smoothly against the skin and blends with almost any outfit — formal, casual, or traditional. It is the most universally flattering shape across different wrist widths and proportions.",
+          "On the wrist, a round case sits smoothly against the skin and blends with almost any outfit - formal, casual, or traditional. It is the most universally flattering shape across different wrist widths and proportions.",
         ],
         tips: ["Round watches in sizes 28–34 mm suit most women's wrists elegantly.", "A sunburst or guilloché dial adds depth to a round watch without sacrificing simplicity."],
       },
       {
         heading: "The elegance case for square watches",
         paragraphs: [
-          "Square and cushion-shaped watches carry an inherently architectural quality. Historically associated with dress watches — the Cartier Tank and Jaeger-LeCoultre Reverso are the definitive examples — square cases feel deliberately designed rather than conventional.",
+          "Square and cushion-shaped watches carry an inherently architectural quality. Historically associated with dress watches - the Cartier Tank and Jaeger-LeCoultre Reverso are the definitive examples - square cases feel deliberately designed rather than conventional.",
           "The straight edges of a square case align naturally with cuffs, bracelets, and the lines of tailored clothing. This geometric quality is what makes square watches feel fashion-forward and editorial.",
         ],
       },
@@ -218,11 +218,11 @@ const articles: Article[] = [
           "For weddings, formal events, and conservative professional settings, round watches remain the safest and most accepted choice. For fashion-focused occasions, editorial styling, artistic environments, or simply as a personal signature, square and rectangular watches make a more distinctive statement.",
           "Many collectors and style enthusiasts own both: a round everyday watch and a square dress watch for occasions where they want their timepiece to be part of the story.",
         ],
-        tips: ["Square watches photograph particularly well — worth considering for events.", "A cushion-shaped case is a softer halfway point between round and square if you are undecided."],
+        tips: ["Square watches photograph particularly well - worth considering for events.", "A cushion-shaped case is a softer halfway point between round and square if you are undecided."],
       },
     ],
     faqs: [
-      { question: "Are square watches considered elegant for women?", answer: "Yes. Square and rectangular watches are associated with historic luxury dress watches and carry a distinctive, architectural elegance — especially when worn with tailored or evening outfits." },
+      { question: "Are square watches considered elegant for women?", answer: "Yes. Square and rectangular watches are associated with historic luxury dress watches and carry a distinctive, architectural elegance - especially when worn with tailored or evening outfits." },
       { question: "Which watch shape is more versatile for everyday wear?", answer: "Round watches are more versatile for daily wear as they suit the widest range of outfits, occasions, and wrist sizes." },
     ],
   },
@@ -230,10 +230,10 @@ const articles: Article[] = [
     title: "Gold vs Rose Gold vs Silver Watches: Which Should Women Choose?",
     slug: "gold-watches-for-women",
     subtitle: "A complete guide to choosing the right metal tone for your skin, wardrobe, and style.",
-    excerpt: "Gold, rose gold, or silver — choosing a watch metal tone can transform how a watch looks on your wrist. This guide helps you decide based on skin tone, wardrobe, and personal style.",
+    excerpt: "Gold, rose gold, or silver - choosing a watch metal tone can transform how a watch looks on your wrist. This guide helps you decide based on skin tone, wardrobe, and personal style.",
     focusKeyword: "gold watches for women",
     secondaryKeywords: ["rose gold watches for women", "silver watches for women", "best metal tone women's watch", "gold vs silver watch women"],
-    directAnswer: "Yellow gold watches complement warm and olive skin tones and warm-coloured wardrobes. Rose gold is universally flattering and suits romantic, feminine, or eclectic styles. Silver and steel work best with cool skin tones and neutral or cool wardrobes. All three can be worn confidently by any woman — personal preference and outfit context matter most.",
+    directAnswer: "Yellow gold watches complement warm and olive skin tones and warm-coloured wardrobes. Rose gold is universally flattering and suits romantic, feminine, or eclectic styles. Silver and steel work best with cool skin tones and neutral or cool wardrobes. All three can be worn confidently by any woman - personal preference and outfit context matter most.",
     readTime: 7,
     isFeatured: true,
     isTrending: false,
@@ -242,14 +242,14 @@ const articles: Article[] = [
         heading: "Yellow gold watches: warmth and heritage",
         paragraphs: [
           "Yellow gold is the most traditional and historically prestigious watch metal. It carries associations with heirloom jewellery, occasion dressing, and enduring luxury. Modern yellow gold watches range from subtle champagne tones to rich, saturated gold finishes.",
-          "On the wrist, yellow gold creates warmth and richness against medium-to-deep skin tones. For lighter cool-toned skin, yellow gold provides a striking contrast. The key is pairing gold with warm-toned clothing — camel, cream, olive, terracotta, and burgundy all complement yellow gold beautifully.",
+          "On the wrist, yellow gold creates warmth and richness against medium-to-deep skin tones. For lighter cool-toned skin, yellow gold provides a striking contrast. The key is pairing gold with warm-toned clothing - camel, cream, olive, terracotta, and burgundy all complement yellow gold beautifully.",
         ],
         tips: ["Yellow gold pairs naturally with brown leather straps for a heritage aesthetic.", "A sunburst champagne dial in a yellow gold case is one of the most elegant daytime combinations."],
       },
       {
         heading: "Rose gold watches: romance and versatility",
         paragraphs: [
-          "Rose gold has been the most popular women's watch tone for the past decade, and for good reason. The pink-copper alloy is universally flattering — it adds warmth without overwhelming fair skin and harmonises beautifully with medium and deep tones.",
+          "Rose gold has been the most popular women's watch tone for the past decade, and for good reason. The pink-copper alloy is universally flattering - it adds warmth without overwhelming fair skin and harmonises beautifully with medium and deep tones.",
           "Rose gold also crosses aesthetic boundaries: it suits feminine romantic styles, modern minimalist aesthetics, and even streetwear-influenced looks depending on the case shape and dial design. Its warmth is softer than yellow gold, which makes it feel more contemporary and less traditional.",
         ],
       },
@@ -259,7 +259,7 @@ const articles: Article[] = [
           "Stainless steel is the most practical and durable case material and serves as the default 'silver' tone in most watches. Its neutral, cool-grey finish suits a wider range of outfits than any single metal colour, particularly navy, black, white, grey, and cool jewel tones.",
           "For cool or pink-toned skin, silver harmonises naturally and looks sophisticated without trying. Steel watches also hold up better to daily wear and are significantly more cost-effective than gold alloys.",
         ],
-        tips: ["Steel watches on mesh bracelets have an almost jewellery-like quality — a great alternative to yellow gold at a lower price point.", "White dials and steel cases are the ultimate neutral watch combination."],
+        tips: ["Steel watches on mesh bracelets have an almost jewellery-like quality - a great alternative to yellow gold at a lower price point.", "White dials and steel cases are the ultimate neutral watch combination."],
       },
       {
         heading: "How to choose based on your existing jewellery",
@@ -270,7 +270,7 @@ const articles: Article[] = [
       },
     ],
     faqs: [
-      { question: "Is rose gold or yellow gold better for a women's watch?", answer: "Rose gold is more universally flattering and contemporary. Yellow gold suits warm skin tones and traditional or occasion dressing more naturally. Both are beautiful — the choice comes down to personal style and existing jewellery." },
+      { question: "Is rose gold or yellow gold better for a women's watch?", answer: "Rose gold is more universally flattering and contemporary. Yellow gold suits warm skin tones and traditional or occasion dressing more naturally. Both are beautiful - the choice comes down to personal style and existing jewellery." },
       { question: "Does silver or gold look better on fair skin?", answer: "Both work on fair skin. Silver and steel create a cool, clean look. Yellow gold provides warm contrast. Rose gold offers a soft flattering middle ground. Try both in natural light to see which resonates most with your colouring." },
     ],
   },
@@ -278,7 +278,7 @@ const articles: Article[] = [
     title: "Best Watches for College Girls: Trendy and Stylish Everyday Designs",
     slug: "watches-for-college-girls",
     subtitle: "Smart, affordable, and stylish watches that keep up with student life.",
-    excerpt: "Find the best watches for college girls — from minimalist everyday pieces to colourful statement designs. Practical, stylish, and suited to campus life at every budget.",
+    excerpt: "Find the best watches for college girls - from minimalist everyday pieces to colourful statement designs. Practical, stylish, and suited to campus life at every budget.",
     focusKeyword: "watches for college girls",
     secondaryKeywords: ["best watches for college students", "trendy watches for young women", "affordable women's watches", "stylish watches for teens"],
     directAnswer: "The best watches for college girls combine durability, style, and affordability. Look for lightweight cases (28–36 mm), easy-to-clean straps (silicone or mesh), clear dials for quick time-reading, and designs versatile enough to move from class to social settings. Minimalist, sport-chic, and colourful fashion watches are most popular.",
@@ -290,7 +290,7 @@ const articles: Article[] = [
         heading: "What makes a watch right for college life?",
         paragraphs: [
           "College life demands a watch that is practical enough for a full day on campus and stylish enough for evenings and social events. This means prioritising comfort for long wears, legibility for checking time between classes, durability for everyday bumps, and versatility across casual and smart-casual outfits.",
-          "Water resistance is a bonus — especially for students who cycle, attend sports, or live in unpredictable climates. A watch that survives a splash or light rain without anxiety is worth choosing.",
+          "Water resistance is a bonus - especially for students who cycle, attend sports, or live in unpredictable climates. A watch that survives a splash or light rain without anxiety is worth choosing.",
         ],
         tips: ["Choose a watch rated to at least 30m water resistance for everyday practicality.", "Interchangeable straps let one watch serve multiple style purposes."],
       },
@@ -304,17 +304,17 @@ const articles: Article[] = [
       {
         heading: "Sport and casual watches for active students",
         paragraphs: [
-          "For students with active schedules — gym sessions, outdoor classes, sports clubs — a sport-inspired watch on a silicone or rubber strap is practical and stylish. Colourful bands, bold dials, and water-resistant cases suit an active campus lifestyle.",
+          "For students with active schedules - gym sessions, outdoor classes, sports clubs - a sport-inspired watch on a silicone or rubber strap is practical and stylish. Colourful bands, bold dials, and water-resistant cases suit an active campus lifestyle.",
           "Sport-chic designs that remain attractive off the court or track are especially useful. A 32–36 mm cushion-case watch on a tonal silicone band looks intentional rather than purely athletic.",
         ],
       },
       {
         heading: "Fashion and statement watches for self-expression",
         paragraphs: [
-          "College is the ideal time to experiment with bolder watch designs — geometric cases, pastel dials, transparent faces, or playful colours that reflect your personal aesthetic. These need not be expensive; fashion watches at accessible price points offer tremendous variety.",
+          "College is the ideal time to experiment with bolder watch designs - geometric cases, pastel dials, transparent faces, or playful colours that reflect your personal aesthetic. These need not be expensive; fashion watches at accessible price points offer tremendous variety.",
           "A statement watch can be the foundation of an outfit on casual days, eliminating the need for additional jewellery. It is worth owning one practical everyday watch and one more expressive piece for style experimentation.",
         ],
-        tips: ["Transparent or skeleton dials are particularly popular with students for their unique visual appeal.", "Colourful silicone straps are easy to swap out and clean — perfect for daily wear."],
+        tips: ["Transparent or skeleton dials are particularly popular with students for their unique visual appeal.", "Colourful silicone straps are easy to swap out and clean - perfect for daily wear."],
       },
     ],
     faqs: [
@@ -337,7 +337,7 @@ const articles: Article[] = [
       {
         heading: "What is a bracelet watch and why it's both a timepiece and jewellery",
         paragraphs: [
-          "A bracelet watch features an integrated or matching metal bracelet where the strap and case form one continuous design — it functions as a watch but presents as jewellery. The most iconic examples include fine mesh (Milanese loop), link bracelets, and bangle-style cuffs.",
+          "A bracelet watch features an integrated or matching metal bracelet where the strap and case form one continuous design - it functions as a watch but presents as jewellery. The most iconic examples include fine mesh (Milanese loop), link bracelets, and bangle-style cuffs.",
           "Because the bracelet is as visible as the dial, the styling logic shifts: you are coordinating jewellery-to-jewellery rather than watch-to-outfit. This elevates the complexity and the reward of getting it right.",
         ],
       },
@@ -353,7 +353,7 @@ const articles: Article[] = [
         heading: "Stacking the same wrist: arm party styling",
         paragraphs: [
           "Stacking a bracelet watch with bangles and bracelets on the same wrist is one of the most popular styling approaches. The key is graduating scale: lead with the watch as the largest piece, then add medium bangles, and finish with delicate chains or stacking rings.",
-          "Keep all pieces in the same metal family for a curated look. Mixing textures — a smooth link watch with a hammered bangle and a beaded bracelet — creates visual interest without colour conflict.",
+          "Keep all pieces in the same metal family for a curated look. Mixing textures - a smooth link watch with a hammered bangle and a beaded bracelet - creates visual interest without colour conflict.",
         ],
       },
       {
@@ -385,30 +385,30 @@ const articles: Article[] = [
       {
         heading: "The heritage roots of the rectangular watch",
         paragraphs: [
-          "The rectangular watch case emerged in the early 20th century as watchmakers explored geometric case shapes that departed from the pocket watch's traditional round form. The Cartier Tank — launched in 1917 and inspired by the overhead view of a World War I tank — became the defining example of the rectangular watch and remains one of the most referenced designs in horological history.",
-          "The elongated case's straight lines were an expression of Art Deco architecture's obsession with geometry and clean structure. These qualities make rectangular watches feel inherently architectural and design-conscious — qualities that resonate strongly with contemporary fashion.",
+          "The rectangular watch case emerged in the early 20th century as watchmakers explored geometric case shapes that departed from the pocket watch's traditional round form. The Cartier Tank - launched in 1917 and inspired by the overhead view of a World War I tank - became the defining example of the rectangular watch and remains one of the most referenced designs in horological history.",
+          "The elongated case's straight lines were an expression of Art Deco architecture's obsession with geometry and clean structure. These qualities make rectangular watches feel inherently architectural and design-conscious - qualities that resonate strongly with contemporary fashion.",
         ],
       },
       {
         heading: "Why rectangular watches are trending now",
         paragraphs: [
-          "Fashion operates in cycles, and after a decade of sporty, round watches dominating women's wardrobes, the appetite for something more considered and visually distinctive has grown. Rectangular cases offer an editorial quality — they look equally compelling on red carpets, street style shoots, and editorial fashion imagery.",
+          "Fashion operates in cycles, and after a decade of sporty, round watches dominating women's wardrobes, the appetite for something more considered and visually distinctive has grown. Rectangular cases offer an editorial quality - they look equally compelling on red carpets, street style shoots, and editorial fashion imagery.",
           "The vintage revival across all categories of fashion and design has made the rectangular watch a natural beneficiary. Its association with the 1960s and 1970s haute horlogerie tradition makes it simultaneously nostalgic and fresh.",
         ],
-        tips: ["Look for a rectangular case with thin lugs — it creates an elongated, elegant effect on the wrist.", "Roman numerals pair particularly well with rectangular dials for a heritage-inspired aesthetic."],
+        tips: ["Look for a rectangular case with thin lugs - it creates an elongated, elegant effect on the wrist.", "Roman numerals pair particularly well with rectangular dials for a heritage-inspired aesthetic."],
       },
       {
         heading: "How to style a rectangular watch",
         paragraphs: [
           "Rectangular watches are inherently elegant and lean toward dressier styling. They work beautifully with tailored trousers, blazers, shirt dresses, and evening outfits. The straight case edge sits flush against a cuff in a visually satisfying way that round watches cannot replicate.",
-          "For casual styling, pair a rectangular watch with a fine leather strap and simple everyday clothing — the contrast between the watch's formality and relaxed clothing creates the kind of intentional styling that fashion-forward dressing is built on.",
+          "For casual styling, pair a rectangular watch with a fine leather strap and simple everyday clothing - the contrast between the watch's formality and relaxed clothing creates the kind of intentional styling that fashion-forward dressing is built on.",
         ],
       },
       {
         heading: "What to look for in a quality rectangular watch",
         paragraphs: [
-          "Case finishing is critical — a well-made rectangular watch should have sharp, defined edges with consistent polished and brushed surface contrasts. The dial should be symmetrically aligned within the case, with indices that sit correctly in the corners of the rectangular frame.",
-          "Leather strap quality matters as much as the case. Rectangular watches look most refined on slim, fine-grained leather in classic colours — black, tan, navy, burgundy. Avoid thick or chunky straps that overpower the elegant case proportions.",
+          "Case finishing is critical - a well-made rectangular watch should have sharp, defined edges with consistent polished and brushed surface contrasts. The dial should be symmetrically aligned within the case, with indices that sit correctly in the corners of the rectangular frame.",
+          "Leather strap quality matters as much as the case. Rectangular watches look most refined on slim, fine-grained leather in classic colours - black, tan, navy, burgundy. Avoid thick or chunky straps that overpower the elegant case proportions.",
         ],
       },
     ],
@@ -420,7 +420,7 @@ const articles: Article[] = [
   {
     title: "Best Watches for Working Women: Elegant Office-Wear Styles",
     slug: "office-watches-for-women",
-    subtitle: "Professional, polished, and practical — the watches that work as hard as you do.",
+    subtitle: "Professional, polished, and practical - the watches that work as hard as you do.",
     excerpt: "The best office watches for women balance professionalism with personal style. Discover the key criteria for choosing a work watch and the styles that shine in every professional setting.",
     focusKeyword: "office watches for women",
     secondaryKeywords: ["professional watches for women", "work watches for women", "best watches for businesswomen", "elegant watches for office"],
@@ -432,32 +432,32 @@ const articles: Article[] = [
       {
         heading: "What makes a watch right for professional settings?",
         paragraphs: [
-          "In a professional environment, your watch communicates more than the time — it signals your attention to detail, your personal standards, and your cultural literacy around quality and presentation. A well-chosen office watch does this quietly and effectively.",
-          "The criteria are consistent across industries: the watch should be proportionate (not oversized), legible (readable at a glance), slim enough to clear the cuff, and finished in materials that read as quality — genuine leather, sapphire crystal, stainless steel.",
+          "In a professional environment, your watch communicates more than the time - it signals your attention to detail, your personal standards, and your cultural literacy around quality and presentation. A well-chosen office watch does this quietly and effectively.",
+          "The criteria are consistent across industries: the watch should be proportionate (not oversized), legible (readable at a glance), slim enough to clear the cuff, and finished in materials that read as quality - genuine leather, sapphire crystal, stainless steel.",
         ],
-        tips: ["Keep the dial clean and readable — avoid overly complicated dials with too many sub-registers.", "A dark leather strap (black or dark brown) reads most formally."],
+        tips: ["Keep the dial clean and readable - avoid overly complicated dials with too many sub-registers.", "A dark leather strap (black or dark brown) reads most formally."],
       },
       {
         heading: "Three-hand watches: the professional classic",
         paragraphs: [
-          "Hours, minutes, and seconds — that is all most professional settings require. A clean three-hand watch on a leather strap or fine steel bracelet is the most reliably professional choice. It signals restraint, good taste, and practicality in equal measure.",
-          "Look for a dial with applied (raised) indices rather than printed — they catch light and add depth to the design. A date window at 3 or 6 o'clock adds practical value without complicating the dial unnecessarily.",
+          "Hours, minutes, and seconds - that is all most professional settings require. A clean three-hand watch on a leather strap or fine steel bracelet is the most reliably professional choice. It signals restraint, good taste, and practicality in equal measure.",
+          "Look for a dial with applied (raised) indices rather than printed - they catch light and add depth to the design. A date window at 3 or 6 o'clock adds practical value without complicating the dial unnecessarily.",
         ],
       },
       {
         heading: "Slim dress watches for formal offices",
         paragraphs: [
-          "In highly formal or conservative environments — finance, law, senior management, or formal client-facing roles — an ultra-slim dress watch on a smooth leather strap is the most appropriate choice. The watch should feel like an extension of the clothing rather than a separate accessory.",
+          "In highly formal or conservative environments - finance, law, senior management, or formal client-facing roles - an ultra-slim dress watch on a smooth leather strap is the most appropriate choice. The watch should feel like an extension of the clothing rather than a separate accessory.",
           "Dial sizes of 28–34 mm are most common in this category. The case should sit flush on the wrist without overhanging the edges. A sapphire crystal is worth prioritising, as mineral glass accumulates visible scratches that look unprofessional over time.",
         ],
       },
       {
         heading: "Steel bracelet watches for modern professional settings",
         paragraphs: [
-          "For contemporary professional environments — creative industries, tech, consulting, flexible workplaces — a steel bracelet watch reads as smart and versatile. It transitions smoothly from desk to after-work social settings and requires less maintenance than leather.",
+          "For contemporary professional environments - creative industries, tech, consulting, flexible workplaces - a steel bracelet watch reads as smart and versatile. It transitions smoothly from desk to after-work social settings and requires less maintenance than leather.",
           "The bracelet should fit correctly: it should sit without sliding over the hand but not so tight that it leaves marks. A butterfly clasp is more secure and less prone to accidental opening than a push-button clasp.",
         ],
-        tips: ["A steel watch on a mesh bracelet is an excellent modern professional choice — it adjusts easily for a perfect fit.", "Avoid overly sporty designs (large bezels, bright colours, rubber straps) in conservative professional environments."],
+        tips: ["A steel watch on a mesh bracelet is an excellent modern professional choice - it adjusts easily for a perfect fit.", "Avoid overly sporty designs (large bezels, bright colours, rubber straps) in conservative professional environments."],
       },
     ],
     faqs: [
@@ -480,30 +480,30 @@ const articles: Article[] = [
       {
         heading: "Why minimalism looks luxurious in watches",
         paragraphs: [
-          "In watchmaking, restraint is expensive. Achieving a truly clean dial — with no distracting text, minimal indices, and a perfectly proportioned case — requires confidence in the fundamentals: movement quality, case finishing, and material selection. Cheap watches add details to distract from poor construction; quality watches can afford to remove them.",
+          "In watchmaking, restraint is expensive. Achieving a truly clean dial - with no distracting text, minimal indices, and a perfectly proportioned case - requires confidence in the fundamentals: movement quality, case finishing, and material selection. Cheap watches add details to distract from poor construction; quality watches can afford to remove them.",
           "The result is that a genuinely minimalist watch often reads as more luxurious than a heavily decorated one. The eye has nowhere to hide, so every surface must be perfect.",
         ],
       },
       {
         heading: "Key design principles of a great minimalist watch",
         paragraphs: [
-          "Case-to-dial ratio: the dial should fill the case without feeling cramped. Indices should be proportionate — slender applied hour markers rather than thick printed numbers. The hands should be thin and elegant, reaching close to the dial edge without touching it.",
-          "Colour discipline: the finest minimalist watches use two or three colours maximum — often a neutral case, single-tone dial, and matching or contrasting strap. White, black, silver, cream, and navy are the most effective minimalist dial colours.",
+          "Case-to-dial ratio: the dial should fill the case without feeling cramped. Indices should be proportionate - slender applied hour markers rather than thick printed numbers. The hands should be thin and elegant, reaching close to the dial edge without touching it.",
+          "Colour discipline: the finest minimalist watches use two or three colours maximum - often a neutral case, single-tone dial, and matching or contrasting strap. White, black, silver, cream, and navy are the most effective minimalist dial colours.",
         ],
-        tips: ["Look for applied (raised) hour markers rather than printed — they catch light and add depth without visual clutter.", "A matching strap colour (tonal dressing) is the most sophisticated minimalist approach."],
+        tips: ["Look for applied (raised) hour markers rather than printed - they catch light and add depth without visual clutter.", "A matching strap colour (tonal dressing) is the most sophisticated minimalist approach."],
       },
       {
         heading: "Materials that elevate minimalist watches",
         paragraphs: [
           "Because decoration is absent, material quality is immediately exposed. Sapphire crystal reveals its quality by being completely scratch-free and optically clear. High-grade stainless steel holds its polished and brushed surfaces distinctly over time. Genuine calf leather develops a patina that adds character.",
-          "Ceramic and titanium cases are increasingly used in minimalist designs — both have a tactile and visual quality that feels inherently premium despite (or because of) their understated appearance.",
+          "Ceramic and titanium cases are increasingly used in minimalist designs - both have a tactile and visual quality that feels inherently premium despite (or because of) their understated appearance.",
         ],
       },
       {
         heading: "How to style a minimalist watch",
         paragraphs: [
-          "Minimalist watches have a natural affinity with minimal clothing — simple cuts, neutral palettes, quality fabrics. They let your face and overall silhouette be the focus, anchoring rather than competing. With a monochrome outfit (all black, all white, or all cream), a minimalist watch becomes the single intentional detail.",
-          "Conversely, a minimalist watch provides visual calm in a more complex outfit — with prints, pattern, or layered styling. It says 'I haven't tried too hard' while elevating the whole look.",
+          "Minimalist watches have a natural affinity with minimal clothing - simple cuts, neutral palettes, quality fabrics. They let your face and overall silhouette be the focus, anchoring rather than competing. With a monochrome outfit (all black, all white, or all cream), a minimalist watch becomes the single intentional detail.",
+          "Conversely, a minimalist watch provides visual calm in a more complex outfit - with prints, pattern, or layered styling. It says 'I haven't tried too hard' while elevating the whole look.",
         ],
         tips: ["A white or cream dial minimalist watch is one of the most universally flattering accessories a woman can own.", "The same minimalist watch on a mesh bracelet (for work) and a leather strap (for evenings) becomes two distinct looks."],
       },
@@ -528,7 +528,7 @@ const articles: Article[] = [
       {
         heading: "Why dial diameter alone doesn't determine fit",
         paragraphs: [
-          "Many women measure their wrist, look at a watch's listed diameter, and assume a 32 mm watch will fit because their wrist is small. But dial diameter is not the most important measurement. Lug-to-lug distance — the total length of the case from the top to bottom lug where the strap attaches — determines whether the watch overhangs the wrist edges.",
+          "Many women measure their wrist, look at a watch's listed diameter, and assume a 32 mm watch will fit because their wrist is small. But dial diameter is not the most important measurement. Lug-to-lug distance - the total length of the case from the top to bottom lug where the strap attaches - determines whether the watch overhangs the wrist edges.",
           "A compact 36 mm watch with short lugs can sit better on a thin wrist than a 30 mm watch with long lugs that protrude past the wrist edges. Always check the lug-to-lug dimension alongside the dial size.",
         ],
         tips: ["Under 42 mm lug-to-lug is the target for thin wrists.", "Under 8 mm case thickness ensures the watch doesn't feel bulky on a petite frame."],
@@ -552,8 +552,8 @@ const articles: Article[] = [
       {
         heading: "Style approaches that work for thin wrists",
         paragraphs: [
-          "A single small watch on a thin wrist often looks more elegant than stacking — there is simply less space to add additional pieces without overcrowding. If you enjoy the stacked look, choose one very thin bangle and pair it with the watch on the same wrist.",
-          "Avoid excessively thick bezels or rotating ring complications on small cases — they increase visual bulk without adding proportionate dial size. A clean, unadorned bezel keeps the case looking crisp and proportionate.",
+          "A single small watch on a thin wrist often looks more elegant than stacking - there is simply less space to add additional pieces without overcrowding. If you enjoy the stacked look, choose one very thin bangle and pair it with the watch on the same wrist.",
+          "Avoid excessively thick bezels or rotating ring complications on small cases - they increase visual bulk without adding proportionate dial size. A clean, unadorned bezel keeps the case looking crisp and proportionate.",
         ],
       },
     ],
@@ -580,7 +580,7 @@ function articleHtml(article: Article) {
     )
     .join("\n");
 
-  return `<p class="lead font-serif text-xl italic text-ink/90 leading-relaxed border-l-2 border-primary/40 pl-5 mb-8">${article.directAnswer}</p>${sections}<div class="my-10 rounded-fuse border border-line bg-white p-6"><h2 class="text-xl font-serif font-bold text-ink mb-3">The final word</h2><p class="text-ink/80 leading-relaxed">Use these principles as a framework rather than a rulebook. The best women's watch is the one that fits your wrist, your wardrobe, and your life — worn confidently, every day.</p></div>`;
+  return `<p class="lead font-serif text-xl italic text-ink/90 leading-relaxed border-l-2 border-primary/40 pl-5 mb-8">${article.directAnswer}</p>${sections}<div class="my-10 rounded-fuse border border-line bg-white p-6"><h2 class="text-xl font-serif font-bold text-ink mb-3">The final word</h2><p class="text-ink/80 leading-relaxed">Use these principles as a framework rather than a rulebook. The best women's watch is the one that fits your wrist, your wardrobe, and your life - worn confidently, every day.</p></div>`;
 }
 
 function editorialSvg(title: string, index: number) {

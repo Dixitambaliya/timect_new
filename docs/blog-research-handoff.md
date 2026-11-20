@@ -35,9 +35,9 @@ These 30 candidates are a brainstorming inventory, not 30 individually validated
 | 19 | Watches for office outfits | Working women / informational | Reject as currently framed: office coverage already exists; a genuinely different angle requires evidence. | Existing office guide |
 | 20 | Watch with kurti or western dress | Women / informational | Hold: broad outfit overlap; combine with a more specific wardrobe problem only if analysis supports it. | Existing outfit guide |
 | 21 | Minimalist watch versus oversized watch | Young adults / comparison | Hold: check overlap with fit and personal-style guides; specificity alone is insufficient. | Existing fit guide |
-| 22 | Affordable-looking luxury watches | Young adults / commercial | Reject: ambiguous intent and unsubstantiated value judgement. | — |
+| 22 | Affordable-looking luxury watches | Young adults / commercial | Reject: ambiguous intent and unsubstantiated value judgement. | - |
 | 23 | Watches for streetwear | Young adults / informational | Hold: examine personal-style and casual sections for distinct advice. | Existing men's style guide |
-| 24 | Watches for social media photographs | Young adults / informational | Hold: weak demonstrated search intent and narrow utility. | — |
+| 24 | Watches for social media photographs | Young adults / informational | Hold: weak demonstrated search intent and narrow utility. | - |
 | 25 | Classic watches for retired professionals | Older adults / commercial | Hold: generic classic-style overlap; prioritize legibility and clasp needs instead. | Existing personal-style guide |
 | 26 | Anniversary watch gift ideas | Couples / commercial | Reject as broad: existing gifting article explicitly covers anniversaries. | Existing gifting guide |
 | 27 | Birthday watch gifts | Families / commercial | Reject: existing milestone-birthday gifting. | Existing gifting guide |

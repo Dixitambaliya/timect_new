@@ -62,4 +62,4 @@ If droplets appear inside the watch, or mist persists or returns, keep the watch
 
 ## A practical rule before you get wet
 
-Read the marking, find the instructions for the exact model, and consider the condition of the watch and its strap. If any of those are uncertain, keep it dry and ask for advice. Choosing a suitable watch starts with what you actually plan to do while wearing it—not just the largest number on the case back.
+Read the marking, find the instructions for the exact model, and consider the condition of the watch and its strap. If any of those are uncertain, keep it dry and ask for advice. Choosing a suitable watch starts with what you actually plan to do while wearing it-not just the largest number on the case back.

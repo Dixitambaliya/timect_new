@@ -142,7 +142,7 @@ export default function StorefrontPage() {
     startTransition(async () => {
       const res = await adminSaveStorefront(data);
       if (res.ok) {
-        success("Storefront saved — changes are live");
+        success("Storefront saved - changes are live");
         setDirty(false);
       } else error(res.error);
     });
