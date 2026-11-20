@@ -55,7 +55,7 @@ const GROUPS: Group[] = [
   {
     title: "Blogs",
     items: [
-      { href: "/admin/blog", label: "Articles", icon: BookOpen },
+      { href: "/admin/blog", label: "Blogs", icon: BookOpen },
     ],
   },
   {

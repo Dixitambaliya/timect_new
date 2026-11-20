@@ -110,7 +110,7 @@ export default async function BlogHomePage({ searchParams }: { searchParams: Pro
       <div className="mt-10 md:mt-12">
         <div className="mb-4 px-1">
           <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-muted">Archive</p>
-          <h2 className="text-[20px] font-bold text-heading md:text-[24px]">All Articles</h2>
+          <h2 className="text-[20px] font-bold text-heading md:text-[24px]">All Blogs</h2>
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">

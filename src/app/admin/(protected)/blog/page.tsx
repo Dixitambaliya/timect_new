@@ -94,10 +94,10 @@ export default function AdminBlogPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-[var(--admin-heading)]">
-            Blog Articles
+            Blogs
           </h1>
           <p className="mt-1 text-sm text-[var(--admin-muted)]">
-            Manage luxury watch editorial articles, specifications, and SEO metadata.
+            Manage luxury watch blogs, specifications, and SEO metadata.
           </p>
         </div>
 
@@ -115,7 +115,7 @@ export default function AdminBlogPage() {
             className="admin-btn admin-btn-primary"
           >
             <Plus className="h-4 w-4" />
-            New Article
+            New Blog
           </Link>
         </div>
       </div>
@@ -123,7 +123,7 @@ export default function AdminBlogPage() {
       {/* Metrics Bar */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         <div className="admin-card p-4">
-          <p className="text-xs font-semibold uppercase tracking-wider text-[var(--admin-muted)]">Total Articles</p>
+          <p className="text-xs font-semibold uppercase tracking-wider text-[var(--admin-muted)]">Total Blogs</p>
           <p className="mt-1 text-2xl font-bold text-[var(--admin-heading)]">{pagination.total}</p>
         </div>
       </div>
@@ -162,7 +162,7 @@ export default function AdminBlogPage() {
           <table className="w-full min-w-[720px] text-left text-sm">
             <thead className="border-b border-[var(--admin-line)] bg-[var(--admin-bg)] text-xs uppercase tracking-wider text-[var(--admin-muted)]">
               <tr>
-                <th className="px-5 py-3 font-semibold">Article Title & Details</th>
+                <th className="px-5 py-3 font-semibold">Blog Title & Details</th>
                 <th className="px-4 py-3 font-semibold">Category</th>
                 <th className="px-4 py-3 font-semibold">Status</th>
                 <th className="px-4 py-3 font-semibold">Views</th>
@@ -173,13 +173,13 @@ export default function AdminBlogPage() {
               {loading ? (
                 <tr>
                   <td colSpan={5} className="py-12 text-center text-[var(--admin-muted)]">
-                    Loading editorial articles...
+                    Loading blogs...
                   </td>
                 </tr>
               ) : posts.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="py-12 text-center text-[var(--admin-muted)]">
-                    No articles found matching criteria.
+                    No blogs found matching criteria.
                   </td>
                 </tr>
               ) : (
@@ -273,7 +273,7 @@ export default function AdminBlogPage() {
         {pagination.totalPages > 1 && (
           <div className="flex items-center justify-between border-t border-[var(--admin-line)] px-5 py-3 text-xs text-[var(--admin-muted)]">
             <p>
-              Showing Page {pagination.page} of {pagination.totalPages} ({pagination.total} articles)
+              Showing Page {pagination.page} of {pagination.totalPages} ({pagination.total} blogs)
             </p>
             <div className="flex items-center gap-2">
               <button
@@ -297,13 +297,13 @@ export default function AdminBlogPage() {
 
       <ConfirmDialog
         open={!!postToDelete}
-        title="Delete article?"
+        title="Delete blog?"
         description={
           postToDelete
             ? `“${postToDelete.title}” will be permanently deleted. This action cannot be undone.`
             : undefined
         }
-        confirmLabel="Delete article"
+        confirmLabel="Delete blog"
         danger
         loading={deleting}
         onCancel={() => setPostToDelete(null)}

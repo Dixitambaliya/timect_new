@@ -277,10 +277,10 @@ export default function BlogEditorForm({ postId }: { postId?: number }) {
           </Link>
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-[var(--admin-heading)]">
-              {isEditing ? "Edit Article" : "Create Article"}
+              {isEditing ? "Edit Blog" : "Create Blog"}
             </h1>
             <p className="text-xs text-[var(--admin-muted)]">
-              Edit all article content, featured imagery, and FAQs.
+              Edit all blog content, featured imagery, and FAQs.
             </p>
           </div>
         </div>
@@ -301,7 +301,7 @@ export default function BlogEditorForm({ postId }: { postId?: number }) {
             className="admin-btn admin-btn-primary disabled:opacity-50"
           >
             {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-            Publish Article
+            Publish Blog
           </button>
         </div>
       </div>
@@ -351,7 +351,7 @@ export default function BlogEditorForm({ postId }: { postId?: number }) {
             <div className="admin-card p-5 space-y-4">
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-[var(--admin-muted)] mb-1">
-                  Article Title (Also used for Meta Title)
+                  Blog Title (Also used for Meta Title)
                 </label>
                 <input
                   type="text"
@@ -397,7 +397,7 @@ export default function BlogEditorForm({ postId }: { postId?: number }) {
                   rows={2}
                   value={excerpt}
                   onChange={(e) => setExcerpt(e.target.value)}
-                  placeholder="Concise 2-sentence summary of the article..."
+                  placeholder="Concise 2-sentence summary of the blog..."
                   className="admin-input text-sm"
                 />
               </div>
@@ -408,7 +408,7 @@ export default function BlogEditorForm({ postId }: { postId?: number }) {
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-b border-[var(--admin-line)] pb-3">
                 <div>
                   <h3 className="text-sm font-semibold uppercase tracking-wider text-[var(--admin-heading)]">
-                    Article Sections
+                    Blog Sections
                   </h3>
                   <p className="text-xs text-[var(--admin-muted)]">
                     Easily add, re-order, and remove paragraphs, headings, bullet points, and italic leads.
@@ -680,7 +680,7 @@ export default function BlogEditorForm({ postId }: { postId?: number }) {
           <div>
             <h2 className="text-lg font-bold text-[var(--admin-heading)]">Direct Answer Summary & FAQs</h2>
             <p className="text-xs text-[var(--admin-muted)]">
-              Manage the quick answer summary and frequently asked questions for this article.
+              Manage the quick answer summary and frequently asked questions for this blog.
             </p>
           </div>
 
@@ -765,7 +765,7 @@ export default function BlogEditorForm({ postId }: { postId?: number }) {
           <div>
             <h2 className="text-lg font-bold text-[var(--admin-heading)]">Featured Media</h2>
             <p className="text-xs text-[var(--admin-muted)]">
-              Assign, replace, or upload a new image for this article.
+              Assign, replace, or upload a new image for this blog.
             </p>
           </div>
 
@@ -830,13 +830,13 @@ export default function BlogEditorForm({ postId }: { postId?: number }) {
       {/* Confirm Save Draft / Publish */}
       <ConfirmDialog
         open={confirmSaveStatus !== null}
-        title={confirmSaveStatus === "published" ? "Publish article live?" : "Save article as draft?"}
+        title={confirmSaveStatus === "published" ? "Publish blog live?" : "Save blog as draft?"}
         description={
           confirmSaveStatus === "published"
             ? `“${title}” will be published live on the Timect Blog and indexed for search engines.`
             : `“${title}” will be saved as an internal draft and won't be visible to public readers.`
         }
-        confirmLabel={confirmSaveStatus === "published" ? "Publish Article" : "Save Draft"}
+        confirmLabel={confirmSaveStatus === "published" ? "Publish Blog" : "Save Draft"}
         icon={<Save className="h-5 w-5" />}
         loading={saving}
         onCancel={() => setConfirmSaveStatus(null)}
@@ -863,7 +863,7 @@ export default function BlogEditorForm({ postId }: { postId?: number }) {
       <ConfirmDialog
         open={faqToDelete !== null}
         title="Delete FAQ question?"
-        description="Are you sure you want to remove this FAQ item from the article schema and display?"
+        description="Are you sure you want to remove this FAQ item from the blog schema and display?"
         confirmLabel="Delete FAQ"
         danger
         onCancel={() => setFaqToDelete(null)}

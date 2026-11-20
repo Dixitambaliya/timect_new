@@ -29,7 +29,7 @@ export async function generateMetadata({ params, searchParams }: CategoryPagePro
   return {
     ...createPageMetadata({
       title: current.seo_title || `${current.name} Watch Guides | Timect Watches`,
-      description: current.seo_description || current.description || `Read ${current.name} watch guides and practical articles from Timect Blogs.`,
+      description: current.seo_description || current.description || `Read ${current.name} watch guides and practical blogs from Timect Blogs.`,
       path: `/blog/category/${slug}`,
       keywords: [`${current.name} watch guides`, current.name, "Timect Watches Blogs", "watch education"],
     }),
@@ -75,7 +75,7 @@ export default async function BlogCategoryPage({ params, searchParams }: Categor
       <div className="mx-auto mt-12 md:mt-16 max-w-site">
         {posts.length === 0 ? (
           <div className="rounded-fuse bg-white p-12 text-center text-muted">
-            <p>No published articles in this category yet.</p>
+            <p>No published blogs in this category yet.</p>
             <Link href="/blog" className="mt-4 inline-block text-[13px] uppercase tracking-wider text-heading font-semibold underline">
               Return to Blogs
             </Link>

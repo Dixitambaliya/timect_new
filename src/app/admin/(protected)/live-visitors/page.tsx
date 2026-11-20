@@ -208,7 +208,7 @@ export default function LiveVisitorsPage() {
             <option value="all">All Pages</option>
             <option value="home">Homepage</option>
             <option value="product">Product Pages</option>
-            <option value="blog">Blogs / Articles</option>
+            <option value="blog">Blogs</option>
             <option value="catalog">Watches Catalog</option>
             <option value="corporate">Corporate Gifting</option>
           </select>

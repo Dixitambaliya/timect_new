@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   const post = await getBlogPostBySlug(slug);
 
   if (!post) {
-    return { title: "Article Not Found | Timect Watches" };
+    return { title: "Blog Not Found | Timect Watches" };
   }
 
   const imageAlt = typeof post.content_json?.featuredImageAlt === "string" && post.content_json.featuredImageAlt.trim() || post.title;
@@ -289,12 +289,12 @@ export default async function BlogPostDetailPage({ params }: BlogPostPageProps) 
         </div>
       </div>
 
-      {/* Related Articles strictly within container-fuse */}
+      {/* Related Blogs strictly within container-fuse */}
       {related.length > 0 && (
         <div className="mt-12 md:mt-14">
           <div className="flex items-center justify-between mb-4 px-1">
             <h3 className="text-[20px] font-bold text-heading md:text-[22px]">
-              Related Articles
+              Related Blogs
             </h3>
             <Link href="/blog" className="text-[12px] font-semibold text-heading hover:underline">
               View All →
